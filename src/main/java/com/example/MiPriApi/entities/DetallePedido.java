@@ -1,0 +1,31 @@
+package com.example.MiPriApi.entities;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.web.bind.annotation.RestController;
+
+@Entity
+@Table(name = "detallePedidos")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class DetallePedido extends Base {
+
+    private Integer cantidad;
+    private Double subTotal;
+
+    @ManyToOne
+    @JoinColumn(name = "pedidoId")
+    private Pedido pedido;
+
+    @ManyToOne
+    @JoinColumn(name = "articuloId")
+    private Articulo articulo;
+
+
+
+}
