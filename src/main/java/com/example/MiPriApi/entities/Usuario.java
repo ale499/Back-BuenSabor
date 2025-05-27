@@ -13,6 +13,5 @@ import lombok.*;
 public class Usuario extends Base{
 
     private String auth0Id;
-    @Column
     private String userName;
 }

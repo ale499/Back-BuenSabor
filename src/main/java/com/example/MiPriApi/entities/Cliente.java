@@ -18,6 +18,8 @@ import java.util.Set;
 @Builder
 public class Cliente extends Persona{
 
+
+
     @ManyToMany
     @JoinTable(name = "clienteDomicilio",
             joinColumns = @JoinColumn(name = "clienteId"),

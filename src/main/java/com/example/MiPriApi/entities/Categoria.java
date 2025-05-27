@@ -17,6 +17,7 @@ import java.util.Set;
 public class Categoria extends Base {
 
     private String denominacion;
+    private Boolean esInsumo;
     @OneToMany(mappedBy = "categoriaPadre")
     @Builder.Default
     private Set<Categoria> subcategorias = new HashSet<>();

@@ -16,8 +16,10 @@ import lombok.NoArgsConstructor;
 public class Empresa extends Base{
 
     private String nombre;
-
     private String razonSocial;
-
     private Integer cuil;
+    private String direccionFiscal;
+    private String emailContacto;
+    private String telefono;
+    private String sitioWeb;
 }

@@ -24,6 +24,7 @@ import java.time.LocalTime;
 @Builder
 public class Pedido extends Base{
 
+    private Integer numeroPedido;
     private LocalTime horaEstimadaFinalizacion;
     private Double total = 0.0;
     private Double totalCosto;
@@ -33,12 +34,13 @@ public class Pedido extends Base{
     private LocalDate fechaPedido;
 
     @ManyToOne
+    @JoinColumn(name = "chefId")
+    private Chef chef;
+
+    @ManyToOne
     @JoinColumn(name = "clienteId")
     private Cliente cliente;
 
-    @ManyToOne
-    @JoinColumn(name = "empleadoId")
-    private Empleado empleado;
 
     @ManyToOne
     @JoinColumn(name = "sucursalId")
