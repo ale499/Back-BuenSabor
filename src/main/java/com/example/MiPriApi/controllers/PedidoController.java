@@ -26,9 +26,9 @@ public class PedidoController extends BaseController<Pedido, Long>{
         return ResponseEntity.ok(pedidos);
     }
 
-    @RequestMapping("/empleado/{idEmpleado}")
-    public ResponseEntity<List<Pedido>> listarPorEmpleado(@PathVariable Long idEmpleado) throws Exception{
-        List<Pedido> pedidos = pedidoService.listarPorCliente(idEmpleado);
+    @GetMapping("/empleado/{idEmpleado}")
+    public ResponseEntity<List<Pedido>> listarPorEmpleado(@PathVariable Long idEmpleado) throws Exception {
+        List<Pedido> pedidos = pedidoService.listarPorEmpleado(idEmpleado);
         return ResponseEntity.ok(pedidos);
     }
 
