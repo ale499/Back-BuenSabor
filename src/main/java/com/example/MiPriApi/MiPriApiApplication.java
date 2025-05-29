@@ -21,6 +21,12 @@ public class MiPriApiApplication {
 	@Autowired
 	private ClienteRepository clienteRepository;
 
+	@Autowired
+	private CategoriaRepository categoriaRepository;
+
+	@Autowired
+	private UnidadMedidaRepository unidadMedidaRepository;
+
 	public static void main(String[] args) {
 		SpringApplication.run(MiPriApiApplication.class, args);
 		System.out.println("Servidor iniciado.");
@@ -67,6 +73,44 @@ public class MiPriApiApplication {
 
 			System.out.println("Cliente de prueba creado con éxito.");
 
+			// Crear categorías
+			Categoria categoriaComida = Categoria.builder()
+					.denominacion("Comida")
+					.esInsumo(false)
+					.build();
+			Categoria categoriaBebida = Categoria.builder()
+					.denominacion("Bebida")
+					.esInsumo(false)
+					.build();
+			Categoria categoriaInsumo = Categoria.builder()
+					.denominacion("Insumo")
+					.esInsumo(true)
+					.build();
+
+			categoriaRepository.save(categoriaComida);
+			categoriaRepository.save(categoriaBebida);
+			categoriaRepository.save(categoriaInsumo);
+
+			System.out.println("Categorías creadas con éxito.");
+
+			// Crear unidades de medida
+			UnidadMedida unidadGramos = UnidadMedida.builder()
+					.denominacion("Gramos")
+					.build();
+			UnidadMedida unidadLitros = UnidadMedida.builder()
+					.denominacion("Litros")
+					.build();
+			UnidadMedida unidadUnidades = UnidadMedida.builder()
+					.denominacion("Unidades")
+					.build();
+
+			unidadMedidaRepository.save(unidadGramos);
+			unidadMedidaRepository.save(unidadLitros);
+			unidadMedidaRepository.save(unidadUnidades);
+
+			System.out.println("Unidades de medida creadas con éxito.");
 		};
+
+
 	}
 }
