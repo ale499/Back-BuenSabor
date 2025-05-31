@@ -46,4 +46,11 @@ public class PedidoService extends BaseService<Pedido, Long>{
             throw new Exception(ex.getMessage());
         }
     }
+
+    @Transactional
+    public Pedido buscarPedidoPorId(Long idPedido) throws Exception {
+        return pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new Exception("Pedido no encontrado con ID: " + idPedido));
+    }
+
 }

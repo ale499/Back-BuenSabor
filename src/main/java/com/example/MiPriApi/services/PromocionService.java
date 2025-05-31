@@ -18,9 +18,9 @@ public class PromocionService extends BaseService<Promocion, Long>{
     private PromocionRepository promocionRepository;
 
     @Transactional
-    public List<Promocion> listarPorSucursal(Long idSucursal) throws Exception{
+    public List<Promocion> listarPorSucursal(Long sucursalId) throws Exception{
         try {
-            return promocionRepository.findAllBySucursalesId(idSucursal);
+            return promocionRepository.findAllBySucursalesId(sucursalId);
         }catch (Exception ex){
             throw new Exception(ex.getMessage());
         }
