@@ -1,19 +1,42 @@
 package com.example.MiPriApi.services;
 
 import com.example.MiPriApi.entities.Cliente;
-import com.example.MiPriApi.repositories.BaseRepository;
+import com.example.MiPriApi.entities.Usuario;
+import com.example.MiPriApi.entities.enums.Rol;
 import com.example.MiPriApi.repositories.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-
-import java.util.List;
 
 @Service
 public class ClienteService extends BaseService<Cliente, Long>{
 
-    public ClienteService(ClienteRepository clienteRepository) {
+    private final ClienteRepository clienteRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public ClienteService(ClienteRepository clienteRepository, PasswordEncoder passwordEncoder) {
         super(clienteRepository);
+        this.clienteRepository = clienteRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    // Registrar nuevo cliente
+    public Cliente registrar(Cliente cliente) {
+        Usuario usuario = cliente.getUsuario();
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        usuario.setRol(Rol.CLIENTE);
+        cliente.setUsuario(usuario);
+        return clienteRepository.save(cliente);
+    }
+
+    // Actualizar datos del cliente autenticado
+    public Cliente actualizarDatos(String username, Cliente nuevosDatos) {
+        Cliente cliente = clienteRepository.findByUsuario_Username(username)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+        cliente.setNombre(nuevosDatos.getNombre());
+        cliente.setApellido(nuevosDatos.getApellido());
+        // Agrega aquí otros campos a actualizar si es necesario
+        return clienteRepository.save(cliente);
     }
 }
-

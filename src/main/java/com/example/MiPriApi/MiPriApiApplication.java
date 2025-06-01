@@ -38,7 +38,7 @@ public class MiPriApiApplication {
 			// Crear usuario para administrador
 			Usuario usuarioAdmin = Usuario.builder()
 					.auth0Id("auth0-admin-id")
-					.userName("adminUser")
+					.username("adminUser")
 					.build();
 			usuarioRepository.save(usuarioAdmin);
 
@@ -56,7 +56,7 @@ public class MiPriApiApplication {
 
 			Usuario usuarioCliente = Usuario.builder()
 					.auth0Id("auth0-client-id")
-					.userName("clienteUser")
+					.username("clienteUser")
 					.build();
 			usuarioRepository.save(usuarioCliente);
 
