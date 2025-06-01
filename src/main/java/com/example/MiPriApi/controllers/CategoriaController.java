@@ -24,9 +24,12 @@ public class CategoriaController extends BaseController<Categoria, Long>{
     private CategoriaService categoriaService;
 
     @RequestMapping("/subcategoria/{idCP}")
-    public Optional<Categoria> agregarSubcategoria(@PathVariable Long id_CP, @RequestBody Categoria subCategoria) throws Exception {
-        Categoria catPadre= categoriaService.agregarSubcategoria(id_CP, subCategoria);
-        return Optional.ofNullable(catPadre);
+    public ResponseEntity<Categoria> agregarSubcategoria(@PathVariable Long idCP, @RequestBody Categoria subCategoria) throws Exception {
+        Categoria catPadre = categoriaService.agregarSubcategoria(idCP, subCategoria);
+        if (catPadre == null) {
+            return ResponseEntity.notFound().build(); // Devuelve 404 si no se encuentra la categoría padre
+        }
+        return ResponseEntity.ok(catPadre); // Devuelve 200 con la categoría padre
     }
 
     @RequestMapping("/categoriaPadre/{id}")

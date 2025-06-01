@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface SucursalRepository extends BaseRepository<Sucursal, Long>{
 
-    List<Sucursal> findAllByEmpresaId(Long idEmpresa);
+
 
 
 }

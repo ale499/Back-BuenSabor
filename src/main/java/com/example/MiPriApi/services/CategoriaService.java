@@ -18,19 +18,15 @@ public class CategoriaService extends BaseService<Categoria, Long>{
     private CategoriaRepository categoriaRepository;
 
     @Transactional
-    public Categoria agregarSubcategoria(Long idCategoriaPadre, Categoria nuevasubCategoria) throws Exception{
-
-        try{
-            Categoria cagetoriaPadre = categoriaRepository.findById(idCategoriaPadre).orElse(null);
-            if (cagetoriaPadre == null){
-
-                nuevasubCategoria.setCategoriaPadre(cagetoriaPadre);
-                categoriaRepository.save(nuevasubCategoria);
-                return nuevasubCategoria;
-            }else{
-                return null;
+    public Categoria agregarSubcategoria(Long idCategoriaPadre, Categoria nuevasubCategoria) throws Exception {
+        try {
+            Categoria categoriaPadre = categoriaRepository.findById(idCategoriaPadre).orElse(null);
+            if (categoriaPadre == null) {
+                return null; // No se encontró la categoría padre
             }
-        }catch (Exception ex){
+            nuevasubCategoria.setCategoriaPadre(categoriaPadre); // Asigna la categoría padre
+            return categoriaRepository.save(nuevasubCategoria); // Guarda la subcategoría
+        } catch (Exception ex) {
             throw new Exception(ex.getMessage());
         }
     }

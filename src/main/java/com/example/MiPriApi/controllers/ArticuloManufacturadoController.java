@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+
 @RequestMapping("/articulosManufacturados")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ArticuloManufacturadoController extends BaseController<ArticuloManufacturado, Long> {
     public ArticuloManufacturadoController(ArticuloManufacturadoService service) {
         super(service);

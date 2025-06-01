@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 
 @Entity
@@ -13,12 +14,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 public class ArticuloInsumo extends Articulo {
 
-    private String denominacion;
     private Double precioCompra;
-    private Double precioVenta;
     private Integer stockActual;
     private Integer stockMaximo;
     private Integer stockMinimo;

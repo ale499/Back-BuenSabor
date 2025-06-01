@@ -29,9 +29,8 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
     }
 
     @RequestMapping("/articuloManufacturado/{id}")
-    public ResponseEntity<List<ArticuloManufacturadoDetalle>> listarPorArticuloManufacturado(@PathVariable Long idArticuloManufacturado) throws Exception{
-        List<ArticuloManufacturadoDetalle> articuloManufacturadoDetalles = articuloManufacturadoDetalleService.listarPorArticuloManufacturado(idArticuloManufacturado);
+    public ResponseEntity<List<ArticuloManufacturadoDetalle>> listarPorArticuloManufacturado(@PathVariable Long id) throws Exception {
+        List<ArticuloManufacturadoDetalle> articuloManufacturadoDetalles = articuloManufacturadoDetalleService.listarPorArticuloManufacturado(id);
         return ResponseEntity.ok(articuloManufacturadoDetalles);
-
     }
 }

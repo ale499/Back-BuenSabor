@@ -9,6 +9,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.time.LocalTime;
+
 @SpringBootApplication
 public class MiPriApiApplication {
 
@@ -26,6 +28,20 @@ public class MiPriApiApplication {
 
 	@Autowired
 	private UnidadMedidaRepository unidadMedidaRepository;
+
+	@Autowired
+	private ArticuloManufacturadoRepository manufacturadoRepository;
+
+	@Autowired
+	private ArticuloInsumoRepository insumoRepository;
+
+	@Autowired
+	private ArticuloManufacturadoDetalleRepository detalleRepository;
+
+	@Autowired
+	private SucursalRepository sucursalRepository;
+
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(MiPriApiApplication.class, args);
@@ -73,44 +89,239 @@ public class MiPriApiApplication {
 
 			System.out.println("Cliente de prueba creado con éxito.");
 
-			// Crear categorías
-			Categoria categoriaComida = Categoria.builder()
-					.denominacion("Comida")
-					.esInsumo(false)
-					.build();
-			Categoria categoriaBebida = Categoria.builder()
-					.denominacion("Bebida")
-					.esInsumo(false)
-					.build();
-			Categoria categoriaInsumo = Categoria.builder()
-					.denominacion("Insumo")
-					.esInsumo(true)
+			// Crear una sucursal
+			Sucursal sucursal = Sucursal.builder()
+					.nombre("Sucursal Centro")
+					.horarioApertura(LocalTime.of(9, 0))
+					.horarioCierre(LocalTime.of(18, 0))
+					.telefono("123456789")
+					.email("centro@example.com")
 					.build();
 
-			categoriaRepository.save(categoriaComida);
-			categoriaRepository.save(categoriaBebida);
-			categoriaRepository.save(categoriaInsumo);
+			// Verificar y obtener las categorías existentes
+			Categoria categoriaComidaExistente = categoriaRepository.findByDenominacion("Comida").orElse(null);
+			Categoria categoriaBebidaExistente = categoriaRepository.findByDenominacion("Bebida").orElse(null);
+
+			if (categoriaComidaExistente != null) {
+				sucursal.getCategorias().add(categoriaComidaExistente);
+			}
+			if (categoriaBebidaExistente != null) {
+				sucursal.getCategorias().add(categoriaBebidaExistente);
+			}
+
+			// Guardar la sucursal
+			sucursalRepository.save(sucursal);
+
+			System.out.println("Sucursal creada con éxito.");
+
+			// Crear categorías padre
+			Categoria categoriaComida = categoriaRepository.findByDenominacion("Comida")
+					.orElseGet(() -> {
+						Categoria nuevaCategoria = Categoria.builder()
+								.denominacion("Comida")
+								.esInsumo(false)
+								.build();
+						return categoriaRepository.save(nuevaCategoria);
+					});
+
+			Categoria categoriaBebida = categoriaRepository.findByDenominacion("Bebida")
+					.orElseGet(() -> {
+						Categoria nuevaCategoria = Categoria.builder()
+								.denominacion("Bebida")
+								.esInsumo(false)
+								.build();
+						return categoriaRepository.save(nuevaCategoria);
+					});
+
+			// Verificar y crear subcategorías para "Comida"
+			Categoria subcategoriaPizza = categoriaRepository.findByDenominacionAndCategoriaPadre("Pizza", categoriaComida)
+					.orElseGet(() -> {
+						Categoria nuevaSubcategoria = Categoria.builder()
+								.denominacion("Pizza")
+								.esInsumo(false)
+								.categoriaPadre(categoriaComida)
+								.build();
+						return categoriaRepository.save(nuevaSubcategoria);
+					});
+
+			Categoria subcategoriaPastas = categoriaRepository.findByDenominacionAndCategoriaPadre("Pastas", categoriaComida)
+					.orElseGet(() -> {
+						Categoria nuevaSubcategoria = Categoria.builder()
+								.denominacion("Pastas")
+								.esInsumo(false)
+								.categoriaPadre(categoriaComida)
+								.build();
+						return categoriaRepository.save(nuevaSubcategoria);
+					});
+
+			Categoria subcategoriaEmpanadas = categoriaRepository.findByDenominacionAndCategoriaPadre("Empanadas", categoriaComida)
+					.orElseGet(() -> {
+						Categoria nuevaSubcategoria = Categoria.builder()
+								.denominacion("Empanadas")
+								.esInsumo(false)
+								.categoriaPadre(categoriaComida)
+								.build();
+						return categoriaRepository.save(nuevaSubcategoria);
+					});
+
+
+			// Crear subcategorías para "Bebidas"
+			Categoria subcategoriaGaseosas = categoriaRepository.findByDenominacionAndCategoriaPadre("Gaseosas", categoriaBebida)
+					.orElseGet(() -> {
+						Categoria nuevaSubcategoria = Categoria.builder()
+								.denominacion("Gaseosas")
+								.esInsumo(false)
+								.categoriaPadre(categoriaBebida)
+								.build();
+						return categoriaRepository.save(nuevaSubcategoria);
+					});
+
+			Categoria subcategoriaJugos = categoriaRepository.findByDenominacionAndCategoriaPadre("Jugos", categoriaBebida)
+					.orElseGet(() -> {
+						Categoria nuevaSubcategoria = Categoria.builder()
+								.denominacion("Jugos")
+								.esInsumo(false)
+								.categoriaPadre(categoriaBebida)
+								.build();
+						return categoriaRepository.save(nuevaSubcategoria);
+					});
+
+			Categoria subcategoriaCervezas = categoriaRepository.findByDenominacionAndCategoriaPadre("Cervezas", categoriaBebida)
+					.orElseGet(() -> {
+						Categoria nuevaSubcategoria = Categoria.builder()
+								.denominacion("Cervezas")
+								.esInsumo(false)
+								.categoriaPadre(categoriaBebida)
+								.build();
+						return categoriaRepository.save(nuevaSubcategoria);
+					});
+
+
 
 			System.out.println("Categorías creadas con éxito.");
 
 			// Crear unidades de medida
-			UnidadMedida unidadGramos = UnidadMedida.builder()
-					.denominacion("Gramos")
-					.build();
-			UnidadMedida unidadLitros = UnidadMedida.builder()
-					.denominacion("Litros")
-					.build();
-			UnidadMedida unidadUnidades = UnidadMedida.builder()
-					.denominacion("Unidades")
-					.build();
+			UnidadMedida unidadGramos = unidadMedidaRepository.findByDenominacion("Gramos")
+					.orElseGet(() -> {
+						UnidadMedida nuevaUnidad = UnidadMedida.builder()
+								.denominacion("Gramos")
+								.build();
+						return unidadMedidaRepository.save(nuevaUnidad);
+					});
 
-			unidadMedidaRepository.save(unidadGramos);
-			unidadMedidaRepository.save(unidadLitros);
-			unidadMedidaRepository.save(unidadUnidades);
+			UnidadMedida unidadLitros = unidadMedidaRepository.findByDenominacion("Litros")
+					.orElseGet(() -> {
+						UnidadMedida nuevaUnidad = UnidadMedida.builder()
+								.denominacion("Litros")
+								.build();
+						return unidadMedidaRepository.save(nuevaUnidad);
+					});
+
+			UnidadMedida unidadUnidades = unidadMedidaRepository.findByDenominacion("Unidades")
+					.orElseGet(() -> {
+						UnidadMedida nuevaUnidad = UnidadMedida.builder()
+								.denominacion("Unidades")
+								.build();
+						return unidadMedidaRepository.save(nuevaUnidad);
+					});
 
 			System.out.println("Unidades de medida creadas con éxito.");
-		};
 
+			// Crear artículos insumos
+			ArticuloInsumo manteca = insumoRepository.findByDenominacion("Manteca")
+					.orElseGet(() -> {
+						ArticuloInsumo nuevoInsumo = ArticuloInsumo.builder()
+								.denominacion("Manteca")
+								.unidadMedida(unidadMedidaRepository.findByDenominacion("Gramos").orElse(null))
+								.categoria(categoriaRepository.findByDenominacion("Comida").orElse(null)) // Asignar categoría
+								.precioCompra(80.0)
+								.precioVenta(100.0) // Asignar precio de venta
+								.stockActual(50)
+								.stockMaximo(100)
+								.stockMinimo(10)
+								.esParaElaborar(true)
+								.build();
+						return insumoRepository.save(nuevoInsumo);
+					});
+			ArticuloInsumo azucar = insumoRepository.findByDenominacion("Azúcar")
+					.orElseGet(() -> {
+						ArticuloInsumo nuevoInsumo = ArticuloInsumo.builder()
+								.denominacion("Azúcar")
+								.unidadMedida(unidadMedidaRepository.findByDenominacion("Gramos").orElse(null))
+								.categoria(categoriaRepository.findByDenominacion("Comida").orElse(null)) // Asignar categoría
+								.precioCompra(40.0)
+								.precioVenta(50.0) // Asignar precio de venta
+								.stockActual(150)
+								.stockMaximo(300)
+								.stockMinimo(30)
+								.esParaElaborar(false)
+								.build();
+						return insumoRepository.save(nuevoInsumo);
+					});
+
+			ArticuloInsumo sal = insumoRepository.findByDenominacion("Sal")
+					.orElseGet(() -> {
+						ArticuloInsumo nuevoInsumo = ArticuloInsumo.builder()
+								.denominacion("Sal")
+								.unidadMedida(unidadMedidaRepository.findByDenominacion("Gramos").orElse(null))
+								.categoria(categoriaRepository.findByDenominacion("Comida").orElse(null)) // Asignar categoría
+								.precioCompra(10.0)
+								.precioVenta(15.0) // Asignar precio de venta
+								.stockActual(200)
+								.stockMaximo(400)
+								.stockMinimo(50)
+								.esParaElaborar(false)
+								.build();
+						return insumoRepository.save(nuevoInsumo);
+					});
+
+
+			System.out.println("Artículos insumos creados con éxito.");
+
+
+			// Crear artículo manufacturado
+			ArticuloManufacturado pizza = manufacturadoRepository.findByDenominacion("Pizza")
+					.orElseGet(() -> {
+						ArticuloManufacturado nuevoManufacturado = ArticuloManufacturado.builder()
+								.denominacion("Pizza")
+								.descripcion("Pizza de mozzarella")
+								.tiempoEstimadoMinutos(30)
+								.preparacion("Hornear la masa y agregar ingredientes")
+								.categoria(categoriaRepository.findByDenominacion("Comida").orElse(null)) // Asignar categoría
+								.precioVenta(500.0) // Asignar precio de venta
+								.build();
+						return manufacturadoRepository.save(nuevoManufacturado);
+					});
+
+			// Crear detalles del artículo manufacturado
+			ArticuloManufacturadoDetalle detalleHarina = detalleRepository.findByArticuloManufacturadoAndArticuloInsumo(pizza, insumoRepository.findByDenominacion("Harina").orElse(null))
+					.orElseGet(() -> {
+						ArticuloManufacturadoDetalle nuevoDetalle = ArticuloManufacturadoDetalle.builder()
+								.articuloManufacturado(pizza)
+								.articuloInsumo(insumoRepository.findByDenominacion("Harina").orElse(null))
+								.cantidad(500) // Cantidad en gramos
+								.build();
+						return detalleRepository.save(nuevoDetalle);
+					});
+
+			ArticuloManufacturadoDetalle detalleManteca = detalleRepository.findByArticuloManufacturadoAndArticuloInsumo(pizza, insumoRepository.findByDenominacion("Manteca").orElse(null))
+					.orElseGet(() -> {
+						ArticuloManufacturadoDetalle nuevoDetalle = ArticuloManufacturadoDetalle.builder()
+								.articuloManufacturado(pizza)
+								.articuloInsumo(insumoRepository.findByDenominacion("Manteca").orElse(null))
+								.cantidad(100) // Cantidad en gramos
+								.build();
+						return detalleRepository.save(nuevoDetalle);
+					});
+
+			System.out.println("Artículo manufacturado 'Pizza' creado con éxito.");
+
+
+
+
+
+
+		};
 
 	}
 }
