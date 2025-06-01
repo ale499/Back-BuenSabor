@@ -41,6 +41,18 @@ public class MiPriApiApplication {
 	@Autowired
 	private SucursalRepository sucursalRepository;
 
+	@Autowired
+	private DomicilioRepository domicilioRepository;
+
+	@Autowired
+	private LocalidadRepository localidadRepository;
+
+	@Autowired
+	private ProvinciaRepository provinciaRepository;
+
+	@Autowired
+	private PaisRepository paisRepository;
+
 
 
 	public static void main(String[] args) {
@@ -90,29 +102,72 @@ public class MiPriApiApplication {
 			System.out.println("Cliente de prueba creado con éxito.");
 
 			// Crear una sucursal
-			Sucursal sucursal = Sucursal.builder()
-					.nombre("Sucursal Centro")
-					.horarioApertura(LocalTime.of(9, 0))
-					.horarioCierre(LocalTime.of(18, 0))
-					.telefono("123456789")
-					.email("centro@example.com")
-					.build();
+			Sucursal sucursal = sucursalRepository.findByNombre("Sucursal Centro")
+					.orElseGet(() -> {
+						Sucursal nuevaSucursal = Sucursal.builder()
+								.nombre("Sucursal Centro")
+								.horarioApertura(LocalTime.of(9, 0))
+								.horarioCierre(LocalTime.of(18, 0))
+								.telefono("123456789")
+								.email("centro@example.com")
+								.build();
 
-			// Verificar y obtener las categorías existentes
-			Categoria categoriaComidaExistente = categoriaRepository.findByDenominacion("Comida").orElse(null);
-			Categoria categoriaBebidaExistente = categoriaRepository.findByDenominacion("Bebida").orElse(null);
+						// Verificar y obtener las categorías existentes
+						Categoria categoriaComidaExistente = categoriaRepository.findByDenominacion("Comida").orElse(null);
+						Categoria categoriaBebidaExistente = categoriaRepository.findByDenominacion("Bebida").orElse(null);
 
-			if (categoriaComidaExistente != null) {
-				sucursal.getCategorias().add(categoriaComidaExistente);
-			}
-			if (categoriaBebidaExistente != null) {
-				sucursal.getCategorias().add(categoriaBebidaExistente);
-			}
+						if (categoriaComidaExistente != null) {
+							nuevaSucursal.getCategorias().add(categoriaComidaExistente);
+						}
+						if (categoriaBebidaExistente != null) {
+							nuevaSucursal.getCategorias().add(categoriaBebidaExistente);
+						}
 
-			// Guardar la sucursal
-			sucursalRepository.save(sucursal);
+						return sucursalRepository.save(nuevaSucursal);
+					});
 
 			System.out.println("Sucursal creada con éxito.");
+
+
+			// Crear domicilio
+			Domicilio domicilioCentro = domicilioRepository.findByCalleAndNumeroAndPisoAndNroDpto("Av. Principal", 123, 1, 101)
+					.orElseGet(() -> {
+						Domicilio nuevoDomicilio = Domicilio.builder()
+								.calle("Av. Principal")
+								.numero(123)
+								.piso(1)
+								.nroDpto(101)
+								.cp(5000)
+								.localidad(localidadRepository.findByNombre("Ciudad Centro").orElseGet(() -> {
+									Localidad nuevaLocalidad = Localidad.builder()
+											.nombre("Ciudad Centro")
+											.provincia(provinciaRepository.findByNombre("Provincia Ejemplo").orElseGet(() -> {
+												Provincia nuevaProvincia = Provincia.builder()
+														.nombre("Provincia Ejemplo")
+														.pais(paisRepository.findByNombre("País Ejemplo").orElseGet(() -> {
+															Pais nuevoPais = Pais.builder()
+																	.nombre("País Ejemplo")
+																	.build();
+															return paisRepository.save(nuevoPais);
+														}))
+														.build();
+												return provinciaRepository.save(nuevaProvincia);
+											}))
+											.build();
+									return localidadRepository.save(nuevaLocalidad);
+								}))
+								.build();
+						return domicilioRepository.save(nuevoDomicilio);
+					});
+
+            // Asignar domicilio a la sucursal
+			Sucursal sucursalCentro = sucursalRepository.findByNombre("Sucursal Centro").orElse(null);
+			if (sucursalCentro != null) {
+				sucursalCentro.setDomicilio(domicilioCentro);
+				sucursalRepository.save(sucursalCentro);
+			}
+
+			System.out.println("Domicilio asignado a la sucursal con éxito.");
 
 			// Crear categorías padre
 			Categoria categoriaComida = categoriaRepository.findByDenominacion("Comida")
