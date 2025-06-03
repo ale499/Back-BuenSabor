@@ -63,43 +63,57 @@ public class MiPriApiApplication {
 	@Bean
 	CommandLineRunner initData() {
 		return args -> {
-			// Crear usuario para administrador
-			Usuario usuarioAdmin = Usuario.builder()
-					.auth0Id("auth0-admin-id")
-					.userName("adminUser")
-					.build();
-			usuarioRepository.save(usuarioAdmin);
+            // Verificar y crear usuario para administrador
+            Usuario usuarioAdmin = usuarioRepository.findByUserName("adminUser")
+                    .orElseGet(() -> {
+                        Usuario nuevoUsuarioAdmin = Usuario.builder()
+                                .auth0Id("auth0-admin-id")
+                                .userName("adminUser")
+                                .build();
+                        return usuarioRepository.save(nuevoUsuarioAdmin);
+                    });
 
-			// Crear administrador
-			Administrador administrador = Administrador.builder()
-					.nombre("Admin")
-					.apellido("Principal")
-					.email("admin@example.com")
-					.rol(Rol.ADMIN)
-					.usuario(usuarioAdmin)
-					.build();
-			administradorRepository.save(administrador);
+            // Verificar y crear administrador
+            Administrador administrador = administradorRepository.findByEmail("admin@example.com")
+                    .orElseGet(() -> {
+                        Administrador nuevoAdministrador = Administrador.builder()
+                                .nombre("Admin")
+                                .apellido("Principal")
+                                .email("admin@example.com")
+                                .rol(Rol.ADMIN)
+                                .usuario(usuarioAdmin)
+                                .build();
+                        return administradorRepository.save(nuevoAdministrador);
+                    });
 
-			System.out.println("Administrador creado con éxito.");
+            System.out.println("Administrador creado con éxito.");
 
-			Usuario usuarioCliente = Usuario.builder()
-					.auth0Id("auth0-client-id")
-					.userName("clienteUser")
-					.build();
-			usuarioRepository.save(usuarioCliente);
+            // Verificar y crear usuario para cliente
+            Usuario usuarioCliente = usuarioRepository.findByUserName("clienteUser")
+                    .orElseGet(() -> {
+                        Usuario nuevoUsuarioCliente = Usuario.builder()
+                                .auth0Id("auth0-client-id")
+                                .userName("clienteUser")
+                                .build();
+                        return usuarioRepository.save(nuevoUsuarioCliente);
+                    });
 
-			Cliente cliente = Cliente.builder()
-					.nombre("Cliente")
-					.apellido("Prueba")
-					.email("cliente@example.com")
-					.telefono("123456789")
-					.fechaNacimiento("1990-01-01")
-					.rol(Rol.CLIENTE)
-					.usuario(usuarioCliente)
-					.build();
-			clienteRepository.save(cliente);
+            // Verificar y crear cliente
+            Cliente cliente = clienteRepository.findByEmail("cliente@example.com")
+                    .orElseGet(() -> {
+                        Cliente nuevoCliente = Cliente.builder()
+                                .nombre("Cliente")
+                                .apellido("Prueba")
+                                .email("cliente@example.com")
+                                .telefono("123456789")
+                                .fechaNacimiento("1990-01-01")
+                                .rol(Rol.CLIENTE)
+                                .usuario(usuarioCliente)
+                                .build();
+                        return clienteRepository.save(nuevoCliente);
+                    });
 
-			System.out.println("Cliente de prueba creado con éxito.");
+            System.out.println("Cliente de prueba creado con éxito.");
 
 			// Crear una sucursal
 			Sucursal sucursal = sucursalRepository.findByNombre("Sucursal Centro")
