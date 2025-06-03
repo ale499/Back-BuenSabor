@@ -4,14 +4,20 @@ import com.example.MiPriApi.entities.Cliente;
 import com.example.MiPriApi.entities.Usuario;
 import com.example.MiPriApi.entities.enums.Rol;
 import com.example.MiPriApi.repositories.ClienteRepository;
+import com.example.MiPriApi.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ClienteService extends BaseService<Cliente, Long>{
+public class ClienteService extends BaseService<Cliente, Long> {
 
+    @Autowired
     private final ClienteRepository clienteRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -26,7 +32,8 @@ public class ClienteService extends BaseService<Cliente, Long>{
         Usuario usuario = cliente.getUsuario();
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuario.setRol(Rol.CLIENTE);
-        cliente.setUsuario(usuario);
+        Usuario usuarioGuardado = usuarioRepository.save(usuario);
+        cliente.setUsuario(usuarioGuardado);
         return clienteRepository.save(cliente);
     }
 

@@ -4,6 +4,7 @@ import com.example.MiPriApi.entities.Pedido;
 import com.example.MiPriApi.services.BaseService;
 import com.example.MiPriApi.services.PedidoService;
 import com.example.MiPriApi.dto.PedidoRequestDTO;
+import com.example.MiPriApi.dto.ConfirmarPedidoRequestDTO;
 import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.preference.PreferenceClient;
 import com.mercadopago.client.preference.PreferenceItemRequest;
@@ -88,6 +89,14 @@ public class PedidoController extends BaseController<Pedido, Long>{
     public ResponseEntity<?> crearPedidoDesdeCarrito(@RequestBody PedidoRequestDTO pedidoRequest) throws Exception {
         pedidoService.crearPedidoDesdeCarrito(pedidoRequest);
         return ResponseEntity.ok("Pedido creado correctamente");
+    }
+
+    @PostMapping("/{idPedido}/confirmar")
+    public ResponseEntity<?> confirmarPedido(
+            @PathVariable Long idPedido,
+            @RequestBody ConfirmarPedidoRequestDTO request) throws Exception {
+        pedidoService.confirmarPedido(idPedido, request);
+        return ResponseEntity.ok("Pedido confirmado correctamente");
     }
 
 

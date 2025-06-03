@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Table(name = "pedidos")
@@ -47,6 +48,9 @@ public class Pedido extends Base{
     @ManyToOne
     @JoinColumn(name = "domicilioId")
     private Domicilio domicilio;
+
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<DetallePedido> detalles; // <-- Agrega esta línea
 
 
 }

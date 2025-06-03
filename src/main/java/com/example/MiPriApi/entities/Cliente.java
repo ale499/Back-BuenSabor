@@ -28,8 +28,8 @@ public class Cliente extends Persona{
     @Builder.Default
     private Set<Domicilio> domicilios = new HashSet<>();
 
-    @OneToOne
-    @JoinColumn(name = "usuarioCliente")
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
     @OneToOne

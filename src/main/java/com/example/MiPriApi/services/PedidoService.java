@@ -2,13 +2,16 @@ package com.example.MiPriApi.services;
 
 import com.example.MiPriApi.dto.DetallePedidoRequestDTO;
 import com.example.MiPriApi.dto.PedidoRequestDTO;
+import com.example.MiPriApi.dto.ConfirmarPedidoRequestDTO;
 import com.example.MiPriApi.entities.*;
+import com.example.MiPriApi.entities.enums.Estado;
 import com.example.MiPriApi.repositories.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -24,6 +27,10 @@ public class PedidoService extends BaseService<Pedido, Long> {
     private ArticuloInsumoRepository articuloInsumoRepository;
     @Autowired
     private ArticuloManufacturadoRepository articuloManufacturadoRepository;
+    @Autowired
+    private StockService stockService;
+    @Autowired
+    private TiempoEstimadoService tiempoEstimadoService;
 
     public PedidoService(PedidoRepository pedidoRepository) {
         super(pedidoRepository);
@@ -93,5 +100,27 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
             detallePedidoRepository.save(detalle);
         }
+    }
+
+    @Transactional
+    public void confirmarPedido(Long idPedido, ConfirmarPedidoRequestDTO request) throws Exception {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new Exception("Pedido no encontrado"));
+
+        // Aquí puedes agregar lógica para tipo de envío y forma de pago usando el DTO si es necesario
+        // pedido.setTipoEnvio(request.getTipoEnvio());
+        // pedido.setFormaPago(request.getFormaPago());
+
+        pedido.setEstado(Estado.PENDIENTE);
+
+        // Descontar stock usando el servicio
+        stockService.descontarStockIngredientes(pedido);
+
+        // Calcular y setear tiempo estimado usando el servicio
+        int minutos = tiempoEstimadoService.calcularTiempoEstimado(pedido);
+        LocalTime horaEstimada = LocalTime.now().plusMinutes(minutos);
+        pedido.setHoraEstimadaFinalizacion(horaEstimada);
+
+        pedidoRepository.save(pedido);
     }
 }

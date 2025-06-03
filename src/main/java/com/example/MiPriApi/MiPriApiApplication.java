@@ -36,27 +36,34 @@ public class MiPriApiApplication {
 	CommandLineRunner initData() {
 		return args -> {
 			// Crear usuario para administrador
-			Usuario usuarioAdmin = Usuario.builder()
-					.auth0Id("auth0-admin-id")
-					.username("adminUser")
-					.build();
-			usuarioRepository.save(usuarioAdmin);
+			if (usuarioRepository.findByUsername("adminUser").isPresent()) {
+				System.out.println("Usuario administrador ya existe, no se creará de nuevo.");
+				return;
+			}
 
-			// Crear administrador
-			Administrador administrador = Administrador.builder()
-					.nombre("Admin")
-					.apellido("Principal")
-					.email("admin@example.com")
-					.rol(Rol.ADMIN)
-					.usuario(usuarioAdmin)
-					.build();
-			administradorRepository.save(administrador);
+				Usuario usuarioAdmin = Usuario.builder()
+						.auth0Id("auth0-admin-id")
+						.username("adminUser")
+						.rol(Rol.ADMIN)
+						.build();
+				usuarioRepository.save(usuarioAdmin);
+
+				// Crear administrador
+				Administrador administrador = Administrador.builder()
+						.nombre("Admin")
+						.apellido("Principal")
+						.email("admin@example.com")
+						.rol(Rol.ADMIN)
+						.usuario(usuarioAdmin)
+						.build();
+				administradorRepository.save(administrador);
 
 			System.out.println("Administrador creado con éxito.");
 
 			Usuario usuarioCliente = Usuario.builder()
 					.auth0Id("auth0-client-id")
 					.username("clienteUser")
+					.rol(Rol.CLIENTE)
 					.build();
 			usuarioRepository.save(usuarioCliente);
 
@@ -66,7 +73,6 @@ public class MiPriApiApplication {
 					.email("cliente@example.com")
 					.telefono("123456789")
 					.fechaNacimiento("1990-01-01")
-					.rol(Rol.CLIENTE)
 					.usuario(usuarioCliente)
 					.build();
 			clienteRepository.save(cliente);
@@ -114,3 +120,4 @@ public class MiPriApiApplication {
 
 	}
 }
+
