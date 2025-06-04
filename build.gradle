@@ -40,6 +40,9 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	//AUTH0
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 }
 
 tasks.named('test') {
