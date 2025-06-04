@@ -4,6 +4,7 @@ import com.example.MiPriApi.entities.enums.Estado;
 import com.example.MiPriApi.entities.enums.FormaPago;
 import com.example.MiPriApi.entities.enums.TipoEnvio;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,6 +51,7 @@ public class Pedido extends Base{
     private Domicilio domicilio;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<DetallePedido> detalles; // <-- Agrega esta línea
 
 

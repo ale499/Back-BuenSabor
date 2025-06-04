@@ -1,5 +1,6 @@
 package com.example.MiPriApi.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,7 @@ public class DetallePedido extends Base {
 
     @ManyToOne
     @JoinColumn(name = "pedidoId", nullable = false)
+    @JsonBackReference
     private Pedido pedido;
 
     @ManyToOne
