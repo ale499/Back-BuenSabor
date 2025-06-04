@@ -4,8 +4,8 @@ import com.example.MiPriApi.entities.ArticuloInsumo;
 import com.example.MiPriApi.services.ArticuloInsumoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -25,4 +25,11 @@ public class ArticuloInsumoController extends BaseController<ArticuloInsumo, Lon
         List<ArticuloInsumo> articuloInsumos = articuloInsumoService.listarPorCategoria(idCategoria);
         return ResponseEntity.ok(articuloInsumos);
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<ArticuloInsumo>> buscarPorDenominacion(@RequestParam String denominacion) throws Exception {
+        List<ArticuloInsumo> resultado = articuloInsumoService.buscarPorDenominacion(denominacion);
+        return ResponseEntity.ok(resultado);
+    }
+
 }

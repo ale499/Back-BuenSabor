@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ArticuloInsumo extends Articulo {
 
-    private String denominacion;
     private Double precioCompra;
     private Double precioVenta;
     private Integer stockActual;

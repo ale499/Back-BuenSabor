@@ -38,9 +38,10 @@ public class ClienteService extends BaseService<Cliente, Long> {
     }
 
     // Actualizar datos del cliente autenticado
-    public Cliente actualizarDatos(String username, Cliente nuevosDatos) {
-        Cliente cliente = clienteRepository.findByUsuario_Username(username)
+    public Cliente actualizarDatosPorId(Long id, Cliente nuevosDatos) {
+        Cliente cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+
         cliente.setNombre(nuevosDatos.getNombre());
         cliente.setApellido(nuevosDatos.getApellido());
         // Agrega aquí otros campos a actualizar si es necesario

@@ -9,4 +9,6 @@ import java.util.List;
 public interface ArticuloInsumoRepository extends BaseRepository<ArticuloInsumo, Long>{
 
     List<ArticuloInsumo> findAllByCategoriaId(Long idCategoria);
+    List<ArticuloInsumo> findByDenominacionContainingIgnoreCase(String denominacion);
+
 }

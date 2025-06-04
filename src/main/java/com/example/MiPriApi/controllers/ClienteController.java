@@ -26,10 +26,9 @@ public class ClienteController extends BaseController<Cliente, Long> {
     }
 
     // Endpoint para actualizar datos del cliente autenticado
-    @PutMapping("/actualizar")
-    public ResponseEntity<Cliente> actualizar(@RequestBody Cliente cliente) throws Exception {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Cliente actualizado = clienteService.actualizarDatos(username, cliente);
+    @PutMapping("/actualizar/{id}")
+    public ResponseEntity<?> actualizarCliente(@PathVariable Long id, @RequestBody Cliente nuevosDatos) {
+        Cliente actualizado = clienteService.actualizarDatosPorId(id, nuevosDatos);
         return ResponseEntity.ok(actualizado);
     }
 }
