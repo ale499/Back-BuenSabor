@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -19,8 +20,6 @@ import java.util.Set;
 @SuperBuilder
 public class Cliente extends Persona{
 
-
-
     @ManyToMany
     @JoinTable(name = "clienteDomicilio",
             joinColumns = @JoinColumn(name = "clienteId"),
@@ -28,8 +27,12 @@ public class Cliente extends Persona{
     @Builder.Default
     private Set<Domicilio> domicilios = new HashSet<>();
 
-    @OneToOne
-    @JoinColumn(name = "usuarioCliente")
+
+    @OneToMany(mappedBy = "cliente")
+    private List<Pedido> pedidos;
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
     @OneToOne

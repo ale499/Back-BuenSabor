@@ -64,6 +64,9 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
     @Transactional
     public void crearPedidoDesdeCarrito(PedidoRequestDTO pedidoRequest) throws Exception {
+        if (pedidoRequest.getClienteId() == null) {
+            throw new Exception("El ID del cliente no puede ser nulo");
+        }
         Cliente cliente = clienteRepository.findById(pedidoRequest.getClienteId())
                 .orElseThrow(() -> new Exception("Cliente no encontrado"));
 
@@ -76,6 +79,9 @@ public class PedidoService extends BaseService<Pedido, Long> {
         for (DetallePedidoRequestDTO item : pedidoRequest.getItems()) {
             Articulo articulo;
             if ("INSUMO".equalsIgnoreCase(item.getTipoArticulo())) {
+                if (item.getArticuloId() == null) {
+                    throw new Exception("El ID del artículo no puede ser nulo");
+                }
                 articulo = articuloInsumoRepository.findById(item.getArticuloId())
                         .orElseThrow(() -> new Exception("Insumo no encontrado"));
             } else if ("MANUFACTURADO".equalsIgnoreCase(item.getTipoArticulo())) {

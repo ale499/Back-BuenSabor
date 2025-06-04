@@ -15,7 +15,7 @@ public class Usuario extends Base{
     private String auth0Id;
 
     @Column(unique = true)
-    private String username;
+    private String userName;
 
     private String password;
 
