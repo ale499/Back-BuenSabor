@@ -312,6 +312,21 @@ public class MiPriApiApplication {
 								.build();
 						return insumoRepository.save(nuevoInsumo);
 					});
+			ArticuloInsumo harina = insumoRepository.findByDenominacion("Harina")
+					.orElseGet(() -> {
+						ArticuloInsumo nuevoInsumo = ArticuloInsumo.builder()
+								.denominacion("Harina")
+								.unidadMedida(unidadMedidaRepository.findByDenominacion("Gramos").orElse(null))
+								.categoria(categoriaRepository.findByDenominacion("Comida").orElse(null)) // Asignar categoría
+								.precioCompra(50.0)
+								.precioVenta(70.0) // Asignar precio de venta
+								.stockActual(100)
+								.stockMaximo(200)
+								.stockMinimo(20)
+								.esParaElaborar(true)
+								.build();
+						return insumoRepository.save(nuevoInsumo);
+					});
 			ArticuloInsumo azucar = insumoRepository.findByDenominacion("Azúcar")
 					.orElseGet(() -> {
 						ArticuloInsumo nuevoInsumo = ArticuloInsumo.builder()

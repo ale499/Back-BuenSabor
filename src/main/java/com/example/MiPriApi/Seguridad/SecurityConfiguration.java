@@ -46,6 +46,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/api/public").permitAll()
+                                .requestMatchers("/articulosManufacturados/**").permitAll() // Permitir acceso público
+                                .requestMatchers("/articuloManufacturadoDetalle/**").permitAll()
                                 .requestMatchers("/api/admin/**").hasAuthority("administrador")
                                 .requestMatchers("/api/client/**").hasAuthority("cliente")
                                 .anyRequest().authenticated()
