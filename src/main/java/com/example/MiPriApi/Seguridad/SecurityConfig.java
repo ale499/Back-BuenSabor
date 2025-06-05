@@ -39,6 +39,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/clientes").permitAll()
                         .requestMatchers("/clientes/registro").permitAll()
+                        .requestMatchers("/clientes/pedidos").permitAll()
                         .requestMatchers("/clientes/actualizar/**").permitAll()
                         .requestMatchers("/clientes/**").authenticated()
                         .anyRequest().permitAll()

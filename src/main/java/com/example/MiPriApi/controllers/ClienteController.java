@@ -2,10 +2,13 @@ package com.example.MiPriApi.controllers;
 
 import com.example.MiPriApi.controllers.BaseController;
 import com.example.MiPriApi.entities.Cliente;
+import com.example.MiPriApi.entities.Pedido;
 import com.example.MiPriApi.services.ClienteService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/clientes")
@@ -31,4 +34,12 @@ public class ClienteController extends BaseController<Cliente, Long> {
         Cliente actualizado = clienteService.actualizarDatosPorId(id, nuevosDatos);
         return ResponseEntity.ok(actualizado);
     }
+
+    @GetMapping("/pedidos")
+    public ResponseEntity<List<Pedido>> obtenerHistorialPedidos(@RequestParam String username) {
+        List<Pedido> pedidos = clienteService.obtenerPedidosPorUsername(username);
+        return ResponseEntity.ok(pedidos);
+    }
+
+
 }

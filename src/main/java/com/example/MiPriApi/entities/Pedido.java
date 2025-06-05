@@ -4,6 +4,7 @@ import com.example.MiPriApi.entities.enums.Estado;
 import com.example.MiPriApi.entities.enums.FormaPago;
 import com.example.MiPriApi.entities.enums.TipoEnvio;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -39,6 +40,7 @@ public class Pedido extends Base{
 
     @ManyToOne
     @JoinColumn(name = "clienteId")
+    @JsonBackReference
     private Cliente cliente;
 
 

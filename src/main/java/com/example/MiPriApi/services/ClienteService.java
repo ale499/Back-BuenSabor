@@ -1,6 +1,7 @@
 package com.example.MiPriApi.services;
 
 import com.example.MiPriApi.entities.Cliente;
+import com.example.MiPriApi.entities.Pedido;
 import com.example.MiPriApi.entities.Usuario;
 import com.example.MiPriApi.entities.enums.Rol;
 import com.example.MiPriApi.repositories.ClienteRepository;
@@ -8,6 +9,8 @@ import com.example.MiPriApi.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ClienteService extends BaseService<Cliente, Long> {
@@ -47,4 +50,11 @@ public class ClienteService extends BaseService<Cliente, Long> {
         // Agrega aquí otros campos a actualizar si es necesario
         return clienteRepository.save(cliente);
     }
+
+    public List<Pedido> obtenerPedidosPorUsername(String username) {
+        Cliente cliente = clienteRepository.findByUsuario_Username(username)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+        return cliente.getPedidos();
+    }
+
 }
