@@ -1,59 +1,59 @@
 package com.example.MiPriApi;
 
 import com.example.MiPriApi.entities.*;
-import com.example.MiPriApi.entities.enums.*;
+import com.example.MiPriApi.entities.enums.Rol;
 import com.example.MiPriApi.repositories.*;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 
 @SpringBootApplication
 public class MiPriApiApplication {
 
 	@Autowired
-	private ImagenRepository imagenRepository;
+	private AdministradorRepository administradorRepository;
+
 	@Autowired
 	private UsuarioRepository usuarioRepository;
-	@Autowired
-	private EmpleadoRepository empleadoRepository;
+
 	@Autowired
 	private ClienteRepository clienteRepository;
-	@Autowired
-	private PaisRepository paisRepository;
-	@Autowired
-	private ProvinciaRepository provinciaRepository;
-	@Autowired
-	private LocalidadRepository localidadRepository;
-	@Autowired
-	private DomicilioRepository domicilioRepository;
-	@Autowired
-	private EmpresaRepository empresaRepository;
-	@Autowired
-	private SucursalRepository sucursalRepository;
-	@Autowired
-	private PedidoRepository pedidoRepository;
-	@Autowired
-	private DetallePedidoRepository detallePedidoRepository;
+
 	@Autowired
 	private CategoriaRepository categoriaRepository;
-	@Autowired
-	private PromocionRepository promocionRepository;
+
 	@Autowired
 	private UnidadMedidaRepository unidadMedidaRepository;
+
 	@Autowired
-	private ArticuloInsumoRepository articuloInsumoRepository;
+	private ArticuloManufacturadoRepository manufacturadoRepository;
+
 	@Autowired
-	private ArticuloManufacturadoRepository articuloManufacturadoRepository;
+	private ArticuloInsumoRepository insumoRepository;
+
 	@Autowired
-	private ArticuloManufacturadoDetalleRepository articuloManufacturadoDetalleRepository;
+	private ArticuloManufacturadoDetalleRepository detalleRepository;
+
 	@Autowired
-	private DetallePromocionRepository promocionDetalleRepository;
+	private SucursalRepository sucursalRepository;
+
+	@Autowired
+	private DomicilioRepository domicilioRepository;
+
+	@Autowired
+	private LocalidadRepository localidadRepository;
+
+	@Autowired
+	private ProvinciaRepository provinciaRepository;
+
+	@Autowired
+	private PaisRepository paisRepository;
+
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(MiPriApiApplication.class, args);
@@ -61,340 +61,351 @@ public class MiPriApiApplication {
 	}
 
 	@Bean
-	@Transactional
-	CommandLineRunner init(ImagenRepository imagenRepository,
-						   UsuarioRepository usuarioRepository,
-						   EmpleadoRepository empleadoRepository,
-						   ClienteRepository clienteRepository,
-						   PaisRepository paisRepository,
-						   ProvinciaRepository provinciaRepository,
-						   LocalidadRepository localidadRepository,
-						   DomicilioRepository domicilioRepository,
-						   EmpresaRepository empresaRepository,
-						   SucursalRepository sucursalRepository,
-						   PedidoRepository pedidoRepository,
-						   DetallePedidoRepository detallePedidoRepository,
-						   CategoriaRepository categoriaRepository,
-						   PromocionRepository promocionRepository,
-						   UnidadMedidaRepository unidadMedidaRepository,
-						   ArticuloInsumoRepository articuloInsumoRepository,
-						   ArticuloManufacturadoRepository articuloManufacturadoRepository,
-						   ArticuloManufacturadoDetalleRepository articuloManufacturadoDetalleRepository,
-						   FacturaRepository facturaRepository){
+	CommandLineRunner initData() {
 		return args -> {
+            // Verificar y crear usuario para administrador
+            Usuario usuarioAdmin = usuarioRepository.findByUserName("adminUser")
+                    .orElseGet(() -> {
+                        Usuario nuevoUsuarioAdmin = Usuario.builder()
+                                .auth0Id("auth0-admin-id")
+                                .userName("adminUser")
+                                .build();
+                        return usuarioRepository.save(nuevoUsuarioAdmin);
+                    });
 
-			Pais pais1 = Pais.builder()
-					.nombre("Pais 1")
-					.build();
-			paisRepository.save(pais1);
+            // Verificar y crear administrador
+            Administrador administrador = administradorRepository.findByEmail("admin@example.com")
+                    .orElseGet(() -> {
+                        Administrador nuevoAdministrador = Administrador.builder()
+                                .nombre("Admin")
+                                .apellido("Principal")
+                                .email("admin@example.com")
+                                .rol(Rol.ADMIN)
+                                .usuario(usuarioAdmin)
+                                .build();
+                        return administradorRepository.save(nuevoAdministrador);
+                    });
 
-			Provincia prov1 = Provincia.builder()
-					.nombre("Provincia 1")
-					.pais(pais1)
-					.build();
-			provinciaRepository.save(prov1);
+            System.out.println("Administrador creado con éxito.");
 
-			Localidad loc1 = Localidad.builder()
-					.nombre("Localidad 1")
-					.provincia(prov1)
-					.build();
-			localidadRepository.save(loc1);
+            // Verificar y crear usuario para cliente
+            Usuario usuarioCliente = usuarioRepository.findByUserName("clienteUser")
+                    .orElseGet(() -> {
+                        Usuario nuevoUsuarioCliente = Usuario.builder()
+                                .auth0Id("auth0-client-id")
+                                .userName("clienteUser")
+                                .build();
+                        return usuarioRepository.save(nuevoUsuarioCliente);
+                    });
 
-			Domicilio dom1 = Domicilio.builder()
-					.calle("Calle 1")
-					.numero(1234)
-					.cp(1234)
-					.localidad(loc1)
-					.build();
-			domicilioRepository.save(dom1);
+            // Verificar y crear cliente
+            Cliente cliente = clienteRepository.findByEmail("cliente@example.com")
+                    .orElseGet(() -> {
+                        Cliente nuevoCliente = Cliente.builder()
+                                .nombre("Cliente")
+                                .apellido("Prueba")
+                                .email("cliente@example.com")
+                                .telefono("123456789")
+                                .fechaNacimiento("1990-01-01")
+                                .rol(Rol.CLIENTE)
+                                .usuario(usuarioCliente)
+                                .build();
+                        return clienteRepository.save(nuevoCliente);
+                    });
 
-			Domicilio dom2 = Domicilio.builder()
-					.calle("Calle 2")
-					.numero(5678)
-					.cp(5678)
-					.localidad(loc1)
-					.build();
-			domicilioRepository.save(dom2);
+            System.out.println("Cliente de prueba creado con éxito.");
 
-			Empresa empr1 = Empresa.builder()
-					.razonSocial("Empresa S.A")
-					.nombre("Empresa 1")
-					.cuil(12334555)
-					.build();
-			empresaRepository.save(empr1);
+			// Crear una sucursal
+			Sucursal sucursal = sucursalRepository.findByNombre("Sucursal Centro")
+					.orElseGet(() -> {
+						Sucursal nuevaSucursal = Sucursal.builder()
+								.nombre("Sucursal Centro")
+								.horarioApertura(LocalTime.of(9, 0))
+								.horarioCierre(LocalTime.of(18, 0))
+								.telefono("123456789")
+								.email("centro@example.com")
+								.build();
 
-			Sucursal suc1 = Sucursal.builder()
-					.nombre("Sucursal 1")
-					.casaMatriz(Boolean.FALSE)
-					.domicilio(dom1)
-					.horarioApertura(LocalTime.of(8,30))
-					.horarioCierre(LocalTime.of(20,30))
-					.empresa(empr1)
-					.build();
-			sucursalRepository.save(suc1);
+						// Verificar y obtener las categorías existentes
+						Categoria categoriaComidaExistente = categoriaRepository.findByDenominacion("Comida").orElse(null);
+						Categoria categoriaBebidaExistente = categoriaRepository.findByDenominacion("Bebida").orElse(null);
 
-			Imagen img1 = Imagen.builder()
-					.denominacion("Imangen 1")
-					.build();
-			imagenRepository.save(img1);
-			Imagen img2 = Imagen.builder()
-					.denominacion("Imangen 2")
-					.build();
-			imagenRepository.save(img2);
+						if (categoriaComidaExistente != null) {
+							nuevaSucursal.getCategorias().add(categoriaComidaExistente);
+						}
+						if (categoriaBebidaExistente != null) {
+							nuevaSucursal.getCategorias().add(categoriaBebidaExistente);
+						}
 
-			Imagen img3 = Imagen.builder()
-					.denominacion("Imangen 3")
-					.build();
-			imagenRepository.save(img3);
+						return sucursalRepository.save(nuevaSucursal);
+					});
 
-			Imagen img4 = Imagen.builder()
-					.denominacion("Imangen 4")
-					.build();
-			imagenRepository.save(img4);
-
-			Imagen img5 = Imagen.builder()
-					.denominacion("Imangen 5")
-					.build();
-			imagenRepository.save(img5);
-
-			Imagen img6 = Imagen.builder()
-					.denominacion("Imangen 5")
-					.build();
-			imagenRepository.save(img6);
-
-			Usuario us1 = Usuario.builder()
-					.auth0Id("pass")
-					.userName("user")
-					.build();
-			usuarioRepository.save(us1);
-			Usuario us2 = Usuario.builder()
-					.auth0Id("pass2")
-					.userName("user2")
-					.build();
-			usuarioRepository.save(us2);
-
-			Empleado em1 = Empleado.builder()
-					.sucursal(suc1)
-					.build();
-			em1.setNombre("Cinthia");
-			em1.setApellido("Rigoni");
-			em1.setTelefono("123456");
-			em1.setEmail("prueba@gmail.com");
-			em1.setFechaNacimiento("1992-05-27");
-			em1.setImagenPersona(img1);
-			em1.setImagen(img5);
-			em1.setUsuario(us1);
-			em1.setRol(Rol.CAJERO);
-			empleadoRepository.save(em1);
-
-			Cliente cli1 = Cliente.builder().build();
-			cli1.setNombre("Juan");
-			cli1.setApellido("Fernandez");
-			cli1.setTelefono("456789");
-			cli1.setEmail("probando@gmail.com");
-			cli1.setFechaNacimiento("1996-01-31");
-			cli1.setImagenPersona(img2);
-			cli1.setUsuario(us2);
-			cli1.setRol(Rol.CLIENTE);
-			cli1.getDomicilios().add(dom1);
-			cli1.getDomicilios().add(dom2);
-			cli1.setImagen(img6);
-			clienteRepository.save(cli1);
-
-			Pedido ped1 = Pedido.builder()
-					.fechaPedido(LocalDate.of(2023,05,23))
-					.sucursal(suc1).cliente(cli1)
-					.empleado(em1).total(250.5)
-					.domicilio(dom1)
-					.estado(Estado.PENDIENTE)
-					.formaPago(FormaPago.EFECTIVO)
-					.horaEstimadaFinalizacion(LocalTime.of(12,55))
-					.tipoEnvio(TipoEnvio.DELIVERY)
-					.totalCosto(170.0)
-					.build();
-			pedidoRepository.save(ped1);
+			System.out.println("Sucursal creada con éxito.");
 
 
-			Categoria cat1 = Categoria.builder()
-					.denominacion("Categoria 1")
-					.build();
-			categoriaRepository.save(cat1);
+			// Crear domicilio
+			Domicilio domicilioCentro = domicilioRepository.findByCalleAndNumeroAndPisoAndNroDpto("Av. Principal", 123, 1, 101)
+					.orElseGet(() -> {
+						Domicilio nuevoDomicilio = Domicilio.builder()
+								.calle("Av. Principal")
+								.numero(123)
+								.piso(1)
+								.nroDpto(101)
+								.cp(5000)
+								.localidad(localidadRepository.findByNombre("Ciudad Centro").orElseGet(() -> {
+									Localidad nuevaLocalidad = Localidad.builder()
+											.nombre("Ciudad Centro")
+											.provincia(provinciaRepository.findByNombre("Provincia Ejemplo").orElseGet(() -> {
+												Provincia nuevaProvincia = Provincia.builder()
+														.nombre("Provincia Ejemplo")
+														.pais(paisRepository.findByNombre("País Ejemplo").orElseGet(() -> {
+															Pais nuevoPais = Pais.builder()
+																	.nombre("País Ejemplo")
+																	.build();
+															return paisRepository.save(nuevoPais);
+														}))
+														.build();
+												return provinciaRepository.save(nuevaProvincia);
+											}))
+											.build();
+									return localidadRepository.save(nuevaLocalidad);
+								}))
+								.build();
+						return domicilioRepository.save(nuevoDomicilio);
+					});
+
+            // Asignar domicilio a la sucursal
+			Sucursal sucursalCentro = sucursalRepository.findByNombre("Sucursal Centro").orElse(null);
+			if (sucursalCentro != null) {
+				sucursalCentro.setDomicilio(domicilioCentro);
+				sucursalRepository.save(sucursalCentro);
+			}
+
+			System.out.println("Domicilio asignado a la sucursal con éxito.");
+
+			// Crear categorías padre
+			Categoria categoriaComida = categoriaRepository.findByDenominacion("Comida")
+					.orElseGet(() -> {
+						Categoria nuevaCategoria = Categoria.builder()
+								.denominacion("Comida")
+								.esInsumo(false)
+								.build();
+						return categoriaRepository.save(nuevaCategoria);
+					});
+
+			Categoria categoriaBebida = categoriaRepository.findByDenominacion("Bebida")
+					.orElseGet(() -> {
+						Categoria nuevaCategoria = Categoria.builder()
+								.denominacion("Bebida")
+								.esInsumo(false)
+								.build();
+						return categoriaRepository.save(nuevaCategoria);
+					});
+
+			// Verificar y crear subcategorías para "Comida"
+			Categoria subcategoriaPizza = categoriaRepository.findByDenominacionAndCategoriaPadre("Pizza", categoriaComida)
+					.orElseGet(() -> {
+						Categoria nuevaSubcategoria = Categoria.builder()
+								.denominacion("Pizza")
+								.esInsumo(false)
+								.categoriaPadre(categoriaComida)
+								.build();
+						return categoriaRepository.save(nuevaSubcategoria);
+					});
+
+			Categoria subcategoriaPastas = categoriaRepository.findByDenominacionAndCategoriaPadre("Pastas", categoriaComida)
+					.orElseGet(() -> {
+						Categoria nuevaSubcategoria = Categoria.builder()
+								.denominacion("Pastas")
+								.esInsumo(false)
+								.categoriaPadre(categoriaComida)
+								.build();
+						return categoriaRepository.save(nuevaSubcategoria);
+					});
+
+			Categoria subcategoriaEmpanadas = categoriaRepository.findByDenominacionAndCategoriaPadre("Empanadas", categoriaComida)
+					.orElseGet(() -> {
+						Categoria nuevaSubcategoria = Categoria.builder()
+								.denominacion("Empanadas")
+								.esInsumo(false)
+								.categoriaPadre(categoriaComida)
+								.build();
+						return categoriaRepository.save(nuevaSubcategoria);
+					});
 
 
-			Categoria subCat1 = Categoria.builder()
-					.denominacion("Subcategoria 1")
-					.categoriaPadre(cat1)
-					.build();
-			categoriaRepository.save(subCat1);
+			// Crear subcategorías para "Bebidas"
+			Categoria subcategoriaGaseosas = categoriaRepository.findByDenominacionAndCategoriaPadre("Gaseosas", categoriaBebida)
+					.orElseGet(() -> {
+						Categoria nuevaSubcategoria = Categoria.builder()
+								.denominacion("Gaseosas")
+								.esInsumo(false)
+								.categoriaPadre(categoriaBebida)
+								.build();
+						return categoriaRepository.save(nuevaSubcategoria);
+					});
 
-			Categoria subCat2 = Categoria.builder()
-					.denominacion("Subcategoria 2")
-					.categoriaPadre(cat1)
-					.build();
-			categoriaRepository.save(subCat2);
+			Categoria subcategoriaJugos = categoriaRepository.findByDenominacionAndCategoriaPadre("Jugos", categoriaBebida)
+					.orElseGet(() -> {
+						Categoria nuevaSubcategoria = Categoria.builder()
+								.denominacion("Jugos")
+								.esInsumo(false)
+								.categoriaPadre(categoriaBebida)
+								.build();
+						return categoriaRepository.save(nuevaSubcategoria);
+					});
 
-			cat1.getSubcategorias().add(subCat1);
-			cat1.getSubcategorias().add(subCat2);
-			categoriaRepository.save(cat1);
+			Categoria subcategoriaCervezas = categoriaRepository.findByDenominacionAndCategoriaPadre("Cervezas", categoriaBebida)
+					.orElseGet(() -> {
+						Categoria nuevaSubcategoria = Categoria.builder()
+								.denominacion("Cervezas")
+								.esInsumo(false)
+								.categoriaPadre(categoriaBebida)
+								.build();
+						return categoriaRepository.save(nuevaSubcategoria);
+					});
 
-			suc1.getCategorias().add(cat1);
 
-			Imagen imgProm1 = Imagen.builder()
-					.denominacion("Imangen promo 1")
-					.build();
-			imagenRepository.save(imgProm1);
-			Imagen imgProm2 = Imagen.builder()
-					.denominacion("Imangen promo 2")
-					.build();
-			imagenRepository.save(imgProm2);
 
-			Promocion prom1 = Promocion.builder()
-					.denominacion("Promocion 1")
-					.descripcionDescuento("10% de descuento")
-					.fechaDesde(LocalDate.of(2024,06,12))
-					.fechaHasta(LocalDate.of(2024, 06, 25))
-					.horaDesde(LocalTime.of(20,30))
-					.horaHasta(LocalTime.of(23,30))
-					.precioPromocional(2500.5)
-					.tipoPromocion(TipoPromocion.HAPPYHOUR)
-					.build();
-			prom1.getImagenesPromocion().add(imgProm1);
-			prom1.getSucursals().add(suc1);
-			promocionRepository.save(prom1);
+			System.out.println("Categorías creadas con éxito.");
 
-			Promocion prom2 = Promocion.builder()
-					.denominacion("Promocion 2")
-					.descripcionDescuento("15% de descuento")
-					.fechaDesde(LocalDate.of(2024,06,12))
-					.fechaHasta(LocalDate.of(2024, 06, 25))
-					.horaDesde(LocalTime.of(11,30))
-					.horaHasta(LocalTime.of(14,30))
-					.precioPromocional(3000.0)
-					.tipoPromocion(TipoPromocion.HAPPYHOUR)
-					.build();
-			prom2.getImagenesPromocion().add(imgProm2);
-			promocionRepository.save(prom2);
+			// Crear unidades de medida
+			UnidadMedida unidadGramos = unidadMedidaRepository.findByDenominacion("Gramos")
+					.orElseGet(() -> {
+						UnidadMedida nuevaUnidad = UnidadMedida.builder()
+								.denominacion("Gramos")
+								.build();
+						return unidadMedidaRepository.save(nuevaUnidad);
+					});
 
-			suc1.getPromociones().add(prom1);
-			suc1.getPromociones().add(prom2);
-			sucursalRepository.save(suc1);
+			UnidadMedida unidadLitros = unidadMedidaRepository.findByDenominacion("Litros")
+					.orElseGet(() -> {
+						UnidadMedida nuevaUnidad = UnidadMedida.builder()
+								.denominacion("Litros")
+								.build();
+						return unidadMedidaRepository.save(nuevaUnidad);
+					});
 
-			UnidadMedida unMedida = UnidadMedida.builder()
-					.denominacion("Unidad de medida 1")
-					.build();
-			unidadMedidaRepository.save(unMedida);
+			UnidadMedida unidadUnidades = unidadMedidaRepository.findByDenominacion("Unidades")
+					.orElseGet(() -> {
+						UnidadMedida nuevaUnidad = UnidadMedida.builder()
+								.denominacion("Unidades")
+								.build();
+						return unidadMedidaRepository.save(nuevaUnidad);
+					});
 
-			ArticuloInsumo artInsumo1 = ArticuloInsumo.builder()
-					.precioCompra(460.5)
-					.stockActual(36)
-					.stockMaximo(150)
-					.esParaElaborar(Boolean.TRUE)
-					.build();
-			artInsumo1.getImagenesArticulos().add(img1);
-			artInsumo1.setDenominacion("artInsumo1");
-			artInsumo1.setPrecioVenta(200.0);
-			artInsumo1.setUnidadMedida(unMedida);
-			artInsumo1.setCategoria(cat1);
-			articuloInsumoRepository.save(artInsumo1);
+			System.out.println("Unidades de medida creadas con éxito.");
 
-			ArticuloInsumo artInsumo2 = ArticuloInsumo.builder()
-					.precioCompra(830.5)
-					.stockActual(40)
-					.stockMaximo(300)
-					.esParaElaborar(Boolean.TRUE)
-					.build();
-			artInsumo2.getImagenesArticulos().add(img3);
-			artInsumo2.setDenominacion("artInsumo2");
-			artInsumo2.setPrecioVenta(500.0);
-			artInsumo2.setUnidadMedida(unMedida);
-			artInsumo2.setCategoria(cat1);
-			articuloInsumoRepository.save(artInsumo2);
+			// Crear artículos insumos
+			ArticuloInsumo manteca = insumoRepository.findByDenominacion("Manteca")
+					.orElseGet(() -> {
+						ArticuloInsumo nuevoInsumo = ArticuloInsumo.builder()
+								.denominacion("Manteca")
+								.unidadMedida(unidadMedidaRepository.findByDenominacion("Gramos").orElse(null))
+								.categoria(categoriaRepository.findByDenominacion("Comida").orElse(null)) // Asignar categoría
+								.precioCompra(80.0)
+								.precioVenta(100.0) // Asignar precio de venta
+								.stockActual(50)
+								.stockMaximo(100)
+								.stockMinimo(10)
+								.esParaElaborar(true)
+								.build();
+						return insumoRepository.save(nuevoInsumo);
+					});
+			ArticuloInsumo harina = insumoRepository.findByDenominacion("Harina")
+					.orElseGet(() -> {
+						ArticuloInsumo nuevoInsumo = ArticuloInsumo.builder()
+								.denominacion("Harina")
+								.unidadMedida(unidadMedidaRepository.findByDenominacion("Gramos").orElse(null))
+								.categoria(categoriaRepository.findByDenominacion("Comida").orElse(null)) // Asignar categoría
+								.precioCompra(50.0)
+								.precioVenta(70.0) // Asignar precio de venta
+								.stockActual(100)
+								.stockMaximo(200)
+								.stockMinimo(20)
+								.esParaElaborar(true)
+								.build();
+						return insumoRepository.save(nuevoInsumo);
+					});
+			ArticuloInsumo azucar = insumoRepository.findByDenominacion("Azúcar")
+					.orElseGet(() -> {
+						ArticuloInsumo nuevoInsumo = ArticuloInsumo.builder()
+								.denominacion("Azúcar")
+								.unidadMedida(unidadMedidaRepository.findByDenominacion("Gramos").orElse(null))
+								.categoria(categoriaRepository.findByDenominacion("Comida").orElse(null)) // Asignar categoría
+								.precioCompra(40.0)
+								.precioVenta(50.0) // Asignar precio de venta
+								.stockActual(150)
+								.stockMaximo(300)
+								.stockMinimo(30)
+								.esParaElaborar(false)
+								.build();
+						return insumoRepository.save(nuevoInsumo);
+					});
 
-			ArticuloManufacturado artManuf1 = ArticuloManufacturado.builder()
-					.descripcion("Descripcion art manuf 1")
-					.tiempoEstimadoMinutos(60)
-					.preparacion("Preparacion art manuf 1")
-					.build();
-			artManuf1.getImagenesArticulos().add(img4);
-			artManuf1.setDenominacion("Articulo Manufacturado 1");
-			artManuf1.setPrecioVenta(140.5);
-			artManuf1.setUnidadMedida(unMedida);
-			artManuf1.setCategoria(cat1);
-			articuloManufacturadoRepository.save(artManuf1);
+			ArticuloInsumo sal = insumoRepository.findByDenominacion("Sal")
+					.orElseGet(() -> {
+						ArticuloInsumo nuevoInsumo = ArticuloInsumo.builder()
+								.denominacion("Sal")
+								.unidadMedida(unidadMedidaRepository.findByDenominacion("Gramos").orElse(null))
+								.categoria(categoriaRepository.findByDenominacion("Comida").orElse(null)) // Asignar categoría
+								.precioCompra(10.0)
+								.precioVenta(15.0) // Asignar precio de venta
+								.stockActual(200)
+								.stockMaximo(400)
+								.stockMinimo(50)
+								.esParaElaborar(false)
+								.build();
+						return insumoRepository.save(nuevoInsumo);
+					});
 
-			ArticuloManufacturado artManuf2 = ArticuloManufacturado.builder()
-					.descripcion("Descripcion art manuf 2")
-					.tiempoEstimadoMinutos(40)
-					.preparacion("Preparacion art manuf 2")
-					.build();
-			artManuf2.getImagenesArticulos().add(img2);
-			artManuf2.setDenominacion("Articulo Manufacturado 2");
-			artManuf2.setPrecioVenta(115.5);
-			artManuf2.setUnidadMedida(unMedida);
-			artManuf2.setCategoria(cat1);
-			articuloManufacturadoRepository.save(artManuf2);
 
-			ArticuloManufacturadoDetalle artManufDet1 = ArticuloManufacturadoDetalle.builder()
-					.cantidad(2)
-					.articuloInsumo(artInsumo1)
-					.articuloManufacturado(artManuf1)
-					.build();
-			articuloManufacturadoDetalleRepository.save(artManufDet1);
+			System.out.println("Artículos insumos creados con éxito.");
 
-			ArticuloManufacturadoDetalle artManufDet2 = ArticuloManufacturadoDetalle.builder()
-					.cantidad(2)
-					.articuloInsumo(artInsumo2)
-					.articuloManufacturado(artManuf2)
-					.build();
-			articuloManufacturadoDetalleRepository.save(artManufDet2);
 
-			Factura fac1= Factura.builder()
-					.pedido(ped1)
-					.fechaFacturacion(LocalDate.of(2024, 04, 12))
-					.totalVenta(ped1.getTotal())
-					.formaPago(FormaPago.EFECTIVO)
-					.mpMerchantOrderId(1)
-					.mpPaymentType("EFECTIVO")
-					.mpPaymentId(1)
-					.mpPreferenceId("3")
-					.build();
-			facturaRepository.save(fac1);
+			// Crear artículo manufacturado
+			ArticuloManufacturado pizza = manufacturadoRepository.findByDenominacion("Pizza")
+					.orElseGet(() -> {
+						ArticuloManufacturado nuevoManufacturado = ArticuloManufacturado.builder()
+								.denominacion("Pizza")
+								.descripcion("Pizza de mozzarella")
+								.tiempoEstimadoMinutos(30)
+								.preparacion("Hornear la masa y agregar ingredientes")
+								.categoria(categoriaRepository.findByDenominacion("Comida").orElse(null)) // Asignar categoría
+								.precioVenta(500.0) // Asignar precio de venta
+								.build();
+						return manufacturadoRepository.save(nuevoManufacturado);
+					});
 
-			DetallePedido detPed1 = DetallePedido.builder()
-					.pedido(ped1)
-					.articulo(artInsumo1)
-					.articulo(artManuf1)
-					.cantidad(5)
-					.subTotal(450.5)
-					.build();
-			detallePedidoRepository.save(detPed1);
+			// Crear detalles del artículo manufacturado
+			ArticuloManufacturadoDetalle detalleHarina = detalleRepository.findByArticuloManufacturadoAndArticuloInsumo(pizza, insumoRepository.findByDenominacion("Harina").orElse(null))
+					.orElseGet(() -> {
+						ArticuloManufacturadoDetalle nuevoDetalle = ArticuloManufacturadoDetalle.builder()
+								.articuloManufacturado(pizza)
+								.articuloInsumo(insumoRepository.findByDenominacion("Harina").orElse(null))
+								.cantidad(500) // Cantidad en gramos
+								.build();
+						return detalleRepository.save(nuevoDetalle);
+					});
 
-			DetallePedido detPed2 = DetallePedido.builder()
-					.pedido(ped1)
-					.articulo(artInsumo2)
-					.articulo(artManuf2)
-					.cantidad(2)
-					.subTotal(300.0)
-					.build();
-			detallePedidoRepository.save(detPed2);
+			ArticuloManufacturadoDetalle detalleManteca = detalleRepository.findByArticuloManufacturadoAndArticuloInsumo(pizza, insumoRepository.findByDenominacion("Manteca").orElse(null))
+					.orElseGet(() -> {
+						ArticuloManufacturadoDetalle nuevoDetalle = ArticuloManufacturadoDetalle.builder()
+								.articuloManufacturado(pizza)
+								.articuloInsumo(insumoRepository.findByDenominacion("Manteca").orElse(null))
+								.cantidad(100) // Cantidad en gramos
+								.build();
+						return detalleRepository.save(nuevoDetalle);
+					});
 
-			DetallePromocion detPromo= DetallePromocion.builder()
-					.cantidad(1)
-					.promocion(prom1)
-					.articulo(artManuf1)
-					.build();
-			promocionDetalleRepository.save(detPromo);
+			System.out.println("Artículo manufacturado 'Pizza' creado con éxito.");
 
-			DetallePromocion detPromo1= DetallePromocion.builder()
-					.cantidad(2)
-					.promocion(prom2)
-					.articulo(artManuf2)
-					.build();
-			promocionDetalleRepository.save(detPromo1);
+
+
+
+
+
 		};
 
-
 	}
-
 }
-

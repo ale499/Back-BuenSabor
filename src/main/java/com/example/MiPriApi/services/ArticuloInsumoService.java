@@ -27,4 +27,13 @@ public class ArticuloInsumoService extends BaseService<ArticuloInsumo, Long>{
             throw new Exception(ex.getMessage());
         }
     }
+
+    @Transactional
+    public List<ArticuloInsumo> findAll() throws Exception {
+        try {
+            return articuloInsumoRepository.findAll();
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
 }

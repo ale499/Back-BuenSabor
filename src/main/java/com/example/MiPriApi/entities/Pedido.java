@@ -9,8 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
-import org.hibernate.mapping.Join;
 
 
 import java.time.LocalDate;
@@ -35,7 +33,7 @@ public class Pedido extends Base{
 
     @ManyToOne
     @JoinColumn(name = "chefId")
-    private Chef chef;
+    private Empleado empleado;
 
     @ManyToOne
     @JoinColumn(name = "clienteId")

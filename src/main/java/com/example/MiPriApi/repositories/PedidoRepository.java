@@ -9,9 +9,7 @@ import java.util.List;
 public interface PedidoRepository extends BaseRepository<Pedido, Long> {
 
     List<Pedido> findAllByClienteId(Long idCliente);
-
     List<Pedido> findAllByEmpleadoId(Long idEmpleado);
-
     List<Pedido> findAllBySucursalId(Long idSucursal);
 
 }

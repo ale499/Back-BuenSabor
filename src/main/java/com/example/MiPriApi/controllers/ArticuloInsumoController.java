@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/articuloInsumo")
-public class ArticuloInsumoController extends BaseController<ArticuloInsumo, Long>{
+public class ArticuloInsumoController extends BaseController<ArticuloInsumo, Long> {
 
     public ArticuloInsumoController(ArticuloInsumoService service) {
         super(service);
@@ -21,8 +21,19 @@ public class ArticuloInsumoController extends BaseController<ArticuloInsumo, Lon
     private ArticuloInsumoService articuloInsumoService;
 
     @RequestMapping("/categoria/{id}")
-    public ResponseEntity<List<ArticuloInsumo>> listarPorCategoria(Long idCategoria) throws Exception{
+    public ResponseEntity<List<ArticuloInsumo>> listarPorCategoria(Long idCategoria) throws Exception {
         List<ArticuloInsumo> articuloInsumos = articuloInsumoService.listarPorCategoria(idCategoria);
         return ResponseEntity.ok(articuloInsumos);
     }
+
+    @RequestMapping("/listar")
+    public ResponseEntity<List<ArticuloInsumo>> listarTodos() {
+        try {
+            List<ArticuloInsumo> articuloInsumos = articuloInsumoService.findAll();
+            return ResponseEntity.ok(articuloInsumos);
+        } catch (Exception ex) {
+            return ResponseEntity.status(500).body(null); // Devuelve un error 500 en caso de excepción
+        }
+    }
+
 }

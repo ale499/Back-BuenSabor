@@ -20,7 +20,7 @@ public class PromocionService extends BaseService<Promocion, Long>{
     @Transactional
     public List<Promocion> listarPorSucursal(Long idSucursal) throws Exception{
         try {
-            return promocionRepository.findAllBysucursalsId(idSucursal);
+            return promocionRepository.findAllBySucursalesId(idSucursal);
         }catch (Exception ex){
             throw new Exception(ex.getMessage());
         }
