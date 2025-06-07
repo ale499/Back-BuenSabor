@@ -43,4 +43,14 @@ public class CategoriaController extends BaseController<Categoria, Long>{
         List<Categoria> categorias = categoriaService.listarPorSucursal(idSucursal);
         return ResponseEntity.ok(categorias);
     }
+
+    @RequestMapping("/listar")
+    public ResponseEntity<List<Categoria>> listarCategoriasPrincipales() {
+        try {
+            List<Categoria> categoriasPrincipales = categoriaService.listarCategoriasPrincipales();
+            return ResponseEntity.ok(categoriasPrincipales);
+        } catch (Exception ex) {
+            return ResponseEntity.status(500).body(null);
+        }
+    }
 }

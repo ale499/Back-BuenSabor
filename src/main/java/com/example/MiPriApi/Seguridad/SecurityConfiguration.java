@@ -46,10 +46,11 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/api/public").permitAll()
-                                .requestMatchers("/articulosManufacturados/**").permitAll() // Permitir acceso público
-                                .requestMatchers("/articuloManufacturadoDetalle/**").permitAll()
-                                .requestMatchers("/api/admin/**").hasAuthority("administrador")
-                                .requestMatchers("/api/client/**").hasAuthority("cliente")
+                                .requestMatchers("/articulosManufacturados/**").hasAuthority("Admin")
+                                .requestMatchers("/articuloManufacturadoDetalle/**").hasAnyAuthority("Admin", "Chef")
+                                .requestMatchers("/administradores/**").hasAuthority("Admin")
+                                .requestMatchers("/api/client/**").hasAuthority("Cliente")
+                                .requestMatchers("/api/delivery/**").hasAuthority("Delivery")
                                 .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2ResourceServer ->
@@ -62,6 +63,8 @@ public class SecurityConfiguration {
                 );
         return http.build();
     }
+
+
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
@@ -93,7 +96,7 @@ public class SecurityConfiguration {
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter converter = new JwtGrantedAuthoritiesConverter();
-        converter.setAuthoritiesClaimName("https://buensabor/roles");
+        converter.setAuthoritiesClaimName("https://buensabor");
         converter.setAuthorityPrefix("");
 
         JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();

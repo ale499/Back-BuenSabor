@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoriaService extends BaseService<Categoria, Long>{
@@ -45,6 +46,17 @@ public class CategoriaService extends BaseService<Categoria, Long>{
         try{
             return categoriaRepository.findAllBysucursalsId(idSucursal);
         }catch (Exception ex){
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    @Transactional
+    public List<Categoria> listarCategoriasPrincipales() throws Exception {
+        try {
+            return categoriaRepository.findAll().stream()
+                    .filter(categoria -> categoria.getCategoriaPadre() == null)
+                    .collect(Collectors.toList());
+        } catch (Exception ex) {
             throw new Exception(ex.getMessage());
         }
     }
