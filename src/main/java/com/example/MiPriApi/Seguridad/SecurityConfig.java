@@ -37,11 +37,12 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/clientes").permitAll()
-                        .requestMatchers("/clientes/registro").permitAll()
-                        .requestMatchers("/clientes/pedidos").permitAll()
-                        .requestMatchers("/clientes/actualizar/**").permitAll()
-                        .requestMatchers("/clientes/**").authenticated()
+                        .requestMatchers("/administradores/**").permitAll()
+                        .requestMatchers("/clientes").permitAll() //sirve para el endpoit de clientes asi no tenes que registrarte
+                        .requestMatchers("/clientes/registro").permitAll() //sirve para el endpoit de clientes asi no tenes que registrarte
+                        .requestMatchers("/clientes/pedidos").permitAll() //sirve para el endpoit de clientes asi no tenes que registrarte
+                        .requestMatchers("/clientes/actualizar/**").permitAll() //sirve para el endpoit de clientes asi no tenes que registrarte
+                        .requestMatchers("/clientes/**").authenticated() // Asegura que todas las demás rutas de clientes requieran autenticación
                         .anyRequest().permitAll()
                 )
                 .formLogin(Customizer.withDefaults())

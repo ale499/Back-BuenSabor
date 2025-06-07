@@ -1,6 +1,7 @@
 package com.example.MiPriApi.controllers;
 
 import com.example.MiPriApi.entities.ArticuloInsumo;
+import com.example.MiPriApi.services.CategoriaService;
 import com.example.MiPriApi.services.ArticuloInsumoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +20,19 @@ public class ArticuloInsumoController extends BaseController<ArticuloInsumo, Lon
 
     @Autowired
     private ArticuloInsumoService articuloInsumoService;
+    @Autowired
+    private CategoriaService categoriaService;
 
     @RequestMapping("/categoria/{id}")
-    public ResponseEntity<List<ArticuloInsumo>> listarPorCategoria(Long idCategoria) throws Exception{
+    public ResponseEntity<List<ArticuloInsumo>> listarPorCategoria(@PathVariable("id") Long idCategoria) throws Exception{
         List<ArticuloInsumo> articuloInsumos = articuloInsumoService.listarPorCategoria(idCategoria);
         return ResponseEntity.ok(articuloInsumos);
+    }
+
+    @PostMapping
+    public ResponseEntity<ArticuloInsumo> crear(@RequestBody ArticuloInsumo insumo) {
+        ArticuloInsumo nuevo = categoriaService.crearInsumo(insumo);
+        return ResponseEntity.ok(nuevo);
     }
 
     @GetMapping("/buscar")

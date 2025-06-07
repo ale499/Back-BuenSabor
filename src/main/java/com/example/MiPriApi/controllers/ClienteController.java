@@ -1,11 +1,11 @@
 package com.example.MiPriApi.controllers;
 
-import com.example.MiPriApi.controllers.BaseController;
+import com.example.MiPriApi.dto.CambiarPasswordRequestDTO;
 import com.example.MiPriApi.entities.Cliente;
 import com.example.MiPriApi.entities.Pedido;
 import com.example.MiPriApi.services.ClienteService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +14,7 @@ import java.util.List;
 @RequestMapping("/clientes")
 public class ClienteController extends BaseController<Cliente, Long> {
 
+
     private final ClienteService clienteService;
 
     public ClienteController(ClienteService clienteService){
@@ -21,25 +22,34 @@ public class ClienteController extends BaseController<Cliente, Long> {
         this.clienteService = clienteService;
     }
 
-    // Endpoint para registrar nuevo cliente
+    // Registrar nuevo cliente
     @PostMapping("/registro")
     public ResponseEntity<Cliente> registrar(@RequestBody Cliente cliente) throws Exception {
         Cliente nuevo = clienteService.registrar(cliente);
         return ResponseEntity.ok(nuevo);
     }
 
-    // Endpoint para actualizar datos del cliente autenticado
+    // Actualizar datos del cliente (solo campos permitidos y domicilios)
     @PutMapping("/actualizar/{id}")
-    public ResponseEntity<?> actualizarCliente(@PathVariable Long id, @RequestBody Cliente nuevosDatos) {
+    public ResponseEntity<Cliente> actualizarCliente(@PathVariable Long id, @RequestBody Cliente nuevosDatos) {
         Cliente actualizado = clienteService.actualizarDatosPorId(id, nuevosDatos);
         return ResponseEntity.ok(actualizado);
     }
 
+    // Actualizar la contraseña del cliente
+
+    @PutMapping("/{id}/cambiar-password")
+    public ResponseEntity<?> cambiarPassword(
+            @PathVariable Long id,
+            @RequestBody CambiarPasswordRequestDTO request) {
+        clienteService.cambiarPassword(id, request);
+        return ResponseEntity.ok("Contraseña actualizada correctamente");
+    }
+
+    // Obtener historial de pedidos por username
     @GetMapping("/pedidos")
     public ResponseEntity<List<Pedido>> obtenerHistorialPedidos(@RequestParam String username) {
         List<Pedido> pedidos = clienteService.obtenerPedidosPorUsername(username);
         return ResponseEntity.ok(pedidos);
     }
-
-
 }

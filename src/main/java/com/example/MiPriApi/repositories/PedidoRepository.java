@@ -20,5 +20,7 @@ public interface PedidoRepository extends BaseRepository<Pedido, Long> {
             "WHERE p.estado = com.example.MiPriApi.entities.enums.Estado.PREPARACION")
     int maxTiempoEstimadoEnCocina();
 
+    @Query("SELECT MAX(p.numeroPedido) FROM Pedido p")
+    Integer findMaxNumeroPedido();
 }
 

@@ -21,17 +21,6 @@ public class CategoriaController extends BaseController<Categoria, Long>{
     @Autowired
     private CategoriaService categoriaService;
 
-    @RequestMapping("/subcategoria/{idCP}")
-    public Optional<Categoria> agregarSubcategoria(@PathVariable Long id_CP, @RequestBody Categoria subCategoria) throws Exception {
-        Categoria catPadre= categoriaService.agregarSubcategoria(id_CP, subCategoria);
-        return Optional.ofNullable(catPadre);
-    }
-
-    @RequestMapping("/categoriaPadre/{id}")
-    public ResponseEntity <List<Categoria>> listarPorCategoriaPadre(@PathVariable Long id) throws Exception {
-        List<Categoria> categorias = categoriaService.listarPorCategoriaPadre(id);
-        return ResponseEntity.ok(categorias);
-    }
 
     @RequestMapping("/sucursal/{idSucursal}")
     public ResponseEntity<List<Categoria>> listarPorSucursal(@PathVariable Long idSucursal) throws Exception{

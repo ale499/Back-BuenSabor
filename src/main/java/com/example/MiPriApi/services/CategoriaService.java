@@ -1,7 +1,11 @@
 package com.example.MiPriApi.services;
 
+import com.example.MiPriApi.entities.ArticuloInsumo;
+import com.example.MiPriApi.entities.UnidadMedida;
+import com.example.MiPriApi.repositories.ArticuloInsumoRepository;
 import com.example.MiPriApi.entities.Categoria;
 import com.example.MiPriApi.repositories.CategoriaRepository;
+import com.example.MiPriApi.repositories.UnidadMedidaRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,39 +19,27 @@ public class CategoriaService extends BaseService<Categoria, Long>{
     }
 
     @Autowired
+    private UnidadMedidaRepository unidadMedidaRepository;
+    @Autowired
     private CategoriaRepository categoriaRepository;
+    @Autowired
+    private ArticuloInsumoRepository articuloInsumoRepository;
 
-    @Transactional
-    public Categoria agregarSubcategoria(Long idCategoriaPadre, Categoria nuevasubCategoria) throws Exception{
+    public ArticuloInsumo crearInsumo(ArticuloInsumo insumo) {
+        Categoria categoria = categoriaRepository.findById(insumo.getCategoria().getId()).orElseThrow();
+        insumo.setCategoria(categoria);
 
-        try{
-            Categoria cagetoriaPadre = categoriaRepository.findById(idCategoriaPadre).orElse(null);
-            if (cagetoriaPadre == null){
+        UnidadMedida unidadMedida = unidadMedidaRepository.findById(insumo.getUnidadMedida().getId()).orElseThrow();
+        insumo.setUnidadMedida(unidadMedida);
 
-                nuevasubCategoria.setCategoriaPadre(cagetoriaPadre);
-                categoriaRepository.save(nuevasubCategoria);
-                return nuevasubCategoria;
-            }else{
-                return null;
-            }
-        }catch (Exception ex){
-            throw new Exception(ex.getMessage());
-        }
+        return articuloInsumoRepository.save(insumo);
     }
 
-    @Transactional
-    public List<Categoria> listarPorCategoriaPadre(Long idCategoriaPadre) throws Exception {
-        try{
-            return categoriaRepository.findAllByCategoriaPadreId(idCategoriaPadre);
-        }catch(Exception ex){
-            throw new Exception(ex.getMessage());
-        }
-    }
 
     @Transactional
     public List<Categoria> listarPorSucursal(Long idSucursal)throws Exception{
         try{
-            return categoriaRepository.findAllBysucursalsId(idSucursal);
+            return categoriaRepository.findAllBysucursalesId(idSucursal);
         }catch (Exception ex){
             throw new Exception(ex.getMessage());
         }

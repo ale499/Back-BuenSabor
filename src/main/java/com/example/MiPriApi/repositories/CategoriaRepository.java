@@ -7,10 +7,5 @@ import java.util.List;
 
 @Repository
 public interface CategoriaRepository extends BaseRepository<Categoria, Long>{
-
-    List<Categoria> findAllByCategoriaPadreId(Long idCategoriaPadre);
-
-    List<Categoria> findAllBysucursalsId(Long idSucursal);
-
-
+    List<Categoria> findAllBysucursalesId(Long idSucursal);
 }

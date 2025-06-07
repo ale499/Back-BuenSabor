@@ -1,7 +1,6 @@
 package com.example.MiPriApi.controllers;
 
 import com.example.MiPriApi.entities.Pedido;
-import com.example.MiPriApi.services.BaseService;
 import com.example.MiPriApi.services.PedidoService;
 import com.example.MiPriApi.dto.PedidoRequestDTO;
 import com.example.MiPriApi.dto.ConfirmarPedidoRequestDTO;
@@ -22,15 +21,15 @@ import java.util.List;
 @RequestMapping("/pedido")
 public class PedidoController extends BaseController<Pedido, Long>{
 
-
-    public PedidoController(PedidoService service) {
-        super(service);
+    public PedidoController(PedidoService pedidoService) {
+        super(pedidoService);
     }
+
     @Autowired
     private PedidoService pedidoService;
 
-    @RequestMapping("/cliente/{idCliente}")
-    public ResponseEntity<List<Pedido>> listarPorCliente(@PathVariable Long idCliente) throws Exception{
+    @GetMapping("/cliente/{idCliente}")
+    public ResponseEntity<List<Pedido>> listarPorCliente(@PathVariable Long idCliente) throws Exception {
         List<Pedido> pedidos = pedidoService.listarPorCliente(idCliente);
         return ResponseEntity.ok(pedidos);
     }
@@ -41,15 +40,14 @@ public class PedidoController extends BaseController<Pedido, Long>{
         return ResponseEntity.ok(pedidos);
     }
 
-    @RequestMapping("/sucursal/{idSucursal}")
-    public ResponseEntity<List<Pedido>> listarPorSucursal(@PathVariable Long idSucursal) throws Exception{
-        List<Pedido> pedidos = pedidoService.listarPorCliente(idSucursal);
+    @GetMapping("/sucursal/{idSucursal}")
+    public ResponseEntity<List<Pedido>> listarPorSucursal(@PathVariable Long idSucursal) throws Exception {
+        List<Pedido> pedidos = pedidoService.listarPorSucursal(idSucursal);
         return ResponseEntity.ok(pedidos);
     }
 
     @GetMapping("/historial")
     public ResponseEntity<List<Pedido>> obtenerHistorialPedidos() throws Exception {
-        // Obtener el cliente autenticado
         String clienteId = SecurityContextHolder.getContext().getAuthentication().getName();
         List<Pedido> pedidos = pedidoService.listarPorCliente(Long.valueOf(clienteId));
         return ResponseEntity.ok(pedidos);
@@ -67,14 +65,12 @@ public class PedidoController extends BaseController<Pedido, Long>{
 
         MercadoPagoConfig.setAccessToken("TU_ACCESS_TOKEN");
 
-        // Crear ítem correctamente
         PreferenceItemRequest item = PreferenceItemRequest.builder()
                 .title("Pedido #" + pedido.getId())
                 .quantity(1)
                 .unitPrice(BigDecimal.valueOf(pedido.getTotal()))
                 .build();
 
-        // Crear preferencia
         PreferenceRequest preferenceRequest = PreferenceRequest.builder()
                 .items(List.of(item))
                 .build();
@@ -98,7 +94,4 @@ public class PedidoController extends BaseController<Pedido, Long>{
         pedidoService.confirmarPedido(idPedido, request);
         return ResponseEntity.ok("Pedido confirmado correctamente");
     }
-
-
-
 }
