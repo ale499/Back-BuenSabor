@@ -20,13 +20,6 @@ public class SucursalController extends BaseController<Sucursal, Long>{
         super(service);
     }
 
-    @Autowired
-    private SucursalService sucursalService;
 
-    @RequestMapping("/empresa/{idEmpresa}")
-    public ResponseEntity<List<Sucursal>> listarPorEmpresa(@PathVariable Long idEmpresa) throws Exception{
-        List<Sucursal> sucursals = sucursalService.listarPorEmpresa(idEmpresa);
-        return ResponseEntity.ok(sucursals);
-    }
 
 }

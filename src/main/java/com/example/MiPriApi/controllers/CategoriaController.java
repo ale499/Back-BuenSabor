@@ -22,9 +22,35 @@ public class CategoriaController extends BaseController<Categoria, Long>{
     private CategoriaService categoriaService;
 
 
+    @RequestMapping("/subcategoria/{idCP}")
+    public ResponseEntity<Categoria> agregarSubcategoria(@PathVariable Long idCP, @RequestBody Categoria subCategoria) throws Exception {
+        Categoria catPadre = categoriaService.agregarSubcategoria(idCP, subCategoria);
+        if (catPadre == null) {
+            return ResponseEntity.notFound().build(); // Devuelve 404 si no se encuentra la categoría padre
+        }
+        return ResponseEntity.ok(catPadre); // Devuelve 200 con la categoría padre
+    }
+
+    @RequestMapping("/categoriaPadre/{id}")
+    public ResponseEntity <List<Categoria>> listarPorCategoriaPadre(@PathVariable Long id) throws Exception {
+        List<Categoria> categorias = categoriaService.listarPorCategoriaPadre(id);
+        return ResponseEntity.ok(categorias);
+    }
+
+
     @RequestMapping("/sucursal/{idSucursal}")
     public ResponseEntity<List<Categoria>> listarPorSucursal(@PathVariable Long idSucursal) throws Exception{
         List<Categoria> categorias = categoriaService.listarPorSucursal(idSucursal);
         return ResponseEntity.ok(categorias);
+    }
+
+    @RequestMapping("/listar")
+    public ResponseEntity<List<Categoria>> listarCategoriasPrincipales() {
+        try {
+            List<Categoria> categoriasPrincipales = categoriaService.listarCategoriasPrincipales();
+            return ResponseEntity.ok(categoriasPrincipales);
+        } catch (Exception ex) {
+            return ResponseEntity.status(500).body(null);
+        }
     }
 }

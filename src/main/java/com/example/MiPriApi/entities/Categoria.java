@@ -21,7 +21,20 @@ public class Categoria extends Base {
     private Boolean esInsumo;
 
 
-    @ManyToMany(mappedBy = "categorias")
+
+    @ManyToOne
+    @JoinColumn(name = "categoriaPadreId")
+    @JsonIgnore
+    private Categoria categoriaPadre;
+
+    @OneToMany(mappedBy = "categoriaPadre")
+    @Builder.Default
+    private Set<Categoria> subcategorias = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(name = "categoriaSucursal",
+            joinColumns = @JoinColumn(name = "categoriaId"),
+            inverseJoinColumns = @JoinColumn(name = "sucursalId"))
     @Builder.Default
     private Set<Sucursal> sucursales = new HashSet<>();
 }
