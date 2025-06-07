@@ -29,9 +29,10 @@ public class ArticuloInsumoService extends BaseService<ArticuloInsumo, Long>{
     }
 
     @Transactional
-    public List<ArticuloInsumo> findAll() throws Exception {
+
+    public List<ArticuloInsumo> buscarPorDenominacion(String denominacion) throws Exception {
         try {
-            return articuloInsumoRepository.findAll();
+            return articuloInsumoRepository.findByDenominacionContainingIgnoreCase(denominacion);
         } catch (Exception ex) {
             throw new Exception(ex.getMessage());
         }

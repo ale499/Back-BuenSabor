@@ -13,5 +13,12 @@ import lombok.*;
 public class Usuario extends Base{
 
     private String auth0Id;
-    private String userName;
+
+    @Column(unique = true)
+    private String username;
+
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    private Rol rol;
 }

@@ -9,6 +9,9 @@ import java.util.Optional;
 @Repository
 public interface CategoriaRepository extends BaseRepository<Categoria, Long>{
 
+    List<Categoria> findAllBysucursalesId(Long idSucursal);
+
+
     List<Categoria> findAllByCategoriaPadreId(Long idCategoriaPadre);
 
     List<Categoria> findAllBysucursalsId(Long idSucursal);
@@ -16,6 +19,7 @@ public interface CategoriaRepository extends BaseRepository<Categoria, Long>{
     Optional<Categoria> findByDenominacion(String denominacion);
 
     Optional<Categoria> findByDenominacionAndCategoriaPadre(String denominacion, Categoria categoriaPadre);
+
 
 
 }

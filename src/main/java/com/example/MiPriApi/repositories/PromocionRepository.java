@@ -8,4 +8,4 @@ import java.util.List;
 @Repository
 public interface PromocionRepository extends BaseRepository<Promocion, Long>{
 
-    List<Promocion> findAllBySucursalesId(Long idSucursal);}
+    List<Promocion> findAllBySucursalesId(Long sucursalId);}

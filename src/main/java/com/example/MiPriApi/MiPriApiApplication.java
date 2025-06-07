@@ -63,6 +63,8 @@ public class MiPriApiApplication {
 	@Bean
 	CommandLineRunner initData() {
 		return args -> {
+
+			
             // Verificar y crear usuario para administrador
             Usuario usuarioAdmin = usuarioRepository.findByUserName("adminUser")
                     .orElseGet(() -> {
@@ -409,3 +411,4 @@ public class MiPriApiApplication {
 
 	}
 }
+

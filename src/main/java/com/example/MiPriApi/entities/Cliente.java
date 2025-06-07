@@ -1,5 +1,6 @@
 package com.example.MiPriApi.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -28,8 +30,12 @@ public class Cliente extends Persona{
     @Builder.Default
     private Set<Domicilio> domicilios = new HashSet<>();
 
-    @OneToOne
-    @JoinColumn(name = "usuarioCliente")
+    @OneToMany(mappedBy = "cliente")
+    @JsonManagedReference
+    private List<Pedido> pedidos;
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
     @OneToOne

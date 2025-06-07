@@ -6,13 +6,11 @@ import com.example.MiPriApi.services.CategoriaService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/categoria")
 public class CategoriaController extends BaseController<Categoria, Long>{
@@ -22,6 +20,7 @@ public class CategoriaController extends BaseController<Categoria, Long>{
 
     @Autowired
     private CategoriaService categoriaService;
+
 
     @RequestMapping("/subcategoria/{idCP}")
     public ResponseEntity<Categoria> agregarSubcategoria(@PathVariable Long idCP, @RequestBody Categoria subCategoria) throws Exception {
@@ -37,6 +36,7 @@ public class CategoriaController extends BaseController<Categoria, Long>{
         List<Categoria> categorias = categoriaService.listarPorCategoriaPadre(id);
         return ResponseEntity.ok(categorias);
     }
+
 
     @RequestMapping("/sucursal/{idSucursal}")
     public ResponseEntity<List<Categoria>> listarPorSucursal(@PathVariable Long idSucursal) throws Exception{

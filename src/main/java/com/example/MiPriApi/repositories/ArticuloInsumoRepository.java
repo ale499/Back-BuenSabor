@@ -11,7 +11,10 @@ public interface ArticuloInsumoRepository extends BaseRepository<ArticuloInsumo,
 
     List<ArticuloInsumo> findAllByCategoriaId(Long idCategoria);
 
+    List<ArticuloInsumo> findByDenominacionContainingIgnoreCase(String denominacion);
+
     List<ArticuloInsumo> findAll();
 
     Optional<ArticuloInsumo> findByDenominacion(String denominacion);
+
 }

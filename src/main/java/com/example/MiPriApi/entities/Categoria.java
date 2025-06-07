@@ -21,6 +21,7 @@ public class Categoria extends Base {
     private Boolean esInsumo;
 
 
+
     @ManyToOne
     @JoinColumn(name = "categoriaPadreId")
     @JsonIgnore
@@ -35,5 +36,5 @@ public class Categoria extends Base {
             joinColumns = @JoinColumn(name = "categoriaId"),
             inverseJoinColumns = @JoinColumn(name = "sucursalId"))
     @Builder.Default
-    private Set<Sucursal> sucursals = new HashSet<>();
+    private Set<Sucursal> sucursales = new HashSet<>();
 }
