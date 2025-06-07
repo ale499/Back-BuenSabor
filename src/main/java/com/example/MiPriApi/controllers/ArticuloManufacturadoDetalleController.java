@@ -9,6 +9,7 @@ import com.example.MiPriApi.services.ArticuloManufacturadoService;
 import com.example.MiPriApi.services.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/articuloManufacturadoDetalle")
+@PreAuthorize("hasAnyAuthority('Admin', 'Chef')")
 public class ArticuloManufacturadoDetalleController extends BaseController<ArticuloManufacturadoDetalle, Long> {
     public ArticuloManufacturadoDetalleController(ArticuloManufacturadoDetalleService service) {
         super(service);
