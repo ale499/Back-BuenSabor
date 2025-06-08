@@ -14,8 +14,6 @@ public interface CategoriaRepository extends BaseRepository<Categoria, Long>{
 
     List<Categoria> findAllByCategoriaPadreId(Long idCategoriaPadre);
 
-    List<Categoria> findAllBysucursalsId(Long idSucursal);
-
     Optional<Categoria> findByDenominacion(String denominacion);
 
     Optional<Categoria> findByDenominacionAndCategoriaPadre(String denominacion, Categoria categoriaPadre);

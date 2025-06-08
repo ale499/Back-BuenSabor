@@ -1,8 +1,8 @@
 package com.example.MiPriApi.services;
 
-import com.example.MiPriApi.dto.DetallePedidoRequestDTO;
-import com.example.MiPriApi.dto.PedidoRequestDTO;
-import com.example.MiPriApi.dto.ConfirmarPedidoRequestDTO;
+import com.example.MiPriApi.entities.DTO.DetallePedidoRequestDTO;
+import com.example.MiPriApi.entities.DTO.PedidoRequestDTO;
+import com.example.MiPriApi.entities.DTO.ConfirmarPedidoRequestDTO;
 import com.example.MiPriApi.entities.*;
 import com.example.MiPriApi.entities.enums.Estado;
 import com.example.MiPriApi.entities.enums.FormaPago;

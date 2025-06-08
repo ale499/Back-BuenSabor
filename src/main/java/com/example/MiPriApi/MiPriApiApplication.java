@@ -66,11 +66,11 @@ public class MiPriApiApplication {
 
 			
             // Verificar y crear usuario para administrador
-            Usuario usuarioAdmin = usuarioRepository.findByUserName("adminUser")
+            Usuario usuarioAdmin = usuarioRepository.findByUsername("adminUser")
                     .orElseGet(() -> {
                         Usuario nuevoUsuarioAdmin = Usuario.builder()
                                 .auth0Id("auth0-admin-id")
-                                .userName("adminUser")
+                                .username("adminUser")
                                 .build();
                         return usuarioRepository.save(nuevoUsuarioAdmin);
                     });
@@ -91,17 +91,17 @@ public class MiPriApiApplication {
             System.out.println("Administrador creado con éxito.");
 
             // Verificar y crear usuario para cliente
-            Usuario usuarioCliente = usuarioRepository.findByUserName("clienteUser")
+            Usuario usuarioCliente = usuarioRepository.findByUsername("clienteUser")
                     .orElseGet(() -> {
                         Usuario nuevoUsuarioCliente = Usuario.builder()
                                 .auth0Id("auth0-client-id")
-                                .userName("clienteUser")
+                                .username("clienteUser")
                                 .build();
                         return usuarioRepository.save(nuevoUsuarioCliente);
                     });
 
             // Verificar y crear cliente
-            Cliente cliente = clienteRepository.findByEmail("cliente@example.com")
+            Cliente cliente = clienteRepository.findByUsuario_Username("cliente@example.com")
                     .orElseGet(() -> {
                         Cliente nuevoCliente = Cliente.builder()
                                 .nombre("Cliente")

@@ -1,6 +1,6 @@
 package com.example.MiPriApi.services;
 
-import com.example.MiPriApi.dto.CambiarPasswordRequestDTO;
+import com.example.MiPriApi.entities.DTO.CambiarPasswordRequestDTO;
 import com.example.MiPriApi.entities.Cliente;
 import com.example.MiPriApi.entities.Domicilio;
 import com.example.MiPriApi.entities.Pedido;

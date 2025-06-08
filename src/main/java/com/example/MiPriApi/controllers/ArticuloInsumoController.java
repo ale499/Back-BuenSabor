@@ -53,6 +53,7 @@ public class ArticuloInsumoController extends BaseController<ArticuloInsumo, Lon
     public ResponseEntity<List<ArticuloInsumo>> buscarPorDenominacion(@RequestParam String denominacion) throws Exception {
         List<ArticuloInsumo> resultado = articuloInsumoService.buscarPorDenominacion(denominacion);
         return ResponseEntity.ok(resultado);
+    }
 
     @RequestMapping("/listar")
     public ResponseEntity<List<ArticuloInsumoDTO>> listarTodos() {
@@ -90,4 +91,4 @@ public class ArticuloInsumoController extends BaseController<ArticuloInsumo, Lon
 
     }
 
-}
+    }

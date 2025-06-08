@@ -1,4 +1,4 @@
-package com.example.MiPriApi.dto;
+package com.example.MiPriApi.entities.DTO;
 
 
 import lombok.Data;

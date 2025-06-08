@@ -1,4 +1,4 @@
-package com.example.MiPriApi.dto;
+package com.example.MiPriApi.entities.DTO;
 
 public class CambiarPasswordRequestDTO {
     public String nuevaPassword;

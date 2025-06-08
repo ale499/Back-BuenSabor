@@ -19,12 +19,16 @@ public class CategoriaService extends BaseService<Categoria, Long>{
         super(categoriaRepository);
     }
 
+
+
     @Autowired
     private UnidadMedidaRepository unidadMedidaRepository;
     @Autowired
     private CategoriaRepository categoriaRepository;
     @Autowired
     private ArticuloInsumoRepository articuloInsumoRepository;
+
+
 
 
     public ArticuloInsumo crearInsumo(ArticuloInsumo insumo) {
@@ -51,9 +55,15 @@ public class CategoriaService extends BaseService<Categoria, Long>{
         }
     }
 
-
-        return articuloInsumoRepository.save(insumo);
+    @Transactional
+    public List<Categoria> listarPorCategoriaPadre(Long idCategoriaPadre) throws Exception {
+        try{
+            return categoriaRepository.findAllByCategoriaPadreId(idCategoriaPadre);
+        }catch(Exception ex){
+            throw new Exception(ex.getMessage());
+        }
     }
+
 
 
     @Transactional

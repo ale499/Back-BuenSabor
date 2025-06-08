@@ -2,8 +2,8 @@ package com.example.MiPriApi.controllers;
 
 import com.example.MiPriApi.entities.Pedido;
 import com.example.MiPriApi.services.PedidoService;
-import com.example.MiPriApi.dto.PedidoRequestDTO;
-import com.example.MiPriApi.dto.ConfirmarPedidoRequestDTO;
+import com.example.MiPriApi.entities.DTO.PedidoRequestDTO;
+import com.example.MiPriApi.entities.DTO.ConfirmarPedidoRequestDTO;
 import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.preference.PreferenceClient;
 import com.mercadopago.client.preference.PreferenceItemRequest;
