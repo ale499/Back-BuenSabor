@@ -101,7 +101,7 @@ public class MiPriApiApplication {
                     });
 
             // Verificar y crear cliente
-            Cliente cliente = clienteRepository.findByUsuario_Username("cliente@example.com")
+            Cliente cliente = clienteRepository.findByUsuario_Username("clienteUser")
                     .orElseGet(() -> {
                         Cliente nuevoCliente = Cliente.builder()
                                 .nombre("Cliente")
