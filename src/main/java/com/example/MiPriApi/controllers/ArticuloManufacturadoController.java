@@ -22,6 +22,7 @@ public class ArticuloManufacturadoController extends BaseController<ArticuloManu
         return ResponseEntity.ok(service.crear(articuloManufacturado));
     }
 
+
     @DeleteMapping("/baja/{id}")
     public void eliminarArticuloManufacturado(@PathVariable Long id) throws Exception {
         service.eliminar(id);
