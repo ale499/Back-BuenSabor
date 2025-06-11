@@ -27,7 +27,11 @@ public abstract class Persona extends Base implements Serializable{
 
     @OneToOne
     @JoinColumn(name = "imagenId")
+<<<<<<< HEAD
     protected Imagen imagenPersona;
+=======
+    protected Image imagenPersona;
+>>>>>>> Dev
 
     @OneToOne
     @JoinColumn(name = "usuarioId")

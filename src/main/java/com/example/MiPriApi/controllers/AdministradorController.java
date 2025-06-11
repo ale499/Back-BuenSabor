@@ -5,7 +5,10 @@ import com.example.MiPriApi.entities.Empleado;
 import com.example.MiPriApi.entities.Cliente;
 import com.example.MiPriApi.services.AdministradorService;
 import org.springframework.beans.factory.annotation.Autowired;
+<<<<<<< HEAD
+=======
 import org.springframework.security.access.prepost.PreAuthorize;
+>>>>>>> Dev
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,31 +22,46 @@ public class AdministradorController extends BaseController<Administrador, Long>
         super(administradorService);
     }
 
+<<<<<<< HEAD
+=======
     @PreAuthorize("hasAuthority('Admin')")
+>>>>>>> Dev
     @PostMapping("/empleados/alta")
     public Empleado crearEmpleado(@RequestBody Empleado empleado) throws Exception {
         return administradorService.crearEmpleado(empleado);
     }
 
+<<<<<<< HEAD
+=======
     @PreAuthorize("hasAuthority('Admin')")
+>>>>>>> Dev
     @DeleteMapping("/empleados/baja/{id}")
     public void eliminarEmpleado(@PathVariable Long id) throws Exception {
         administradorService.eliminarEmpleado(id);
     }
 
+<<<<<<< HEAD
+=======
     @PreAuthorize("hasAuthority('Admin')")
+>>>>>>> Dev
     @PutMapping("/empleados/modificar/{id}")
     public Empleado modificarEmpleado(@PathVariable Long id, @RequestBody Empleado empleado) throws Exception {
         return administradorService.modificarEmpleado(id, empleado);
     }
 
+<<<<<<< HEAD
+=======
     @PreAuthorize("hasAuthority('Admin')")
+>>>>>>> Dev
     @DeleteMapping("/clientes/baja/{id}")
     public void eliminarCliente(@PathVariable Long id) throws Exception {
         administradorService.eliminarCliente(id);
     }
 
+<<<<<<< HEAD
+=======
     @PreAuthorize("hasAuthority('Admin')")
+>>>>>>> Dev
     @PutMapping("/clientes/modificar/{id}")
     public Cliente modificarCliente(@PathVariable Long id, @RequestBody Cliente cliente) throws Exception {
         return administradorService.modificarCliente(id, cliente);

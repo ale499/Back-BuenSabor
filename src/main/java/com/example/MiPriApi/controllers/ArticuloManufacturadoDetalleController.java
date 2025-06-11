@@ -1,20 +1,27 @@
 package com.example.MiPriApi.controllers;
 
+
+import java.util.Map;
+import java.util.stream.Collectors;
 import com.example.MiPriApi.entities.ArticuloManufacturado;
 import com.example.MiPriApi.entities.ArticuloManufacturadoDetalle;
 import com.example.MiPriApi.entities.DTO.ArticuloManufacturadoDetalleDTO;
-import com.example.MiPriApi.services.ArticuloManufacturadoDetalleMapper;
+import com.example.MiPriApi.services.Mappers.ArticuloManufacturadoDetalleMapper;
 import com.example.MiPriApi.services.ArticuloManufacturadoDetalleService;
-import com.example.MiPriApi.services.ArticuloManufacturadoService;
-import com.example.MiPriApi.services.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+
+
 
 @RestController
 @RequestMapping("/articuloManufacturadoDetalle")
@@ -91,6 +98,7 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(dtos);
+
     }
 
 }

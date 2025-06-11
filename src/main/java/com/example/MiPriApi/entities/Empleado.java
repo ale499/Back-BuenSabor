@@ -24,5 +24,9 @@ public class Empleado extends Base{
 
     @OneToOne
     @JoinColumn(name = "imagenEmpleado")
+<<<<<<< HEAD
     private Imagen imagen;
+=======
+    private Image imagen;
+>>>>>>> Dev
 }

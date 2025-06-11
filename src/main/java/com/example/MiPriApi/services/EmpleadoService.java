@@ -3,6 +3,18 @@ package com.example.MiPriApi.services;
 
 
 import com.example.MiPriApi.entities.Empleado;
+<<<<<<< HEAD
+import com.example.MiPriApi.repositories.EmpleadoRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class EmpleadoService extends BaseService<Empleado, Long> {
+    public EmpleadoService(EmpleadoRepository empleadoRepository) {
+        super(empleadoRepository);
+    }
+=======
 import com.example.MiPriApi.entities.Usuario;
 import com.example.MiPriApi.repositories.EmpleadoRepository;
 import com.example.MiPriApi.repositories.UsuarioRepository;
@@ -28,4 +40,5 @@ public class EmpleadoService extends BaseService<Empleado, Long> {
         return super.crear(empleado);
     }
 
+>>>>>>> Dev
 }

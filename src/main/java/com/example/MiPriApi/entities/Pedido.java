@@ -29,6 +29,12 @@ public class Pedido extends Base{
     private LocalTime horaEstimadaFinalizacion;
     private Double total = 0.0;
     private Double totalCosto;
+<<<<<<< HEAD
+    private Estado estado;
+    private TipoEnvio tipoEnvio;
+    private FormaPago formaPago;
+=======
+>>>>>>> Dev
     private LocalDate fechaPedido;
 
     @ManyToOne
@@ -37,7 +43,11 @@ public class Pedido extends Base{
 
     @ManyToOne
     @JoinColumn(name = "clienteId")
+<<<<<<< HEAD
+    @JsonBackReference
+=======
     @JsonBackReference // Evita la recursividad infinita en la serialización JSON
+>>>>>>> Dev
     private Cliente cliente;
 
 
@@ -49,6 +59,13 @@ public class Pedido extends Base{
     @JoinColumn(name = "domicilioId")
     private Domicilio domicilio;
 
+<<<<<<< HEAD
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<DetallePedido> detalles; // <-- Agrega esta línea
+
+
+=======
     @Enumerated(EnumType.STRING)
     private FormaPago formaPago;
 
@@ -61,6 +78,5 @@ public class Pedido extends Base{
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference // Permite la serialización de los detalles del pedido sin causar recursividad infinita
     private List<DetallePedido> detalles; // <-- Agrega esta línea
-
-
+>>>>>>> Dev
 }
