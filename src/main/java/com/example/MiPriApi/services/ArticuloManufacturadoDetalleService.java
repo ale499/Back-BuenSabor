@@ -25,12 +25,5 @@ public class ArticuloManufacturadoDetalleService extends BaseService<ArticuloMan
         }
     }
 
-    @Transactional
-    public List<ArticuloManufacturadoDetalle> listarPorArticuloManufacturado(Long idArticuloManufacturado) throws Exception{
-        try{
-            return articuloManufacturadoDetalleRepository.findAllByArticuloManufacturadoId(idArticuloManufacturado);
-        }catch (Exception ex){
-            throw new Exception(ex.getMessage());
-        }
-    }
+
 }
