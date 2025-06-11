@@ -61,6 +61,4 @@ public class Pedido extends Base{
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference // Permite la serialización de los detalles del pedido sin causar recursividad infinita
     private List<DetallePedido> detalles; // <-- Agrega esta línea
-
-
 }

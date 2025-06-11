@@ -402,11 +402,6 @@ public class MiPriApiApplication {
 
 			System.out.println("Artículo manufacturado 'Pizza' creado con éxito.");
 
-
-
-
-
-
 		};
 
 	}

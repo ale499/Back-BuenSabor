@@ -10,7 +10,4 @@ import java.util.Optional;
 public interface ClienteRepository extends BaseRepository<Cliente, Long> {
 
     Optional<Cliente> findByUsuario_Username(String username);
-
-
-
 }

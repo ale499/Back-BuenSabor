@@ -1,6 +1,8 @@
 package com.example.MiPriApi.controllers;
 
+import com.example.MiPriApi.entities.DTO.DetallePedidoResponseDTO;
 import com.example.MiPriApi.entities.Pedido;
+import com.example.MiPriApi.services.Mappers.PedidoMapper;
 import com.example.MiPriApi.services.PedidoService;
 import com.example.MiPriApi.entities.DTO.PedidoRequestDTO;
 import com.example.MiPriApi.entities.DTO.ConfirmarPedidoRequestDTO;
@@ -94,4 +96,15 @@ public class PedidoController extends BaseController<Pedido, Long>{
         pedidoService.confirmarPedido(idPedido, request);
         return ResponseEntity.ok("Pedido confirmado correctamente");
     }
+
+    @GetMapping("/{id}/detalles")
+    public ResponseEntity<List<DetallePedidoResponseDTO>> obtenerDetalles(@PathVariable Long id) throws Exception {
+        Pedido pedido = pedidoService.buscarPorId(id)
+                .orElseThrow(() -> new Exception("Pedido no encontrado"));
+
+        List<DetallePedidoResponseDTO> dtoList = PedidoMapper.toDetalleDTOList(pedido);
+        return ResponseEntity.ok(dtoList);
+    }
+
+
 }

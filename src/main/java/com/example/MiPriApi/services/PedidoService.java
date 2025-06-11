@@ -142,9 +142,22 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
         pedido = pedidoRepository.save(pedido);
 
+
+        pedidoRepository.save(pedido);
+    }
+
+    @Transactional
+    public Pedido crearPedido(PedidoRequestDTO pedidoRequest) throws Exception {
+        Pedido pedido = new Pedido();
+        // podés setearle datos si necesitás (fecha, estado, cliente, etc.)
+
+        // 💾 Guardar el pedido primero para obtener el ID
+        pedido = pedidoRepository.save(pedido);
+
         List<DetallePedido> detalles = new ArrayList<>();
         for (DetallePedidoRequestDTO item : pedidoRequest.getItems()) {
             Articulo articulo;
+
             if ("INSUMO".equalsIgnoreCase(item.getTipoArticulo())) {
                 articulo = articuloInsumoRepository.findById(item.getArticuloId())
                         .orElseThrow(() -> new Exception("Insumo no encontrado"));
@@ -156,18 +169,23 @@ public class PedidoService extends BaseService<Pedido, Long> {
             }
 
             DetallePedido detalle = new DetallePedido();
-            detalle.setPedido(pedido);
+            detalle.setPedido(pedido); // ahora sí, pedido ya tiene ID
             detalle.setArticulo(articulo);
             detalle.setCantidad(item.getCantidad());
             detalle.setSubTotal(item.getSubTotal());
 
-            detallePedidoRepository.save(detalle);
             detalles.add(detalle);
         }
 
+        // Relación bidireccional
         pedido.setDetalles(detalles);
-        pedidoRepository.save(pedido);
+
+        // 💾 Ahora sí, guardar los detalles (gracias al cascade ALL, incluso podrías omitir esto)
+        detallePedidoRepository.saveAll(detalles);
+
+        return pedido;
     }
+
 
     private Integer generarNumeroPedido() {
         Integer maxNumero = pedidoRepository.findMaxNumeroPedido();

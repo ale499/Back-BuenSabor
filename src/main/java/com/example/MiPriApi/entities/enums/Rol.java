@@ -5,5 +5,5 @@ public enum Rol {
     ADMIN,
     CHEF,
     DELIVERY,
-    CLIENTE,
+    CLIENTE
 }
