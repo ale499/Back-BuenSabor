@@ -42,19 +42,5 @@ public class ArticuloManufacturadoDetalleService extends BaseService<ArticuloMan
         }
     }
 
-    @Transactional
-    public List<ArticuloManufacturadoDetalle> buscarPorDenominacion(String denominacion) throws Exception {
-        try {
-            // Suponiendo que tienes acceso al repositorio de ArticuloManufacturado
-            List<ArticuloManufacturado> articulos = articuloManufacturadoRepository.findByDenominacionContainingIgnoreCase(denominacion);
-            List<ArticuloManufacturadoDetalle> detalles = new ArrayList<>();
-            for (ArticuloManufacturado articulo : articulos) {
-                detalles.addAll(articuloManufacturadoDetalleRepository.findAllByArticuloManufacturadoId(articulo.getId()));
-            }
-            return detalles;
-        } catch (Exception ex) {
-            throw new Exception(ex.getMessage());
-        }
-    }
 
 }

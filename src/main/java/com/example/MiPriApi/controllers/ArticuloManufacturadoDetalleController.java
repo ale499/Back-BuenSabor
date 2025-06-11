@@ -93,14 +93,4 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/buscarPorDenominacion")
-    public ResponseEntity<List<ArticuloManufacturadoDetalleDTO>> buscarPorDenominacion(@RequestParam String denominacion) throws Exception {
-        List<ArticuloManufacturadoDetalle> detalles = articuloManufacturadoDetalleService.buscarPorDenominacion(denominacion);
-        // Mapear a DTOs usando el mapper existente
-        List<ArticuloManufacturadoDetalleDTO> dtos = detalles.stream()
-                .map(mapper::toDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
-    }
-
 }
