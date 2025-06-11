@@ -8,12 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface UsuarioRepository extends BaseRepository<Usuario, Long>{
-<<<<<<< HEAD
-
-    Optional<Usuario> findByUsername(String username);
-=======
     Optional<Usuario> findByUsername(String userName);
 
->>>>>>> Dev
 
 }

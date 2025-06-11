@@ -31,11 +31,7 @@ public class Promocion extends Base{
 
     @OneToMany
     @Builder.Default
-<<<<<<< HEAD
     private Set<Imagen> imagenesPromocion = new HashSet<>();
-=======
-    private Set<Image> imagenesPromocion = new HashSet<>();
->>>>>>> Dev
 
     @ManyToMany
     @JoinTable(name = "promocionSucursal",

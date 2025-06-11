@@ -1,32 +1,21 @@
 package com.example.MiPriApi.services;
 
-<<<<<<< HEAD
-import com.example.MiPriApi.entities.Cliente;
-=======
 import com.example.MiPriApi.entities.DTO.CambiarPasswordRequestDTO;
 import com.example.MiPriApi.entities.Cliente;
 import com.example.MiPriApi.entities.Domicilio;
->>>>>>> Dev
 import com.example.MiPriApi.entities.Pedido;
 import com.example.MiPriApi.entities.Usuario;
 import com.example.MiPriApi.entities.enums.Rol;
 import com.example.MiPriApi.repositories.ClienteRepository;
-<<<<<<< HEAD
-=======
 import com.example.MiPriApi.repositories.DomicilioRepository;
->>>>>>> Dev
 import com.example.MiPriApi.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-<<<<<<< HEAD
-import java.util.List;
-=======
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
->>>>>>> Dev
 
 @Service
 public class ClienteService extends BaseService<Cliente, Long> {
@@ -37,12 +26,9 @@ public class ClienteService extends BaseService<Cliente, Long> {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-<<<<<<< HEAD
-=======
     @Autowired
     private DomicilioRepository domicilioRepository;
 
->>>>>>> Dev
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -67,14 +53,6 @@ public class ClienteService extends BaseService<Cliente, Long> {
         Cliente cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
 
-<<<<<<< HEAD
-        cliente.setNombre(nuevosDatos.getNombre());
-        cliente.setApellido(nuevosDatos.getApellido());
-        // Agrega aquí otros campos a actualizar si es necesario
-        return clienteRepository.save(cliente);
-    }
-
-=======
         // Actualizar solo los campos permitidos
         cliente.setNombre(nuevosDatos.getNombre());
         cliente.setApellido(nuevosDatos.getApellido());
@@ -122,14 +100,9 @@ public class ClienteService extends BaseService<Cliente, Long> {
     }
 
     // Obtener historial de pedidos por username
->>>>>>> Dev
     public List<Pedido> obtenerPedidosPorUsername(String username) {
         Cliente cliente = clienteRepository.findByUsuario_Username(username)
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
         return cliente.getPedidos();
     }
-<<<<<<< HEAD
-
-=======
->>>>>>> Dev
 }

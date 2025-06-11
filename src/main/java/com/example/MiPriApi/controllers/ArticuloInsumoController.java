@@ -1,24 +1,14 @@
 package com.example.MiPriApi.controllers;
 
 import com.example.MiPriApi.entities.ArticuloInsumo;
-<<<<<<< HEAD
-=======
 
 import com.example.MiPriApi.services.CategoriaService;
->>>>>>> Dev
 import com.example.MiPriApi.services.ArticuloInsumoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-<<<<<<< HEAD
-import java.util.List;
-
-@RestController
-@RequestMapping("/articuloInsumo")
-public class ArticuloInsumoController extends BaseController<ArticuloInsumo, Long>{
-=======
 import com.example.MiPriApi.entities.DTO.ArticuloInsumoDTO;
 import com.example.MiPriApi.entities.DTO.CategoriaDTO;
 import com.example.MiPriApi.services.ArticuloInsumoService;
@@ -35,7 +25,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/articuloInsumo")
 @PreAuthorize("hasAnyAuthority('Admin', 'Chef')")
 public class ArticuloInsumoController extends BaseController<ArticuloInsumo, Long> {
->>>>>>> Dev
 
     public ArticuloInsumoController(ArticuloInsumoService service) {
         super(service);
@@ -43,24 +32,16 @@ public class ArticuloInsumoController extends BaseController<ArticuloInsumo, Lon
 
     @Autowired
     private ArticuloInsumoService articuloInsumoService;
-<<<<<<< HEAD
-
-    @RequestMapping("/categoria/{id}")
-    public ResponseEntity<List<ArticuloInsumo>> listarPorCategoria(Long idCategoria) throws Exception{
-=======
     @Autowired
     private CategoriaService categoriaService;
 
     @RequestMapping("/categoria/{id}")
 
     public ResponseEntity<List<ArticuloInsumo>> listarPorCategoria(@PathVariable("id") Long idCategoria) throws Exception{
->>>>>>> Dev
         List<ArticuloInsumo> articuloInsumos = articuloInsumoService.listarPorCategoria(idCategoria);
         return ResponseEntity.ok(articuloInsumos);
     }
 
-<<<<<<< HEAD
-=======
 
     @PostMapping
     public ResponseEntity<ArticuloInsumo> crear(@RequestBody ArticuloInsumo insumo) {
@@ -68,16 +49,12 @@ public class ArticuloInsumoController extends BaseController<ArticuloInsumo, Lon
         return ResponseEntity.ok(nuevo);
     }
 
->>>>>>> Dev
     @GetMapping("/buscar")
     public ResponseEntity<List<ArticuloInsumo>> buscarPorDenominacion(@RequestParam String denominacion) throws Exception {
         List<ArticuloInsumo> resultado = articuloInsumoService.buscarPorDenominacion(denominacion);
         return ResponseEntity.ok(resultado);
     }
 
-<<<<<<< HEAD
-}
-=======
     @RequestMapping("/listar")
     public ResponseEntity<List<ArticuloInsumoDTO>> listarTodos() {
         try {
@@ -114,5 +91,4 @@ public class ArticuloInsumoController extends BaseController<ArticuloInsumo, Lon
 
     }
 
-    }
->>>>>>> Dev
+}

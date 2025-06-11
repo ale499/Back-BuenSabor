@@ -61,8 +61,5 @@ public class BaseService<E extends Base, ID extends Serializable> {
             throw new Exception(ex.getMessage());
         }
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> Dev
+

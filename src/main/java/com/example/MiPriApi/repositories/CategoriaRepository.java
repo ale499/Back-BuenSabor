@@ -4,19 +4,11 @@ import com.example.MiPriApi.entities.Categoria;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-<<<<<<< HEAD
-=======
 import java.util.Optional;
->>>>>>> Dev
 
 @Repository
 public interface CategoriaRepository extends BaseRepository<Categoria, Long>{
 
-<<<<<<< HEAD
-    List<Categoria> findAllByCategoriaPadreId(Long idCategoriaPadre);
-
-    List<Categoria> findAllBysucursalsId(Long idSucursal);
-=======
     List<Categoria> findAllBysucursalesId(Long idSucursal);
 
 
@@ -26,7 +18,6 @@ public interface CategoriaRepository extends BaseRepository<Categoria, Long>{
 
     Optional<Categoria> findByDenominacionAndCategoriaPadre(String denominacion, Categoria categoriaPadre);
 
->>>>>>> Dev
 
 
 }

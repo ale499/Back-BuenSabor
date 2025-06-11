@@ -18,20 +18,6 @@ public class SucursalService extends BaseService<Sucursal, Long>{
         super(sucursalRepository);
     }
 
-<<<<<<< HEAD
-    @Autowired
-    private SucursalRepository sucursalRepository;
-
-    @Transactional
-    public List<Sucursal> listarPorEmpresa(Long idEmpresa) throws Exception{
-        try {
-            return sucursalRepository.findAllByEmpresaId(idEmpresa);
-        }catch (Exception ex){
-            throw new Exception(ex.getMessage());
-        }
-    }
-=======
->>>>>>> Dev
 
 
 }

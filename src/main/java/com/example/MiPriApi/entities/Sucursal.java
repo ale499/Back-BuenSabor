@@ -25,13 +25,7 @@ public class Sucursal extends Base{
     @JoinColumn(name = "domicilioId")
     private Domicilio domicilio;
 
-<<<<<<< HEAD
-    @ManyToOne
-    @JoinColumn(name = "empresaId")
-    private Empresa empresa;
-=======
 
->>>>>>> Dev
 
     @ManyToMany
     @JoinTable(name = "sucursalCategoria",

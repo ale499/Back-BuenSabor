@@ -27,11 +27,7 @@ public class Administrador extends Base{
 
     @OneToOne
     @JoinColumn(name = "imagenAdmin")
-<<<<<<< HEAD
     private Imagen imagen;
-=======
-    private Image imagen;
->>>>>>> Dev
 
 
 }

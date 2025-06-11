@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.print.Book;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +20,6 @@ public class CloudinaryServiceImpl implements CloudinaryService {
 
     @Resource
     private Cloudinary cloudinary; // Inyección de dependencia de Cloudinary
-
 
     // Método para subir un archivo a Cloudinary
     @Override

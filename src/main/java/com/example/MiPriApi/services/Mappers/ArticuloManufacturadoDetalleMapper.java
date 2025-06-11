@@ -1,4 +1,4 @@
-package com.example.MiPriApi.services.Mappers;
+package com.example.MiPriApi.services;
 
 
 import com.example.MiPriApi.entities.ArticuloManufacturadoDetalle;
@@ -23,7 +23,7 @@ public class ArticuloManufacturadoDetalleMapper {
         dto.setCategoria(categoriaDTO);
 
         dto.setImagenes(detalle.getArticuloManufacturado().getImagenesArticulos().stream()
-                .map(image -> image.getUrl())
+                .map(imagen -> imagen.getDenominacion())
                 .collect(Collectors.toList()));
         dto.setPrecioVenta(detalle.getArticuloManufacturado().getPrecioVenta());
         dto.setDescripcion(detalle.getArticuloManufacturado().getDescripcion());

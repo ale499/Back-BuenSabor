@@ -37,8 +37,6 @@ public class ArticuloInsumoService extends BaseService<ArticuloInsumo, Long>{
         }
     }
 
-<<<<<<< HEAD
-=======
     @Transactional
     public List<ArticuloInsumo> findAll() throws Exception {
         try {
@@ -48,5 +46,4 @@ public class ArticuloInsumoService extends BaseService<ArticuloInsumo, Long>{
         }
     }
 
->>>>>>> Dev
 }
