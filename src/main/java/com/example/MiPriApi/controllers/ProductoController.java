@@ -4,7 +4,11 @@ import com.example.MiPriApi.entities.Producto;
 import com.example.MiPriApi.services.ProductoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+<<<<<<< HEAD
 import com.example.MiPriApi.dto.ProductoDTO;
+=======
+import com.example.MiPriApi.entities.DTO.ProductoDTO;
+>>>>>>> Dev
 import java.util.List;
 
 @RestController

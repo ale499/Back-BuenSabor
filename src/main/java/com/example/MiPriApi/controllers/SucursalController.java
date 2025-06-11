@@ -20,6 +20,7 @@ public class SucursalController extends BaseController<Sucursal, Long>{
         super(service);
     }
 
+<<<<<<< HEAD
     @Autowired
     private SucursalService sucursalService;
 
@@ -28,5 +29,8 @@ public class SucursalController extends BaseController<Sucursal, Long>{
         List<Sucursal> sucursals = sucursalService.listarPorEmpresa(idEmpresa);
         return ResponseEntity.ok(sucursals);
     }
+=======
+
+>>>>>>> Dev
 
 }

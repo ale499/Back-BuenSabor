@@ -18,6 +18,7 @@ public class SucursalService extends BaseService<Sucursal, Long>{
         super(sucursalRepository);
     }
 
+<<<<<<< HEAD
     @Autowired
     private SucursalRepository sucursalRepository;
 
@@ -29,6 +30,8 @@ public class SucursalService extends BaseService<Sucursal, Long>{
             throw new Exception(ex.getMessage());
         }
     }
+=======
+>>>>>>> Dev
 
 
 }

@@ -1,10 +1,19 @@
 package com.example.MiPriApi.controllers;
 
+<<<<<<< HEAD
 import com.example.MiPriApi.entities.Pedido;
 import com.example.MiPriApi.services.BaseService;
 import com.example.MiPriApi.services.PedidoService;
 import com.example.MiPriApi.dto.PedidoRequestDTO;
 import com.example.MiPriApi.dto.ConfirmarPedidoRequestDTO;
+=======
+import com.example.MiPriApi.entities.DTO.DetallePedidoResponseDTO;
+import com.example.MiPriApi.entities.Pedido;
+import com.example.MiPriApi.services.Mappers.PedidoMapper;
+import com.example.MiPriApi.services.PedidoService;
+import com.example.MiPriApi.entities.DTO.PedidoRequestDTO;
+import com.example.MiPriApi.entities.DTO.ConfirmarPedidoRequestDTO;
+>>>>>>> Dev
 import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.preference.PreferenceClient;
 import com.mercadopago.client.preference.PreferenceItemRequest;
@@ -22,6 +31,7 @@ import java.util.List;
 @RequestMapping("/pedido")
 public class PedidoController extends BaseController<Pedido, Long>{
 
+<<<<<<< HEAD
 
     public PedidoController(PedidoService service) {
         super(service);
@@ -31,6 +41,17 @@ public class PedidoController extends BaseController<Pedido, Long>{
 
     @RequestMapping("/cliente/{idCliente}")
     public ResponseEntity<List<Pedido>> listarPorCliente(@PathVariable Long idCliente) throws Exception{
+=======
+    public PedidoController(PedidoService pedidoService) {
+        super(pedidoService);
+    }
+
+    @Autowired
+    private PedidoService pedidoService;
+
+    @GetMapping("/cliente/{idCliente}")
+    public ResponseEntity<List<Pedido>> listarPorCliente(@PathVariable Long idCliente) throws Exception {
+>>>>>>> Dev
         List<Pedido> pedidos = pedidoService.listarPorCliente(idCliente);
         return ResponseEntity.ok(pedidos);
     }
@@ -41,15 +62,24 @@ public class PedidoController extends BaseController<Pedido, Long>{
         return ResponseEntity.ok(pedidos);
     }
 
+<<<<<<< HEAD
     @RequestMapping("/sucursal/{idSucursal}")
     public ResponseEntity<List<Pedido>> listarPorSucursal(@PathVariable Long idSucursal) throws Exception{
         List<Pedido> pedidos = pedidoService.listarPorCliente(idSucursal);
+=======
+    @GetMapping("/sucursal/{idSucursal}")
+    public ResponseEntity<List<Pedido>> listarPorSucursal(@PathVariable Long idSucursal) throws Exception {
+        List<Pedido> pedidos = pedidoService.listarPorSucursal(idSucursal);
+>>>>>>> Dev
         return ResponseEntity.ok(pedidos);
     }
 
     @GetMapping("/historial")
     public ResponseEntity<List<Pedido>> obtenerHistorialPedidos() throws Exception {
+<<<<<<< HEAD
         // Obtener el cliente autenticado
+=======
+>>>>>>> Dev
         String clienteId = SecurityContextHolder.getContext().getAuthentication().getName();
         List<Pedido> pedidos = pedidoService.listarPorCliente(Long.valueOf(clienteId));
         return ResponseEntity.ok(pedidos);
@@ -67,14 +97,20 @@ public class PedidoController extends BaseController<Pedido, Long>{
 
         MercadoPagoConfig.setAccessToken("TU_ACCESS_TOKEN");
 
+<<<<<<< HEAD
         // Crear ítem correctamente
+=======
+>>>>>>> Dev
         PreferenceItemRequest item = PreferenceItemRequest.builder()
                 .title("Pedido #" + pedido.getId())
                 .quantity(1)
                 .unitPrice(BigDecimal.valueOf(pedido.getTotal()))
                 .build();
 
+<<<<<<< HEAD
         // Crear preferencia
+=======
+>>>>>>> Dev
         PreferenceRequest preferenceRequest = PreferenceRequest.builder()
                 .items(List.of(item))
                 .build();
@@ -99,6 +135,20 @@ public class PedidoController extends BaseController<Pedido, Long>{
         return ResponseEntity.ok("Pedido confirmado correctamente");
     }
 
+<<<<<<< HEAD
 
 
 }
+=======
+    @GetMapping("/{id}/detalles")
+    public ResponseEntity<List<DetallePedidoResponseDTO>> obtenerDetalles(@PathVariable Long id) throws Exception {
+        Pedido pedido = pedidoService.buscarPorId(id)
+                .orElseThrow(() -> new Exception("Pedido no encontrado"));
+
+        List<DetallePedidoResponseDTO> dtoList = PedidoMapper.toDetalleDTOList(pedido);
+        return ResponseEntity.ok(dtoList);
+    }
+
+
+}
+>>>>>>> Dev

@@ -5,7 +5,11 @@ import com.example.MiPriApi.repositories.ProductoRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.ArrayList;
+<<<<<<< HEAD
 import com.example.MiPriApi.dto.ProductoDTO;
+=======
+import com.example.MiPriApi.entities.DTO.ProductoDTO;
+>>>>>>> Dev
 
 @Service
 public class ProductoService extends BaseService<Producto, Long> {

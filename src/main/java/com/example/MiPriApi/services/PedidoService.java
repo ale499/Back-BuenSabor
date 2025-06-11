@@ -1,8 +1,18 @@
 package com.example.MiPriApi.services;
 
+<<<<<<< HEAD
 import com.example.MiPriApi.dto.*;
 import com.example.MiPriApi.entities.*;
 import com.example.MiPriApi.entities.enums.*;
+=======
+import com.example.MiPriApi.entities.DTO.DetallePedidoRequestDTO;
+import com.example.MiPriApi.entities.DTO.PedidoRequestDTO;
+import com.example.MiPriApi.entities.DTO.ConfirmarPedidoRequestDTO;
+import com.example.MiPriApi.entities.*;
+import com.example.MiPriApi.entities.enums.Estado;
+import com.example.MiPriApi.entities.enums.FormaPago;
+import com.example.MiPriApi.entities.enums.TipoEnvio;
+>>>>>>> Dev
 import com.example.MiPriApi.repositories.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +20,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+<<<<<<< HEAD
+=======
+import java.util.ArrayList;
+>>>>>>> Dev
 import java.util.List;
 
 @Service
@@ -75,6 +89,7 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
     @Transactional
     public void crearPedidoDesdeCarrito(PedidoRequestDTO pedidoRequest) throws Exception {
+<<<<<<< HEAD
         if (pedidoRequest.getClienteId() == null) {
             throw new Exception("El ID del cliente no puede ser nulo");
         }
@@ -87,10 +102,17 @@ public class PedidoService extends BaseService<Pedido, Long> {
         if (pedidoRequest.getSucursalId() == null){
             throw new Exception("El ID de la sucursal no puede ser nulo");
         }
+=======
+        if (pedidoRequest.getClienteId() == null) throw new Exception("El ID del cliente no puede ser nulo");
+        if (pedidoRequest.getEmpleadoId() == null) throw new Exception("El ID del empleado no puede ser nulo");
+        if (pedidoRequest.getDomicilioId() == null) throw new Exception("El ID del domicilio no puede ser nulo");
+        if (pedidoRequest.getSucursalId() == null) throw new Exception("El ID de la sucursal no puede ser nulo");
+>>>>>>> Dev
 
         Cliente cliente = clienteRepository.findById(pedidoRequest.getClienteId())
                 .orElseThrow(() -> new Exception("Cliente no encontrado"));
         Empleado empleado = empleadoRepository.findById(pedidoRequest.getEmpleadoId())
+<<<<<<< HEAD
                 .orElseThrow(()-> new Exception("Empleado no encontrado"));
         Domicilio domicilio = domicilioRepository.findById(pedidoRequest.getDomicilioId())
                 .orElseThrow(()-> new Exception("Domicilio no encontrado"));
@@ -109,6 +131,78 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
         for (DetallePedidoRequestDTO item : pedidoRequest.getItems()) {
             Articulo articulo;
+=======
+                .orElseThrow(() -> new Exception("Empleado no encontrado"));
+        Domicilio domicilio = domicilioRepository.findById(pedidoRequest.getDomicilioId())
+                .orElseThrow(() -> new Exception("Domicilio no encontrado"));
+        Sucursal sucursal = sucursalRepository.findById(pedidoRequest.getSucursalId())
+                .orElseThrow(() -> new Exception("Sucursal no encontrada"));
+
+        Pedido pedido = new Pedido();
+        pedido.setCliente(cliente);
+        pedido.setEmpleado(empleado);
+        pedido.setDomicilio(domicilio);
+        pedido.setSucursal(sucursal);
+
+        // Número de pedido
+        if (pedidoRequest.getNumeroPedido() != null) {
+            pedido.setNumeroPedido(pedidoRequest.getNumeroPedido());
+        } else {
+            pedido.setNumeroPedido(generarNumeroPedido());
+        }
+
+        // Fecha del pedido
+        if (pedidoRequest.getFechaPedido() != null) {
+            pedido.setFechaPedido(pedidoRequest.getFechaPedido());
+        } else {
+            pedido.setFechaPedido(LocalDate.now());
+        }
+
+        // Estado
+        if (pedidoRequest.getEstado() != null) {
+            pedido.setEstado(Estado.valueOf(pedidoRequest.getEstado().toUpperCase()));
+        } else {
+            pedido.setEstado(Estado.PREPARACION);
+        }
+
+        // Forma de pago
+        if (pedidoRequest.getFormaPago() != null) {
+            pedido.setFormaPago(FormaPago.valueOf(pedidoRequest.getFormaPago().toUpperCase()));
+        }
+
+        // Tipo de envío
+        if (pedidoRequest.getTipoEnvio() != null) {
+            pedido.setTipoEnvio(TipoEnvio.valueOf(pedidoRequest.getTipoEnvio().toUpperCase()));
+        }
+
+        pedido.setTotal(pedidoRequest.getTotal());
+
+        // Total costo
+        if (pedidoRequest.getTotalCosto() != null) {
+            pedido.setTotalCosto(pedidoRequest.getTotalCosto());
+        } else {
+            pedido.setTotalCosto(calcularTotalCosto(pedidoRequest.getItems()));
+        }
+
+        pedido = pedidoRepository.save(pedido);
+
+
+        pedidoRepository.save(pedido);
+    }
+
+    @Transactional
+    public Pedido crearPedido(PedidoRequestDTO pedidoRequest) throws Exception {
+        Pedido pedido = new Pedido();
+        // podés setearle datos si necesitás (fecha, estado, cliente, etc.)
+
+        // 💾 Guardar el pedido primero para obtener el ID
+        pedido = pedidoRepository.save(pedido);
+
+        List<DetallePedido> detalles = new ArrayList<>();
+        for (DetallePedidoRequestDTO item : pedidoRequest.getItems()) {
+            Articulo articulo;
+
+>>>>>>> Dev
             if ("INSUMO".equalsIgnoreCase(item.getTipoArticulo())) {
                 articulo = articuloInsumoRepository.findById(item.getArticuloId())
                         .orElseThrow(() -> new Exception("Insumo no encontrado"));
@@ -120,13 +214,44 @@ public class PedidoService extends BaseService<Pedido, Long> {
             }
 
             DetallePedido detalle = new DetallePedido();
+<<<<<<< HEAD
             detalle.setPedido(pedido);
+=======
+            detalle.setPedido(pedido); // ahora sí, pedido ya tiene ID
+>>>>>>> Dev
             detalle.setArticulo(articulo);
             detalle.setCantidad(item.getCantidad());
             detalle.setSubTotal(item.getSubTotal());
 
+<<<<<<< HEAD
             detallePedidoRepository.save(detalle);
         }
+=======
+            detalles.add(detalle);
+        }
+
+        // Relación bidireccional
+        pedido.setDetalles(detalles);
+
+        // 💾 Ahora sí, guardar los detalles (gracias al cascade ALL, incluso podrías omitir esto)
+        detallePedidoRepository.saveAll(detalles);
+
+        return pedido;
+    }
+
+
+    private Integer generarNumeroPedido() {
+        Integer maxNumero = pedidoRepository.findMaxNumeroPedido();
+        return (maxNumero == null) ? 1 : maxNumero + 1;
+    }
+
+    private Double calcularTotalCosto(List<DetallePedidoRequestDTO> items) {
+        double suma = 0;
+        for (DetallePedidoRequestDTO item : items) {
+            suma += item.getSubTotal();
+        }
+        return suma;
+>>>>>>> Dev
     }
 
     @Transactional
@@ -134,6 +259,7 @@ public class PedidoService extends BaseService<Pedido, Long> {
         Pedido pedido = pedidoRepository.findById(idPedido)
                 .orElseThrow(() -> new Exception("Pedido no encontrado"));
 
+<<<<<<< HEAD
         // Aquí puedes agregar lógica para tipo de envío y forma de pago usando el DTO si es necesario
         // pedido.setTipoEnvio(request.getTipoEnvio());
         // pedido.setFormaPago(request.getFormaPago());
@@ -144,6 +270,12 @@ public class PedidoService extends BaseService<Pedido, Long> {
         stockService.descontarStockIngredientes(pedido);
 
         // Calcular y setear tiempo estimado usando el servicio
+=======
+        pedido.setEstado(Estado.PENDIENTE);
+
+        stockService.descontarStockIngredientes(pedido);
+
+>>>>>>> Dev
         int minutos = tiempoEstimadoService.calcularTiempoEstimado(pedido);
         LocalTime horaEstimada = LocalTime.now().plusMinutes(minutos);
         pedido.setHoraEstimadaFinalizacion(horaEstimada);

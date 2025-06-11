@@ -40,7 +40,11 @@ public class Cliente extends Persona{
 
     @OneToOne
     @JoinColumn(name = "imagenCliente")
+<<<<<<< HEAD
     private Imagen imagen;
+=======
+    private Image imagen;
+>>>>>>> Dev
 
 
 }

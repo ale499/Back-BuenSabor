@@ -8,9 +8,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+<<<<<<< HEAD
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/articulosManufacturados")
+=======
+
+@RestController
+@RequestMapping("/articulosManufacturados")
+@CrossOrigin(origins = "http://localhost:5173")
+>>>>>>> Dev
 public class ArticuloManufacturadoController extends BaseController<ArticuloManufacturado, Long> {
     public ArticuloManufacturadoController(ArticuloManufacturadoService service) {
         super(service);
@@ -37,7 +44,10 @@ public class ArticuloManufacturadoController extends BaseController<ArticuloManu
         articuloExistente.setCategoria(articuloManufacturado.getCategoria());
         articuloExistente.setUnidadMedida(articuloManufacturado.getUnidadMedida());
         articuloExistente.setTiempoPreparacion(articuloManufacturado.getTiempoPreparacion());
+<<<<<<< HEAD
         // ...agrega aquí cualquier otro campo que quieras actualizar
+=======
+>>>>>>> Dev
         return ResponseEntity.ok(service.actualizar(articuloExistente));
     }
 }

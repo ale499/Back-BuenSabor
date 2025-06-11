@@ -6,6 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+<<<<<<< HEAD
+=======
+import lombok.experimental.SuperBuilder;
+>>>>>>> Dev
 
 
 @Entity
@@ -13,11 +17,18 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+<<<<<<< HEAD
 @Builder
 public class ArticuloInsumo extends Articulo {
 
     private Double precioCompra;
     private Double precioVenta;
+=======
+@SuperBuilder
+public class ArticuloInsumo extends Articulo {
+
+    private Double precioCompra;
+>>>>>>> Dev
     private Integer stockActual;
     private Integer stockMaximo;
     private Integer stockMinimo;
