@@ -1,13 +1,8 @@
 package com.example.MiPriApi.controllers;
 
-<<<<<<< HEAD
-import com.example.MiPriApi.entities.ArticuloManufacturadoDetalle;
-import com.example.MiPriApi.services.ArticuloManufacturadoDetalleService;
-import com.example.MiPriApi.services.ArticuloManufacturadoService;
-import com.example.MiPriApi.services.BaseService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-=======
+
+import java.util.Map;
+import java.util.stream.Collectors;
 import com.example.MiPriApi.entities.ArticuloManufacturado;
 import com.example.MiPriApi.entities.ArticuloManufacturadoDetalle;
 import com.example.MiPriApi.entities.DTO.ArticuloManufacturadoDetalleDTO;
@@ -17,28 +12,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
->>>>>>> Dev
+
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
-<<<<<<< HEAD
 
-@RestController
-@RequestMapping("/articuloManufacturadoDetalle")
-public class ArticuloManufacturadoDetalleController extends BaseController<ArticuloManufacturadoDetalle, Long>{
-    public ArticuloManufacturadoDetalleController(ArticuloManufacturadoDetalleService service) {
-        super(service);
-    }
-    @Autowired
-    private ArticuloManufacturadoDetalleService articuloManufacturadoDetalleService;
 
-    @RequestMapping("/articuloInsumo/{id}")
-    public ResponseEntity<List<ArticuloManufacturadoDetalle>> listarPorArticuloInsumo(@PathVariable Long idArticuloInsumo) throws Exception{
-=======
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/articuloManufacturadoDetalle")
@@ -56,19 +39,11 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
 
     @RequestMapping("/articuloInsumo/{id}")
     public ResponseEntity<List<ArticuloManufacturadoDetalle>> listarPorArticuloInsumo(@PathVariable Long idArticuloInsumo) throws Exception {
->>>>>>> Dev
         List<ArticuloManufacturadoDetalle> articuloManufacturadoDetalles = articuloManufacturadoDetalleService.listarPorArticuloInsumo(idArticuloInsumo);
         return ResponseEntity.ok(articuloManufacturadoDetalles);
 
     }
 
-<<<<<<< HEAD
-    @RequestMapping("/articuloManufacturado/{id}")
-    public ResponseEntity<List<ArticuloManufacturadoDetalle>> listarPorArticuloManufacturado(@PathVariable Long idArticuloManufacturado) throws Exception{
-        List<ArticuloManufacturadoDetalle> articuloManufacturadoDetalles = articuloManufacturadoDetalleService.listarPorArticuloManufacturado(idArticuloManufacturado);
-        return ResponseEntity.ok(articuloManufacturadoDetalles);
-
-=======
 
     @GetMapping("/detalle/{id}")
     public ResponseEntity<ArticuloManufacturadoDetalleDTO> obtenerDetalle(@PathVariable Long id) throws Exception {
@@ -123,6 +98,7 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(dtos);
->>>>>>> Dev
+
     }
+
 }

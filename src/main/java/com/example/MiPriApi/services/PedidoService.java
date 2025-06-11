@@ -6,6 +6,7 @@ import com.example.MiPriApi.entities.*;
 import com.example.MiPriApi.entities.enums.*;
 =======
 import com.example.MiPriApi.entities.DTO.DetallePedidoRequestDTO;
+import com.example.MiPriApi.entities.DTO.ItemDTO;
 import com.example.MiPriApi.entities.DTO.PedidoRequestDTO;
 import com.example.MiPriApi.entities.DTO.ConfirmarPedidoRequestDTO;
 import com.example.MiPriApi.entities.*;
@@ -14,10 +15,14 @@ import com.example.MiPriApi.entities.enums.FormaPago;
 import com.example.MiPriApi.entities.enums.TipoEnvio;
 >>>>>>> Dev
 import com.example.MiPriApi.repositories.*;
+import com.mercadopago.exceptions.MPApiException;
+import com.mercadopago.exceptions.MPException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 <<<<<<< HEAD
@@ -25,6 +30,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 >>>>>>> Dev
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PedidoService extends BaseService<Pedido, Long> {
@@ -49,6 +55,10 @@ public class PedidoService extends BaseService<Pedido, Long> {
     private DomicilioRepository domicilioRepository;
     @Autowired
     private SucursalRepository sucursalRepository;
+
+
+    @Autowired
+    private MercadoPagoService mercadoPagoService;
 
     public PedidoService(PedidoRepository pedidoRepository) {
         super(pedidoRepository);
@@ -281,5 +291,63 @@ public class PedidoService extends BaseService<Pedido, Long> {
         pedido.setHoraEstimadaFinalizacion(horaEstimada);
 
         pedidoRepository.save(pedido);
+    }
+
+
+    @Transactional
+    public Map<String, Object> guardarPedidoConPago(Pedido pedido) throws Exception {
+        // Establecer fecha del pedido
+        pedido.setFechaPedido(LocalDate.now());
+
+        // Calcular total del pedido y asociar detalles
+        if (pedido.getDetalles() != null) {
+            double total = 0.0;
+            for (DetallePedido detalle : pedido.getDetalles()) {
+                detalle.setPedido(pedido);
+
+                Articulo articulo;
+                if (detalle.getArticulo() instanceof ArticuloInsumo) {
+                    articulo = articuloInsumoRepository.findById(detalle.getArticulo().getId())
+                            .orElseThrow(() -> new Exception("Insumo no encontrado"));
+                } else if (detalle.getArticulo() instanceof ArticuloManufacturado) {
+                    articulo = articuloManufacturadoRepository.findById(detalle.getArticulo().getId())
+                            .orElseThrow(() -> new Exception("Manufacturado no encontrado"));
+
+                    // Procesar detalles del artículo manufacturado
+                    ArticuloManufacturado manufacturado = (ArticuloManufacturado) articulo;
+                    for (ArticuloManufacturadoDetalle manufacturadoDetalle : manufacturado.getDetalles()) {
+                        System.out.println("Insumo: " + manufacturadoDetalle.getArticuloInsumo().getDenominacion());
+                    }
+                } else {
+                    throw new Exception("Tipo de artículo no válido");
+                }
+
+                detalle.setArticulo(articulo);
+                total += articulo.getPrecioVenta() * detalle.getCantidad();
+            }
+            pedido.setTotal(total);
+        } else {
+            pedido.setTotal(0.0);
+        }
+
+        // Guardar pedido en la base de datos
+        Pedido guardado = pedidoRepository.save(pedido);
+
+        // Crear preferencia de pago en Mercado Pago
+        List<ItemDTO> items = new ArrayList<>();
+        for (DetallePedido detalle : guardado.getDetalles()) {
+            items.add(new ItemDTO(
+                    detalle.getArticulo().getDenominacion(),
+                    detalle.getCantidad(),
+                    BigDecimal.valueOf(detalle.getArticulo().getPrecioVenta())
+            ));
+        }
+
+        try {
+            String initPoint = mercadoPagoService.procesarPago(items);
+            return Map.of("id", guardado.getId(), "initPoint", initPoint);
+        } catch (MPException | MPApiException e) {
+            throw new RuntimeException("Error al procesar el pago con Mercado Pago: " + e.getMessage());
+        }
     }
 }

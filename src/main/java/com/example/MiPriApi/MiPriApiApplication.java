@@ -462,7 +462,7 @@ public class MiPriApiApplication {
 								.descripcion("Pizza de mozzarella")
 								.tiempoEstimadoMinutos(30)
 								.preparacion("Hornear la masa y agregar ingredientes")
-								.categoria(categoriaRepository.findByDenominacion("Comida").orElse(null)) // Asignar categoría
+								.categoria(categoriaRepository.findByDenominacion("Pizza").orElse(null))
 								.precioVenta(500.0) // Asignar precio de venta
 								.build();
 						return manufacturadoRepository.save(nuevoManufacturado);

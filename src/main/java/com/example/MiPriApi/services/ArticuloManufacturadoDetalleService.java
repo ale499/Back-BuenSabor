@@ -1,11 +1,14 @@
 package com.example.MiPriApi.services;
 
+import com.example.MiPriApi.entities.ArticuloManufacturado;
 import com.example.MiPriApi.entities.ArticuloManufacturadoDetalle;
 import com.example.MiPriApi.repositories.ArticuloManufacturadoDetalleRepository;
+import com.example.MiPriApi.repositories.ArticuloManufacturadoRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -13,8 +16,13 @@ public class ArticuloManufacturadoDetalleService extends BaseService<ArticuloMan
     public ArticuloManufacturadoDetalleService(ArticuloManufacturadoDetalleRepository articuloManufacturadoDetalleRepository) {
         super(articuloManufacturadoDetalleRepository);
     }
+
     @Autowired
     private ArticuloManufacturadoDetalleRepository articuloManufacturadoDetalleRepository;
+
+    @Autowired
+    private ArticuloManufacturadoRepository articuloManufacturadoRepository;
+
 
     @Transactional
     public List<ArticuloManufacturadoDetalle> listarPorArticuloInsumo(Long idArticuloInsumo) throws Exception{
@@ -25,6 +33,7 @@ public class ArticuloManufacturadoDetalleService extends BaseService<ArticuloMan
         }
     }
 
+
     @Transactional
     public List<ArticuloManufacturadoDetalle> listarPorArticuloManufacturado(Long idArticuloManufacturado) throws Exception{
         try{
@@ -33,4 +42,7 @@ public class ArticuloManufacturadoDetalleService extends BaseService<ArticuloMan
             throw new Exception(ex.getMessage());
         }
     }
+
+
+
 }

@@ -25,4 +25,14 @@ public class ArticuloManufacturadoService extends BaseService<ArticuloManufactur
             throw new Exception(ex.getMessage());
         }
     }
+
+    @Transactional
+    public List<ArticuloManufacturado> buscarPorDenominacion(String denominacion) throws Exception {
+        try {
+            return articuloManufacturadoRepository.findByDenominacionContainingIgnoreCase(denominacion);
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
 }
