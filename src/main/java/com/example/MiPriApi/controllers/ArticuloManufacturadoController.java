@@ -1,13 +1,15 @@
 package com.example.MiPriApi.controllers;
 
 import com.example.MiPriApi.entities.ArticuloManufacturado;
+import com.example.MiPriApi.entities.DTO.ArticuloManufacturadoDetalleDTO;
+import com.example.MiPriApi.services.ArticuloManufacturadoDetalleMapper;
 import com.example.MiPriApi.services.ArticuloManufacturadoService;
-import com.example.MiPriApi.services.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/articulosManufacturados")
@@ -16,6 +18,12 @@ public class ArticuloManufacturadoController extends BaseController<ArticuloManu
     public ArticuloManufacturadoController(ArticuloManufacturadoService service) {
         super(service);
     }
+
+    @Autowired
+    private ArticuloManufacturadoService service;
+
+    @Autowired
+    private ArticuloManufacturadoDetalleMapper mapper;
 
     @PostMapping("/alta")
     public ResponseEntity<ArticuloManufacturado> crearArticuloManufacturado(@RequestBody ArticuloManufacturado articuloManufacturado) throws Exception {
@@ -39,5 +47,11 @@ public class ArticuloManufacturadoController extends BaseController<ArticuloManu
         articuloExistente.setUnidadMedida(articuloManufacturado.getUnidadMedida());
         articuloExistente.setTiempoPreparacion(articuloManufacturado.getTiempoPreparacion());
         return ResponseEntity.ok(service.actualizar(articuloExistente));
+    }
+
+    @GetMapping("/buscarPorDenominacion")
+    public ResponseEntity<List<ArticuloManufacturado>> buscarPorDenominacion(@RequestParam String denominacion) throws Exception {
+        List<ArticuloManufacturado> articulos = service.buscarPorDenominacion(denominacion);
+        return ResponseEntity.ok(articulos);
     }
 }
