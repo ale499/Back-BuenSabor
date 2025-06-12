@@ -58,4 +58,12 @@ public class ImageController {
             return null; // Manejo básico de errores, se puede mejorar para devolver una respuesta más específica
         }
     }
+
+    @PostMapping("/uploadToEntity")
+    public ResponseEntity<String> uploadImageToEntity(
+            @RequestParam("entityId") Long entityId,
+            @RequestParam("entityType") String entityType,
+            @RequestParam("file") MultipartFile file) {
+        return imageService.uploadImageToEntity(entityId, entityType, file);
+    }
 }

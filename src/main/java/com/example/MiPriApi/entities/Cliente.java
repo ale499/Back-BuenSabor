@@ -40,7 +40,7 @@ public class Cliente extends Persona{
 
     @OneToOne
     @JoinColumn(name = "imagenCliente")
-    private Imagen imagen;
+    private Image imagen;
 
 
 }

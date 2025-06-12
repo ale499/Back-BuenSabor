@@ -1,9 +1,9 @@
 package com.example.MiPriApi.services.Cloudinary;
 
+import com.example.MiPriApi.entities.*;
+import com.example.MiPriApi.repositories.*;
 import com.example.MiPriApi.services.Cloudinary.CloudinaryService;
 import com.example.MiPriApi.services.Cloudinary.ImageService;
-import com.example.MiPriApi.entities.Image;
-import com.example.MiPriApi.repositories.ImageRepository;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,19 @@ public class ImageServiceImpl implements ImageService {
     @Autowired
     private CloudinaryService cloudinaryService; // Servicio para interactuar con Cloudinary
     @Autowired
-    private ImageRepository imageRepository; // Repositorio para interactuar con la base de datos de imágenes
+    private ImageRepository imageRepository;
+
+    @Autowired
+    private AdministradorRepository administradorRepository;
+
+    @Autowired
+    private ClienteRepository clienteRepository;
+
+    @Autowired
+    private EmpleadoRepository empleadoRepository;
+
+    @Autowired
+    private PromocionRepository promocionRepository;
 
     // Metodo para obtener todas las imágenes almacenadas
     @Override
@@ -106,6 +118,54 @@ public class ImageServiceImpl implements ImageService {
             e.printStackTrace();
             // Devolver un error (400) si ocurre alguna excepción durante la eliminación
             return new ResponseEntity<>("{\"status\":\"ERROR\", \"message\":\"" + e.getMessage() + "\"}", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> uploadImageToEntity(Long entityId, String entityType, MultipartFile file) {
+        try {
+            // Subir la imagen a Cloudinary
+            Image image = new Image();
+            image.setName(file.getOriginalFilename());
+            image.setUrl(cloudinaryService.uploadFile(file));
+
+            // Guardar la imagen en la base de datos
+            imageRepository.save(image);
+
+            // Asociar la imagen a la entidad correspondiente
+            switch (entityType.toLowerCase()) {
+                case "administrador":
+                    Administrador admin = administradorRepository.findById(entityId)
+                            .orElseThrow(() -> new Exception("Administrador no encontrado"));
+                    admin.setImagen(image);
+                    administradorRepository.save(admin);
+                    break;
+                case "cliente":
+                    Cliente cliente = clienteRepository.findById(entityId)
+                            .orElseThrow(() -> new Exception("Cliente no encontrado"));
+                    cliente.setImagen(image);
+                    clienteRepository.save(cliente);
+                    break;
+                case "empleado":
+                    Empleado empleado = empleadoRepository.findById(entityId)
+                            .orElseThrow(() -> new Exception("Empleado no encontrado"));
+                    empleado.setImagen(image);
+                    empleadoRepository.save(empleado);
+                    break;
+                case "promocion":
+                    Promocion promocion = promocionRepository.findById(entityId)
+                            .orElseThrow(() -> new Exception("Promoción no encontrada"));
+                    promocion.getImagenesPromocion().add(image);
+                    promocionRepository.save(promocion);
+                    break;
+                default:
+                    throw new Exception("Tipo de entidad no soportado");
+            }
+
+            return ResponseEntity.ok("Imagen subida y asociada correctamente");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al asociar la imagen");
         }
     }
 }

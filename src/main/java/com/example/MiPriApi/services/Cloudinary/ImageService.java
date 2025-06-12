@@ -14,6 +14,8 @@ public interface ImageService {
     ResponseEntity<List<Map<String, Object>>> getAllImages();
     ResponseEntity<String> uploadImages(MultipartFile[] files);
     ResponseEntity<String> deleteImage(String publicId, UUID uuid);
+    ResponseEntity<String> uploadImageToEntity(Long entityId, String entityType, MultipartFile file);
+
 
 
 }

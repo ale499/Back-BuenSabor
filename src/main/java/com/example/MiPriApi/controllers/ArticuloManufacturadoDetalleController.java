@@ -3,7 +3,7 @@ package com.example.MiPriApi.controllers;
 import com.example.MiPriApi.entities.ArticuloManufacturado;
 import com.example.MiPriApi.entities.ArticuloManufacturadoDetalle;
 import com.example.MiPriApi.entities.DTO.ArticuloManufacturadoDetalleDTO;
-import com.example.MiPriApi.services.ArticuloManufacturadoDetalleMapper;
+import com.example.MiPriApi.services.Mappers.ArticuloManufacturadoDetalleMapper;
 import com.example.MiPriApi.services.ArticuloManufacturadoDetalleService;
 import com.example.MiPriApi.services.ArticuloManufacturadoService;
 import com.example.MiPriApi.services.BaseService;
