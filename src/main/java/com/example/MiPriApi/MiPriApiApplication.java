@@ -1,8 +1,15 @@
 package com.example.MiPriApi;
 
+import com.auth0.json.mgmt.Role;
 import com.example.MiPriApi.entities.*;
+import com.example.MiPriApi.entities.DTO.RoleDTO;
+import com.example.MiPriApi.entities.DTO.UserDTO;
 import com.example.MiPriApi.entities.enums.Rol;
 import com.example.MiPriApi.repositories.*;
+import com.example.MiPriApi.services.RoleAuth0Service;
+import com.example.MiPriApi.services.RoleBBDDService;
+import com.example.MiPriApi.services.UserAuth0Service;
+import com.example.MiPriApi.services.UserBBDDService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -10,6 +17,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.time.LocalTime;
+import java.util.List;
+import java.util.Set;
 
 @SpringBootApplication
 public class MiPriApiApplication {
@@ -52,6 +61,23 @@ public class MiPriApiApplication {
 
 	@Autowired
 	private PaisRepository paisRepository;
+
+	@Autowired
+	private RoleAuth0Service roleService;
+
+	@Autowired
+	private RoleBBDDService roleServicebbdd;
+
+	@Autowired
+	private RoleRepository roleRepository;
+
+	@Autowired
+	private UserAuth0Service userService;
+
+	@Autowired
+	private UserBBDDService userBBDDService;
+
+
 
 
 
@@ -402,7 +428,99 @@ public class MiPriApiApplication {
 
 			System.out.println("Artículo manufacturado 'Pizza' creado con éxito.");
 
+
+
+
+
+
+
+
+
+
 		};
 
+	}
+
+	@Bean
+	public CommandLineRunner run(RoleAuth0Service roleService,
+								 RoleBBDDService roleServicebbdd,
+								 RoleRepository roleRepository,
+								 UserAuth0Service userService,
+								 UserBBDDService userBBDDService) {
+		return args -> {
+
+			RoleDTO rolAdminDTO = new RoleDTO();
+			rolAdminDTO.setName("Administrador");
+			rolAdminDTO.setDescription("Admin del local");
+
+			RoleDTO rolClienteDTO = new RoleDTO();
+			rolClienteDTO.setName("Cliente");
+			rolClienteDTO.setDescription("Cliente del local");
+
+			// ==== 1. Crear Roles ====
+			crearRolInicial(rolAdminDTO, roleService, roleServicebbdd );
+			crearRolInicial(rolClienteDTO, roleService, roleServicebbdd);
+
+
+			// ==== 2. Crear Usuario Administrador ====
+			Roles rolAdmin = roleServicebbdd.findByName("Administrador");
+
+			UserDTO adminDTO = new UserDTO();
+			adminDTO.setEmail("admin@buensabor.com");
+			adminDTO.setName("Administrador");
+			adminDTO.setNickName("admin total");
+			adminDTO.setPassword("Admin@admin");
+			adminDTO.setConnection("Username-Password-Authentication");
+			adminDTO.setRoles(List.of(rolAdmin.getAuth0RoleId()));
+
+
+			com.auth0.json.mgmt.users.User newUser = userService.createUser(adminDTO);
+			userService.assignRoles(newUser.getId(), adminDTO.getRoles());
+
+			User adminBBDD = User.builder()
+					.auth0Id(newUser.getId())
+					.name(newUser.getName())
+					.roles(Set.of(rolAdmin))
+					.nickName(adminDTO.getNickName())
+					.userEmail(newUser.getEmail())
+					.build();
+
+			userBBDDService.save(adminBBDD);
+
+			System.out.println("Roles y usuario administrador creados correctamente.");
+
+		};
+
+
+	}
+
+	private void crearRolInicial(RoleDTO roleDTO,
+								 RoleAuth0Service roleService,
+								 RoleBBDDService roleServicebbdd) throws Exception {
+		Role rolAuth = null;
+		try {
+			// Crear en Auth0
+			rolAuth = roleService.createRole(roleDTO);
+
+			// Guardar en BBDD
+			Roles roles = Roles.builder()
+					.auth0RoleId(rolAuth.getId())
+					.description(roleDTO.getDescription())
+					.name(roleDTO.getName())
+					.build();
+
+			roleServicebbdd.save(roles);
+
+		} catch (Exception e) {
+			// Revertir Auth0 si falla BBDD
+			if (rolAuth != null && rolAuth.getId() != null) {
+				try {
+					roleService.deleteRole(rolAuth.getId());
+				} catch (Exception ex) {
+					System.err.println("Error al eliminar rol en Auth0: " + ex.getMessage());
+				}
+			}
+			throw e;
+		}
 	}
 }

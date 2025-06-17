@@ -44,14 +44,19 @@ public class SecurityConfiguration {
                 .csrf((csrf) -> csrf.disable())
                 .cors(withDefaults()) //por defecto spring va a buscar un bean con el nombre "corsConfigurationSource".
                 .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers("/api/public").permitAll()
-                                .requestMatchers("/articulosManufacturados/**").hasAuthority("Admin")
-                                .requestMatchers("/articuloManufacturadoDetalle/**").hasAnyAuthority("Admin", "Chef")
-                                .requestMatchers("/administradores/**").hasAuthority("Admin")
-                                .requestMatchers("/api/client/**").hasAuthority("Cliente")
-                                .requestMatchers("/api/delivery/**").hasAuthority("Delivery")
-                                .anyRequest().authenticated()
+                                authorizeRequests
+                                        .requestMatchers("/api/public").permitAll()
+                                        .requestMatchers("/api/admin/users/getUserById").authenticated()
+                                        .requestMatchers("/api/admin/users/createUserClient").authenticated()
+                                        .requestMatchers("/api/admin/roles/getRoleByName").authenticated()
+                                        .requestMatchers("/api/client/**").hasAnyAuthority("Cliente","Administrador")
+                                        .requestMatchers("/api/kitchener/**").hasAnyAuthority("Cocinero","Administrador")
+                                        .requestMatchers("/api/admin/**").hasAuthority("Administrador")
+
+                                        .anyRequest().authenticated()
+
+
+                        //.anyRequest().permitAll()
                 )
                 .oauth2ResourceServer(oauth2ResourceServer ->
                         oauth2ResourceServer
@@ -63,8 +68,6 @@ public class SecurityConfiguration {
                 );
         return http.build();
     }
-
-
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
@@ -83,8 +86,8 @@ public class SecurityConfiguration {
     @Bean
     JwtDecoder jwtDecoder() {
         NimbusJwtDecoder jwtDecoder = JwtDecoders.fromOidcIssuerLocation(issuer);
-
         OAuth2TokenValidator<Jwt> audienceValidator = new AudienceValidator(audience);
+
         OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(issuer);
         OAuth2TokenValidator<Jwt> withAudience = new DelegatingOAuth2TokenValidator<>(withIssuer, audienceValidator);
 
@@ -96,7 +99,7 @@ public class SecurityConfiguration {
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter converter = new JwtGrantedAuthoritiesConverter();
-        converter.setAuthoritiesClaimName("https://buensabor");
+        converter.setAuthoritiesClaimName(audience+"/roles");
         converter.setAuthorityPrefix("");
 
         JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
