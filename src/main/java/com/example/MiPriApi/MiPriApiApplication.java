@@ -440,7 +440,7 @@ public class MiPriApiApplication {
 		};
 
 	}
-
+  /*
 	@Bean
 	public CommandLineRunner run(RoleAuth0Service roleService,
 								 RoleBBDDService roleServicebbdd,
@@ -523,4 +523,7 @@ public class MiPriApiApplication {
 			throw e;
 		}
 	}
+
+
+   */
 }
