@@ -38,6 +38,12 @@ public class ImageServiceImpl implements ImageService {
     @Autowired
     private PromocionRepository promocionRepository;
 
+    @Autowired
+    private ArticuloManufacturadoRepository articuloManufacturadoRepository;
+
+    @Autowired
+    private ArticuloInsumoRepository articuloInsumoRepository;
+
     // Metodo para obtener todas las imágenes almacenadas
     @Override
     public ResponseEntity<List<Map<String, Object>>> getAllImages() {
@@ -157,6 +163,18 @@ public class ImageServiceImpl implements ImageService {
                             .orElseThrow(() -> new Exception("Promoción no encontrada"));
                     promocion.getImagenesPromocion().add(image);
                     promocionRepository.save(promocion);
+                    break;
+                case "insumo":
+                    ArticuloInsumo insumo = articuloInsumoRepository.findById(entityId)
+                            .orElseThrow(() -> new Exception("Articulo Insumo no encontrado"));
+                    insumo.getImagenesArticulos().add(image);
+                    articuloInsumoRepository.save(insumo);
+                    break;
+                case "manufacturado":
+                    ArticuloManufacturado manufacturado = articuloManufacturadoRepository.findById(entityId)
+                            .orElseThrow(() -> new Exception("Articulo Manufacturado no encontrado"));
+                    manufacturado.getImagenesArticulos().add(image);
+                    articuloManufacturadoRepository.save(manufacturado);
                     break;
                 default:
                     throw new Exception("Tipo de entidad no soportado");
