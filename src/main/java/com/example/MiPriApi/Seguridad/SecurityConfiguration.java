@@ -47,6 +47,7 @@ public class SecurityConfiguration {
                                 authorizeRequests
                                         .requestMatchers("/api/public").permitAll()
                                         .requestMatchers("/api/admin/users/getUserById").authenticated()
+                                        .requestMatchers("/articuloManufacturadoDetalle/**").permitAll()
                                         .requestMatchers("/api/admin/users/createUserClient").authenticated()
                                         .requestMatchers("/api/admin/roles/getRoleByName").authenticated()
                                         .requestMatchers("/api/client/**").hasAnyAuthority("Cliente","Administrador")

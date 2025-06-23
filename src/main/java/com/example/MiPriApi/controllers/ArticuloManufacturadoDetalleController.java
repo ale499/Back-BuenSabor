@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/articuloManufacturadoDetalle")
-@PreAuthorize("hasAnyAuthority('Administrador', 'Cocinero')")
 public class ArticuloManufacturadoDetalleController extends BaseController<ArticuloManufacturadoDetalle, Long> {
     public ArticuloManufacturadoDetalleController(ArticuloManufacturadoDetalleService service) {
         super(service);
