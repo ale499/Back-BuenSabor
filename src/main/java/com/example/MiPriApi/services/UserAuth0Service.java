@@ -54,6 +54,14 @@ public class UserAuth0Service {
 
         return managementAPI.users().create(user).execute();
     }
+
+    // Metodo para actualizar la contraseña de un usuario
+    public void updatePassword(String userId, String newPassword) throws Exception {
+        User userUpdate = new User();
+        userUpdate.setPassword(newPassword);
+        managementAPI.users().update(userId, userUpdate).execute();
+    }
+
     //eliminamos un usuario
     public void deleteUser(String id) throws Exception {
         managementAPI.users().delete(id).execute();

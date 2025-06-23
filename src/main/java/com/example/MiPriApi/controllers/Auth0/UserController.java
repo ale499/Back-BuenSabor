@@ -8,6 +8,7 @@ import com.example.MiPriApi.entities.User;
 import com.example.MiPriApi.repositories.RoleRepository;
 import com.example.MiPriApi.services.UserAuth0Service;
 import com.example.MiPriApi.services.UserBBDDService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -132,6 +133,18 @@ public class UserController {
             return ResponseEntity.internalServerError().body("Error al modificar usuario: " + e.getMessage());
         }
     }
+    // Actualizar contraseña de un Cliente
+    @PutMapping("/updatePassword")
+    public ResponseEntity<?> updatePassword(@RequestParam String userId, @RequestParam String newPassword) {
+        try {
+            userAuth0Service.updatePassword(userId, newPassword);
+            return ResponseEntity.ok("Contraseña actualizada correctamente.");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error al actualizar la contraseña: " + e.getMessage());
+        }
+    }
+
+
 
     @DeleteMapping("/deleteUserById")
     public ResponseEntity<?> deleteUser(@RequestBody UserDTO userDTO) {
