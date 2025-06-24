@@ -3,10 +3,8 @@ package com.example.MiPriApi.controllers;
 import com.example.MiPriApi.entities.ArticuloManufacturado;
 import com.example.MiPriApi.entities.ArticuloManufacturadoDetalle;
 import com.example.MiPriApi.entities.DTO.ArticuloManufacturadoDetalleDTO;
+import com.example.MiPriApi.services.*;
 import com.example.MiPriApi.services.Mappers.ArticuloManufacturadoDetalleMapper;
-import com.example.MiPriApi.services.ArticuloManufacturadoDetalleService;
-import com.example.MiPriApi.services.ArticuloManufacturadoService;
-import com.example.MiPriApi.services.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,6 +27,15 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
     @Autowired
     private ArticuloManufacturadoDetalleMapper mapper;
 
+    @Autowired
+    private ArticuloManufacturadoService articuloManufacturadoService;
+
+    @Autowired
+    private CategoriaService categoriaService;
+
+    @Autowired
+    private ArticuloInsumoService articuloInsumoService;
+
     @RequestMapping("/articuloInsumo/{id}")
     public ResponseEntity<List<ArticuloManufacturadoDetalle>> listarPorArticuloInsumo(@PathVariable Long idArticuloInsumo) throws Exception {
         List<ArticuloManufacturadoDetalle> articuloManufacturadoDetalles = articuloManufacturadoDetalleService.listarPorArticuloInsumo(idArticuloInsumo);
@@ -42,6 +49,58 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
         ArticuloManufacturadoDetalle detalle = service.buscarPorId(id).orElseThrow(() -> new Exception("Detalle no encontrado"));
         ArticuloManufacturadoDetalleDTO dto = mapper.toDTO(detalle);
         return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping("/crearArticuloManufacturado")
+    public ResponseEntity<ArticuloManufacturadoDetalleDTO> crearArticuloManufacturado(@RequestBody ArticuloManufacturadoDetalleDTO articuloDTO) throws Exception {
+        // Crear el ArticuloManufacturado
+        ArticuloManufacturado articuloManufacturado = new ArticuloManufacturado();
+        articuloManufacturado.setDenominacion(articuloDTO.getDenominacion());
+        articuloManufacturado.setCategoria(categoriaService.buscarPorId(articuloDTO.getCategoriaId()).orElseThrow(() -> new Exception("Categoría no encontrada")));
+        articuloManufacturado.setPrecioVenta(articuloDTO.getPrecioVenta());
+        articuloManufacturado.setDescripcion(articuloDTO.getDescripcion());
+        articuloManufacturado.setTiempoEstimadoMinutos(articuloDTO.getTiempoEstimadoMinutos());
+        articuloManufacturado.setPreparacion(articuloDTO.getPreparacion());
+
+        // Guardar el ArticuloManufacturado
+        ArticuloManufacturado articuloGuardado = articuloManufacturadoService.crear(articuloManufacturado);
+
+        // Asignar los insumos (detalles)
+        for (ArticuloManufacturadoDetalleDTO.DetalleDTO detalleDTO : articuloDTO.getDetalles()) {
+            ArticuloManufacturadoDetalle detalle = new ArticuloManufacturadoDetalle();
+            detalle.setArticuloManufacturado(articuloGuardado);
+            detalle.setCantidad(detalleDTO.getCantidad());
+            detalle.setArticuloInsumo(articuloInsumoService.buscarPorId(detalleDTO.getItem().getId()).orElseThrow(() -> new Exception("Insumo no encontrado")));
+
+            // Guardar el detalle
+            articuloManufacturadoDetalleService.crear(detalle);
+        }
+
+        // Mapear la respuesta al DTO esperado, incluyendo los detalles
+        List<ArticuloManufacturadoDetalle> detallesGuardados = articuloManufacturadoDetalleService.listarPorArticuloManufacturado(articuloGuardado.getId());
+        ArticuloManufacturadoDetalleDTO respuestaDTO = mapper.toDTOFromArticuloManufacturado(articuloGuardado);
+
+        // Mapear los detalles al DTO
+        List<ArticuloManufacturadoDetalleDTO.DetalleDTO> detallesDTO = detallesGuardados.stream().map(detalle -> {
+            ArticuloManufacturadoDetalleDTO.DetalleDTO detalleDTO = new ArticuloManufacturadoDetalleDTO.DetalleDTO();
+            detalleDTO.setTipo("INSUMO");
+            detalleDTO.setCantidad(detalle.getCantidad());
+
+            ArticuloManufacturadoDetalleDTO.DetalleDTO.ItemDTO itemDTO = new ArticuloManufacturadoDetalleDTO.DetalleDTO.ItemDTO();
+            itemDTO.setId(detalle.getArticuloInsumo().getId());
+            itemDTO.setDenominacion(detalle.getArticuloInsumo().getDenominacion());
+            itemDTO.setCategoriaId(detalle.getArticuloInsumo().getCategoria().getId());
+            itemDTO.setUnidadMedida(detalle.getArticuloInsumo().getUnidadMedida().getDenominacion());
+            itemDTO.setPrecioCompra(detalle.getArticuloInsumo().getPrecioCompra());
+            itemDTO.setStockActual(detalle.getArticuloInsumo().getStockActual());
+
+            detalleDTO.setItem(itemDTO);
+            return detalleDTO;
+        }).collect(Collectors.toList());
+
+        respuestaDTO.setDetalles(detallesDTO);
+
+        return ResponseEntity.ok(respuestaDTO);
     }
 
     @GetMapping("/todos")
