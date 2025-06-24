@@ -36,7 +36,7 @@ public abstract class Articulo extends Base{
     @JoinColumn(name = "categoriaId")
     protected Categoria categoria;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     @Builder.Default
     private Set<Image> imagenesArticulos = new HashSet<>();
 

@@ -6,6 +6,7 @@ import com.example.MiPriApi.services.Cloudinary.CloudinaryService;
 import com.example.MiPriApi.services.Cloudinary.ImageService;
 
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -111,18 +112,23 @@ public class ImageServiceImpl implements ImageService {
     }
 
     // Metodo para eliminar una imagen por su identificador en la base de datos y en Cloudinary
-    @Override
+    @Transactional
     public ResponseEntity<String> deleteImage(String publicId, UUID idBd) {
         try {
-            // Eliminar la imagen de la base de datos usando su identificador
+            // Buscar los ArticuloInsumo que contienen la imagen
+            List<ArticuloInsumo> articulosInsumo = articuloInsumoRepository.findAll();
+            for (ArticuloInsumo insumo : articulosInsumo) {
+                insumo.getImagenesArticulos().removeIf(image -> image.getId().equals(idBd));
+                articuloInsumoRepository.save(insumo); // Guardar los cambios
+            }
+
+            // Eliminar la imagen de la base de datos
             imageRepository.deleteById(idBd);
 
-            // Llamar al servicio de Cloudinary para eliminar la imagen por su publicId
+            // Eliminar la imagen de Cloudinary
             return cloudinaryService.deleteImage(publicId, idBd);
-
         } catch (Exception e) {
             e.printStackTrace();
-            // Devolver un error (400) si ocurre alguna excepción durante la eliminación
             return new ResponseEntity<>("{\"status\":\"ERROR\", \"message\":\"" + e.getMessage() + "\"}", HttpStatus.BAD_REQUEST);
         }
     }

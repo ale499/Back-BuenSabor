@@ -13,6 +13,6 @@ public interface ArticuloManufacturadoRepository extends BaseRepository<Articulo
 
     Optional<ArticuloManufacturado> findByDenominacion(String denominacion);
 
-    List<ArticuloManufacturado> findByDenominacionContainingIgnoreCase(String denominacion);// Método para buscar por denominación, ignorando mayúsculas y minúsculas
+    List<ArticuloManufacturado> findByDenominacionContainingIgnoreCase(String denominacion);// Metodo para buscar por denominación, ignorando mayúsculas y minúsculas
 
 }
