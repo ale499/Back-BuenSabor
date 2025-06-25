@@ -65,7 +65,6 @@ public class CategoriaService extends BaseService<Categoria, Long>{
     }
 
 
-
     @Transactional
     public List<Categoria> listarPorSucursal(Long idSucursal)throws Exception{
         try{
@@ -81,6 +80,35 @@ public class CategoriaService extends BaseService<Categoria, Long>{
             return categoriaRepository.findAll().stream()
                     .filter(categoria -> categoria.getCategoriaPadre() == null)
                     .collect(Collectors.toList());
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    @Transactional
+    public Categoria actualizarSubcategoria(Long id, Categoria subCategoria) throws Exception {
+        try {
+            Categoria subCategoriaExistente = categoriaRepository.findById(id).orElse(null);
+            if (subCategoriaExistente == null) {
+                return null; // No se encontró la subcategoría
+            }
+            subCategoriaExistente.setDenominacion(subCategoria.getDenominacion());
+            subCategoriaExistente.setEsInsumo(subCategoria.getEsInsumo());
+            return categoriaRepository.save(subCategoriaExistente); // Actualiza y guarda la subcategoría
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    @Transactional
+    public boolean eliminarSubcategoria(Long id) throws Exception {
+        try {
+            Categoria subCategoria = categoriaRepository.findById(id).orElse(null);
+            if (subCategoria == null) {
+                return false; // No se encontró la subcategoría
+            }
+            categoriaRepository.delete(subCategoria); // Elimina la subcategoría
+            return true;
         } catch (Exception ex) {
             throw new Exception(ex.getMessage());
         }
