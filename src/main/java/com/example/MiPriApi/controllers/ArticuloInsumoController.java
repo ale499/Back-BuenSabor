@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/articuloInsumo")
-@PreAuthorize("hasAnyAuthority('Admin', 'Chef')")
 public class ArticuloInsumoController extends BaseController<ArticuloInsumo, Long> {
 
     public ArticuloInsumoController(ArticuloInsumoService service) {
