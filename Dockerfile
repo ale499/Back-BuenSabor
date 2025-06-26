@@ -13,7 +13,7 @@ RUN ./gradlew build --no-daemon || true
 
 # Copiar el resto de los archivos del proyecto
 COPY src ./src
-COPY application.properties ./src/main/resources/
+COPY src/main/resources/application.properties ./src/main/resources/
 
 # Construir el proyecto
 RUN ./gradlew bootJar --no-daemon
