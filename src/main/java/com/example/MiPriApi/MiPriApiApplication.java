@@ -84,6 +84,7 @@ public class MiPriApiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MiPriApiApplication.class, args);
 		System.out.println("Servidor iniciado.");
+		System.out.println("Valor de PASSWORD_DB: " + System.getenv("PASSWORD_DB"));
 	}
 
 	@Bean

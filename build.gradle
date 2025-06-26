@@ -49,3 +49,8 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+// Configurar la clase principal para el bootJar
+springBoot {
+	mainClass = 'com.example.MiPriApi.MiPriApiApplication'
+}
