@@ -18,6 +18,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -55,6 +56,7 @@ public class SecurityConfiguration {
                                         .requestMatchers("/api/client/**").hasAnyAuthority("Cliente","Administrador")
                                         .requestMatchers("/api/kitchener/**").hasAnyAuthority("Cocinero","Administrador")
                                         .requestMatchers("/api/admin/**").hasAuthority("Administrador")
+                                        .requestMatchers("/ws/**").permitAll() // Permitir acceso público a WebSocket
 
                                         .anyRequest().authenticated()
 
@@ -75,7 +77,7 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(corsAllowedOrigins));
+        configuration.setAllowedOriginPatterns(List.of("*")); // Permite cualquier origen
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS", "HEAD"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));

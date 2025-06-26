@@ -1,5 +1,6 @@
 package com.example.MiPriApi.services;
 
+import com.example.MiPriApi.controllers.PedidoWebSocketController;
 import com.example.MiPriApi.entities.DTO.DetallePedidoRequestDTO;
 import com.example.MiPriApi.entities.DTO.ItemDTO;
 import com.example.MiPriApi.entities.DTO.PedidoRequestDTO;
@@ -26,6 +27,7 @@ import java.util.Map;
 @Service
 public class PedidoService extends BaseService<Pedido, Long> {
 
+
     @Autowired
     private PedidoRepository pedidoRepository;
     @Autowired
@@ -50,6 +52,10 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
     @Autowired
     private MercadoPagoService mercadoPagoService;
+
+    @Autowired
+    private PedidoWebSocketController pedidoWebSocketController;
+
 
     public PedidoService(PedidoRepository pedidoRepository) {
         super(pedidoRepository);
@@ -185,6 +191,11 @@ public class PedidoService extends BaseService<Pedido, Long> {
             detalle.setSubTotal(item.getSubTotal());
 
             detalles.add(detalle);
+
+            pedidoWebSocketController.notificarCliente(
+                    pedido.getCliente().getId(),
+                    pedidoRequest
+            );
         }
 
         // Relación bidireccional
