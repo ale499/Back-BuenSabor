@@ -8,6 +8,9 @@ WORKDIR /app
 COPY build.gradle settings.gradle gradlew ./
 COPY gradle ./gradle
 
+# Otorgar permisos de ejecución al archivo gradlew
+RUN chmod +x gradlew
+
 # Instalar las dependencias del proyecto
 RUN ./gradlew build --no-daemon || true
 
