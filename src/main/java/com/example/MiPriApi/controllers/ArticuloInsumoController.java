@@ -42,7 +42,7 @@ public class ArticuloInsumoController extends BaseController<ArticuloInsumo, Lon
     }
 
 
-    @PostMapping
+    @PostMapping("/crear")
     public ResponseEntity<ArticuloInsumo> crear(@RequestBody ArticuloInsumo insumo) {
         ArticuloInsumo nuevo = categoriaService.crearInsumo(insumo);
         return ResponseEntity.ok(nuevo);
