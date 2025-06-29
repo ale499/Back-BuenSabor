@@ -46,4 +46,22 @@ public class ArticuloInsumoService extends BaseService<ArticuloInsumo, Long>{
         }
     }
 
+    @Transactional
+    public ArticuloInsumo modificar(Long id, ArticuloInsumo insumo) throws Exception {
+        ArticuloInsumo existente = buscarPorId(id)
+                .orElseThrow(() -> new Exception("Insumo no encontrado"));
+
+        existente.setDenominacion(insumo.getDenominacion());
+        existente.setCategoria(insumo.getCategoria());
+        existente.setPrecioCompra(insumo.getPrecioCompra());
+        existente.setPrecioVenta(insumo.getPrecioVenta());
+        existente.setStockActual(insumo.getStockActual());
+        existente.setStockMaximo(insumo.getStockMaximo());
+        existente.setStockMinimo(insumo.getStockMinimo());
+        existente.setEsParaElaborar(insumo.getEsParaElaborar());
+        existente.setUnidadMedida(insumo.getUnidadMedida());
+
+        return articuloInsumoRepository.save(existente);
+    }
+
 }

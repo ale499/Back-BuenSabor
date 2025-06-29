@@ -1,6 +1,7 @@
 package com.example.MiPriApi.services;
 
 import com.example.MiPriApi.entities.ArticuloManufacturado;
+import com.example.MiPriApi.repositories.ArticuloManufacturadoDetalleRepository;
 import com.example.MiPriApi.repositories.ArticuloManufacturadoRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,22 @@ public class ArticuloManufacturadoService extends BaseService<ArticuloManufactur
         } catch (Exception ex) {
             throw new Exception(ex.getMessage());
         }
+    }
+
+    @Autowired
+    private ArticuloManufacturadoDetalleRepository detalleRepository;
+
+    @Override
+    @Transactional
+    public void eliminar(Long id) throws Exception {
+        ArticuloManufacturado articulo = buscarPorId(id)
+                .orElseThrow(() -> new Exception("Artículo manufacturado no encontrado"));
+
+        // Elimina todos los detalles asociados al artículo
+        detalleRepository.deleteAllByArticuloManufacturadoId(articulo.getId());
+
+        // Ahora elimina el artículo manufacturado
+        articuloManufacturadoRepository.delete(articulo);
     }
 
 }

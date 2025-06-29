@@ -20,4 +20,6 @@ public interface ArticuloManufacturadoDetalleRepository extends BaseRepository<A
             ArticuloInsumo articuloInsumo
     );
 
+    void deleteAllByArticuloManufacturadoId(Long articuloManufacturadoId);
+
 }

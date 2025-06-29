@@ -90,4 +90,11 @@ public class ArticuloInsumoController extends BaseController<ArticuloInsumo, Lon
 
     }
 
+
+    @PutMapping("/modificar/{id}")
+    public ResponseEntity<ArticuloInsumo> modificar(@PathVariable Long id, @RequestBody ArticuloInsumo insumo) throws Exception {
+        ArticuloInsumo actualizado = articuloInsumoService.modificar(id, insumo);
+        return ResponseEntity.ok(actualizado);
+    }
+
 }

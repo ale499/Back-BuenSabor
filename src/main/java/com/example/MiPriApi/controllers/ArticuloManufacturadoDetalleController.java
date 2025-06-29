@@ -1,5 +1,6 @@
 package com.example.MiPriApi.controllers;
 
+import com.example.MiPriApi.entities.ArticuloInsumo;
 import com.example.MiPriApi.entities.ArticuloManufacturado;
 import com.example.MiPriApi.entities.ArticuloManufacturadoDetalle;
 import com.example.MiPriApi.entities.DTO.ArticuloManufacturadoDetalleDTO;
@@ -57,10 +58,17 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
         ArticuloManufacturado articuloManufacturado = new ArticuloManufacturado();
         articuloManufacturado.setDenominacion(articuloDTO.getDenominacion());
         articuloManufacturado.setCategoria(categoriaService.buscarPorId(articuloDTO.getCategoriaId()).orElseThrow(() -> new Exception("Categoría no encontrada")));
-        articuloManufacturado.setPrecioVenta(articuloDTO.getPrecioVenta());
         articuloManufacturado.setDescripcion(articuloDTO.getDescripcion());
         articuloManufacturado.setTiempoEstimadoMinutos(articuloDTO.getTiempoEstimadoMinutos());
         articuloManufacturado.setPreparacion(articuloDTO.getPreparacion());
+
+        // Calcular el precio basado en los insumos
+        double precioTotalInsumos = 0.0;
+        for (ArticuloManufacturadoDetalleDTO.DetalleDTO detalleDTO : articuloDTO.getDetalles()) {
+            ArticuloInsumo insumo = articuloInsumoService.buscarPorId(detalleDTO.getItem().getId()).orElseThrow(() -> new Exception("Insumo no encontrado"));
+            precioTotalInsumos += insumo.getPrecioVenta() * detalleDTO.getCantidad();
+        }
+        articuloManufacturado.setPrecioVenta(precioTotalInsumos * 3); // Multiplicar por el factor deseado (en este caso, 3)
 
         // Guardar el ArticuloManufacturado
         ArticuloManufacturado articuloGuardado = articuloManufacturadoService.crear(articuloManufacturado);

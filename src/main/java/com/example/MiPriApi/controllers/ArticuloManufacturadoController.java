@@ -31,8 +31,13 @@ public class ArticuloManufacturadoController extends BaseController<ArticuloManu
     }
 
     @DeleteMapping("/baja/{id}")
-    public void eliminarArticuloManufacturado(@PathVariable Long id) throws Exception {
-        service.eliminar(id);
+    public ResponseEntity<String> eliminarArticuloManufacturado(@PathVariable Long id) {
+        try {
+            service.eliminar(id);
+            return ResponseEntity.ok("Artículo manufacturado eliminado correctamente.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error al eliminar el artículo manufacturado: " + e.getMessage());
+        }
     }
 
     @PutMapping("/modificar/{id}")
