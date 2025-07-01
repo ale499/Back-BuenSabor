@@ -44,6 +44,10 @@ public class ArticuloInsumoController extends BaseController<ArticuloInsumo, Lon
 
     @PostMapping("/crear")
     public ResponseEntity<ArticuloInsumo> crear(@RequestBody ArticuloInsumo insumo) {
+        // Validación: si esParaElaborar es true, precioVenta debe ser null
+        if (insumo.getEsParaElaborar() != null && insumo.getEsParaElaborar()) {
+            insumo.setPrecioVenta(null);
+        }
         ArticuloInsumo nuevo = categoriaService.crearInsumo(insumo);
         return ResponseEntity.ok(nuevo);
     }

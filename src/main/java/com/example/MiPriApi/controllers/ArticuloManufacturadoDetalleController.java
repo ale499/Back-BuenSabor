@@ -62,13 +62,23 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
         articuloManufacturado.setTiempoEstimadoMinutos(articuloDTO.getTiempoEstimadoMinutos());
         articuloManufacturado.setPreparacion(articuloDTO.getPreparacion());
 
-        // Calcular el precio basado en los insumos
+        // Calcular el precio base de los insumos
         double precioTotalInsumos = 0.0;
         for (ArticuloManufacturadoDetalleDTO.DetalleDTO detalleDTO : articuloDTO.getDetalles()) {
             ArticuloInsumo insumo = articuloInsumoService.buscarPorId(detalleDTO.getItem().getId()).orElseThrow(() -> new Exception("Insumo no encontrado"));
             precioTotalInsumos += insumo.getPrecioVenta() * detalleDTO.getCantidad();
         }
-        articuloManufacturado.setPrecioVenta(precioTotalInsumos * 3); // Multiplicar por el factor deseado (en este caso, 3)
+
+        // Si el precio viene en el body, validar que no sea menor al total de insumos
+        if (articuloDTO.getPrecioVenta() != null) {
+            if (articuloDTO.getPrecioVenta() < precioTotalInsumos) {
+                throw new Exception("El precio de venta no puede ser menor a la suma de los insumos (" + precioTotalInsumos + ")");
+            }
+            articuloManufacturado.setPrecioVenta(articuloDTO.getPrecioVenta());
+        } else {
+            // Si no viene, calcularlo automáticamente (por ejemplo, multiplicando por 3)
+            articuloManufacturado.setPrecioVenta(precioTotalInsumos * 3);
+        }
 
         // Guardar el ArticuloManufacturado
         ArticuloManufacturado articuloGuardado = articuloManufacturadoService.crear(articuloManufacturado);
@@ -79,8 +89,6 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
             detalle.setArticuloManufacturado(articuloGuardado);
             detalle.setCantidad(detalleDTO.getCantidad());
             detalle.setArticuloInsumo(articuloInsumoService.buscarPorId(detalleDTO.getItem().getId()).orElseThrow(() -> new Exception("Insumo no encontrado")));
-
-            // Guardar el detalle
             articuloManufacturadoDetalleService.crear(detalle);
         }
 
@@ -88,7 +96,6 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
         List<ArticuloManufacturadoDetalle> detallesGuardados = articuloManufacturadoDetalleService.listarPorArticuloManufacturado(articuloGuardado.getId());
         ArticuloManufacturadoDetalleDTO respuestaDTO = mapper.toDTOFromArticuloManufacturado(articuloGuardado);
 
-        // Mapear los detalles al DTO
         List<ArticuloManufacturadoDetalleDTO.DetalleDTO> detallesDTO = detallesGuardados.stream().map(detalle -> {
             ArticuloManufacturadoDetalleDTO.DetalleDTO detalleDTO = new ArticuloManufacturadoDetalleDTO.DetalleDTO();
             detalleDTO.setTipo("INSUMO");

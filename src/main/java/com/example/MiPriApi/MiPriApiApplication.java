@@ -333,7 +333,7 @@ public class MiPriApiApplication {
 								.unidadMedida(unidadMedidaRepository.findByDenominacion("Gramos").orElse(null))
 								.categoria(categoriaRepository.findByDenominacion("Comida").orElse(null)) // Asignar categoría
 								.precioCompra(80.0)
-								.precioVenta(100.0) // Asignar precio de venta
+								.precioVenta(null) // Asignar precio de venta
 								.stockActual(50)
 								.stockMaximo(100)
 								.stockMinimo(10)
@@ -348,7 +348,7 @@ public class MiPriApiApplication {
 								.unidadMedida(unidadMedidaRepository.findByDenominacion("Gramos").orElse(null))
 								.categoria(categoriaRepository.findByDenominacion("Comida").orElse(null)) // Asignar categoría
 								.precioCompra(50.0)
-								.precioVenta(70.0) // Asignar precio de venta
+								.precioVenta(null) // Asignar precio de venta
 								.stockActual(100)
 								.stockMaximo(200)
 								.stockMinimo(20)
@@ -363,11 +363,11 @@ public class MiPriApiApplication {
 								.unidadMedida(unidadMedidaRepository.findByDenominacion("Gramos").orElse(null))
 								.categoria(categoriaRepository.findByDenominacion("Comida").orElse(null)) // Asignar categoría
 								.precioCompra(40.0)
-								.precioVenta(50.0) // Asignar precio de venta
+								.precioVenta(null)
 								.stockActual(150)
 								.stockMaximo(300)
 								.stockMinimo(30)
-								.esParaElaborar(false)
+								.esParaElaborar(true)
 								.build();
 						return insumoRepository.save(nuevoInsumo);
 					});
@@ -379,11 +379,11 @@ public class MiPriApiApplication {
 								.unidadMedida(unidadMedidaRepository.findByDenominacion("Gramos").orElse(null))
 								.categoria(categoriaRepository.findByDenominacion("Comida").orElse(null)) // Asignar categoría
 								.precioCompra(10.0)
-								.precioVenta(15.0) // Asignar precio de venta
+								.precioVenta(null) // Asignar precio de venta
 								.stockActual(200)
 								.stockMaximo(400)
 								.stockMinimo(50)
-								.esParaElaborar(false)
+								.esParaElaborar(true)
 								.build();
 						return insumoRepository.save(nuevoInsumo);
 					});

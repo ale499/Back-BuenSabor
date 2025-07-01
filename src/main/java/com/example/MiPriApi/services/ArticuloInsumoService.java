@@ -54,12 +54,18 @@ public class ArticuloInsumoService extends BaseService<ArticuloInsumo, Long>{
         existente.setDenominacion(insumo.getDenominacion());
         existente.setCategoria(insumo.getCategoria());
         existente.setPrecioCompra(insumo.getPrecioCompra());
-        existente.setPrecioVenta(insumo.getPrecioVenta());
         existente.setStockActual(insumo.getStockActual());
         existente.setStockMaximo(insumo.getStockMaximo());
         existente.setStockMinimo(insumo.getStockMinimo());
         existente.setEsParaElaborar(insumo.getEsParaElaborar());
         existente.setUnidadMedida(insumo.getUnidadMedida());
+
+        // Validación: si esParaElaborar es true, precioVenta debe ser null o 0
+        if (insumo.getEsParaElaborar() != null && insumo.getEsParaElaborar()) {
+            existente.setPrecioVenta(null);
+        } else {
+            existente.setPrecioVenta(insumo.getPrecioVenta());
+        }
 
         return articuloInsumoRepository.save(existente);
     }
