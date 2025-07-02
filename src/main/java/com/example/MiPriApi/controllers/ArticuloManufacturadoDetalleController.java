@@ -62,11 +62,11 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
         articuloManufacturado.setTiempoEstimadoMinutos(articuloDTO.getTiempoEstimadoMinutos());
         articuloManufacturado.setPreparacion(articuloDTO.getPreparacion());
 
-        // Calcular el precio base de los insumos
+        // Calcular el precio base de los insumos usando precioCompra
         double precioTotalInsumos = 0.0;
         for (ArticuloManufacturadoDetalleDTO.DetalleDTO detalleDTO : articuloDTO.getDetalles()) {
             ArticuloInsumo insumo = articuloInsumoService.buscarPorId(detalleDTO.getItem().getId()).orElseThrow(() -> new Exception("Insumo no encontrado"));
-            precioTotalInsumos += insumo.getPrecioVenta() * detalleDTO.getCantidad();
+            precioTotalInsumos += insumo.getPrecioCompra() * detalleDTO.getCantidad();
         }
 
         // Si el precio viene en el body, validar que no sea menor al total de insumos
