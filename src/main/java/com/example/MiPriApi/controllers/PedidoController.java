@@ -88,6 +88,16 @@ public class PedidoController extends BaseController<Pedido, Long>{
         return ResponseEntity.ok("Pedido creado correctamente");
     }
 
+    @DeleteMapping("/{idPedido}/eliminar")
+    public ResponseEntity<?> eliminarPedido(@PathVariable Long idPedido) {
+        try {
+            pedidoService.eliminarPedido(idPedido);
+            return ResponseEntity.ok("Pedido deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
+
     @PostMapping("/{idPedido}/confirmar")
     public ResponseEntity<?> confirmarPedido(
             @PathVariable Long idPedido,

@@ -97,14 +97,11 @@ public class PedidoService extends BaseService<Pedido, Long> {
     @Transactional
     public void crearPedidoDesdeCarrito(PedidoRequestDTO pedidoRequest) throws Exception {
         if (pedidoRequest.getClienteId() == null) throw new Exception("El ID del cliente no puede ser nulo");
-        if (pedidoRequest.getEmpleadoId() == null) throw new Exception("El ID del empleado no puede ser nulo");
         if (pedidoRequest.getDomicilioId() == null) throw new Exception("El ID del domicilio no puede ser nulo");
         if (pedidoRequest.getSucursalId() == null) throw new Exception("El ID de la sucursal no puede ser nulo");
 
         Cliente cliente = clienteRepository.findById(pedidoRequest.getClienteId())
                 .orElseThrow(() -> new Exception("Cliente no encontrado"));
-        Empleado empleado = empleadoRepository.findById(pedidoRequest.getEmpleadoId())
-                .orElseThrow(() -> new Exception("Empleado no encontrado"));
         Domicilio domicilio = domicilioRepository.findById(pedidoRequest.getDomicilioId())
                 .orElseThrow(() -> new Exception("Domicilio no encontrado"));
         Sucursal sucursal = sucursalRepository.findById(pedidoRequest.getSucursalId())
@@ -112,9 +109,14 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
         Pedido pedido = new Pedido();
         pedido.setCliente(cliente);
-        pedido.setEmpleado(empleado);
         pedido.setDomicilio(domicilio);
         pedido.setSucursal(sucursal);
+
+        if (pedidoRequest.getEmpleadoId() != null) {
+            Empleado empleado = empleadoRepository.findById(pedidoRequest.getEmpleadoId())
+                    .orElseThrow(() -> new Exception("Empleado no encontrado"));
+            pedido.setEmpleado(empleado);
+        }
 
         // Número de pedido
         if (pedidoRequest.getNumeroPedido() != null) {
@@ -158,7 +160,31 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
         pedido = pedidoRepository.save(pedido);
 
+// Save DetallePedido items
+        List<DetallePedido> detalles = new ArrayList<>();
+        for (DetallePedidoRequestDTO item : pedidoRequest.getItems()) {
+            Articulo articulo;
+            if ("INSUMO".equalsIgnoreCase(item.getTipoArticulo())) {
+                articulo = articuloInsumoRepository.findById(item.getArticuloId())
+                        .orElseThrow(() -> new Exception("Insumo no encontrado"));
+            } else if ("MANUFACTURADO".equalsIgnoreCase(item.getTipoArticulo())) {
+                articulo = articuloManufacturadoRepository.findById(item.getArticuloId())
+                        .orElseThrow(() -> new Exception("Manufacturado no encontrado"));
+            } else {
+                throw new Exception("Tipo de artículo no válido");
+            }
 
+            DetallePedido detalle = new DetallePedido();
+            detalle.setPedido(pedido);
+            detalle.setArticulo(articulo);
+            detalle.setCantidad(item.getCantidad());
+            detalle.setSubTotal(item.getSubTotal());
+            detalles.add(detalle);
+        }
+        detallePedidoRepository.saveAll(detalles);
+
+        // Optionally, set the details in the Pedido entity
+        pedido.setDetalles(detalles);
         pedidoRepository.save(pedido);
     }
 
@@ -220,6 +246,12 @@ public class PedidoService extends BaseService<Pedido, Long> {
         return suma;
     }
 
+    public void eliminarPedido(Long idPedido) throws Exception {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new Exception("Pedido not found with ID: " + idPedido));
+        pedidoRepository.delete(pedido);
+    }
+
     @Transactional
     public void confirmarPedido(Long idPedido, ConfirmarPedidoRequestDTO request) throws Exception {
         Pedido pedido = pedidoRepository.findById(idPedido)
@@ -227,6 +259,7 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
         pedido.setEstado(Estado.PENDIENTE);
 
+        // Decrement stock for all insumos in the pedido
         stockService.descontarStockIngredientes(pedido);
 
         int minutos = tiempoEstimadoService.calcularTiempoEstimado(pedido);
