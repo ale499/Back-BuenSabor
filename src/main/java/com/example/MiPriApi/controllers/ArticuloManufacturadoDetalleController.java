@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -178,6 +179,28 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/manufacturables")
+    public ResponseEntity<List<ArticuloManufacturadoDetalleDTO>> listarManufacturables() throws Exception {
+        List<ArticuloManufacturado> todos = articuloManufacturadoService.listarTodos();
+        List<ArticuloManufacturadoDetalleDTO> disponibles = new ArrayList<>();
+
+        for (ArticuloManufacturado manu : todos) {
+            boolean puedeHacerse = true;
+            for (ArticuloManufacturadoDetalle det : manu.getDetalles()) {
+                ArticuloInsumo insumo = det.getArticuloInsumo();
+                if (insumo.getStockActual() < det.getCantidad()) {
+                    puedeHacerse = false;
+                    break;
+                }
+            }
+            if (puedeHacerse) {
+                // Use the mapper to convert to DTO
+                disponibles.add(mapper.toDTOFromArticuloManufacturado(manu));
+            }
+        }
+        return ResponseEntity.ok(disponibles);
     }
 
 }
