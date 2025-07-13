@@ -61,8 +61,16 @@ public class ArticuloInsumoService extends BaseService<ArticuloInsumo, Long>{
                 .orElseThrow(() -> new Exception("Insumo no encontrado"));
 
         // ... (actualiza los campos del insumo)
+        existente.setDenominacion(insumo.getDenominacion());
+        existente.setCategoria(insumo.getCategoria());
+        existente.setUnidadMedida(insumo.getUnidadMedida());
+        existente.setPrecioVenta(insumo.getPrecioVenta());
         existente.setPrecioCompra(insumo.getPrecioCompra());
-        // ...
+        existente.setStockActual(insumo.getStockActual());
+        existente.setStockMaximo(insumo.getStockMaximo());
+        existente.setStockMinimo(insumo.getStockMinimo());
+        existente.setEsParaElaborar(insumo.getEsParaElaborar());
+
 
         ArticuloInsumo actualizado = articuloInsumoRepository.save(existente);
 
