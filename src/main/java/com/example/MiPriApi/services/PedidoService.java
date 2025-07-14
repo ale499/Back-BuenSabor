@@ -167,9 +167,27 @@ public class PedidoService extends BaseService<Pedido, Long> {
             if ("INSUMO".equalsIgnoreCase(item.getTipoArticulo())) {
                 articulo = articuloInsumoRepository.findById(item.getArticuloId())
                         .orElseThrow(() -> new Exception("Insumo no encontrado"));
+                ArticuloInsumo insumo = (ArticuloInsumo) articulo;
+                int disponible = insumo.getStockActual() - insumo.getStockPendiente();
+                if (disponible < item.getCantidad()) {
+                    throw new Exception("Stock insuficiente para " + insumo.getDenominacion());
+                }
+                insumo.setStockPendiente(insumo.getStockPendiente() + item.getCantidad());
+                articuloInsumoRepository.save(insumo);
             } else if ("MANUFACTURADO".equalsIgnoreCase(item.getTipoArticulo())) {
                 articulo = articuloManufacturadoRepository.findById(item.getArticuloId())
                         .orElseThrow(() -> new Exception("Manufacturado no encontrado"));
+                ArticuloManufacturado manufacturado = (ArticuloManufacturado) articulo;
+                for (ArticuloManufacturadoDetalle det : manufacturado.getDetalles()) {
+                    ArticuloInsumo insumo = det.getArticuloInsumo();
+                    int cantidadTotal = det.getCantidad() * item.getCantidad();
+                    int disponible = insumo.getStockActual() - insumo.getStockPendiente();
+                    if (disponible < cantidadTotal) {
+                        throw new Exception("Stock insuficiente para " + insumo.getDenominacion());
+                    }
+                    insumo.setStockPendiente(insumo.getStockPendiente() + cantidadTotal);
+                    articuloInsumoRepository.save(insumo);
+                }
             } else {
                 throw new Exception("Tipo de artículo no válido");
             }
@@ -183,7 +201,6 @@ public class PedidoService extends BaseService<Pedido, Long> {
         }
         detallePedidoRepository.saveAll(detalles);
 
-        // Optionally, set the details in the Pedido entity
         pedido.setDetalles(detalles);
         pedidoRepository.save(pedido);
     }

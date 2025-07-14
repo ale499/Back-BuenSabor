@@ -23,4 +23,8 @@ public class ArticuloInsumo extends Articulo {
     private Integer stockMinimo;
     private Boolean esParaElaborar;
 
+
+    @Builder.Default
+    private Integer stockPendiente = 0;
+
 }
