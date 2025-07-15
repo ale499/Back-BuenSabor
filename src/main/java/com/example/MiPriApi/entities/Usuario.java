@@ -16,6 +16,7 @@ public class Usuario extends Base{
 
     @Column(unique = true)
     private String username;
+    private String email;
 
     private String password;
 
