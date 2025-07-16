@@ -230,6 +230,14 @@ public class MiPriApiApplication {
 								.build();
 						return categoriaRepository.save(nuevaCategoria);
 					});
+			Categoria categoriaInsumo = categoriaRepository.findByDenominacion("Insumos")
+					.orElseGet(() -> {
+						Categoria nuevaCategoria = Categoria.builder()
+								.denominacion("Insumos")
+								.esInsumo(true)
+								.build();
+						return categoriaRepository.save(nuevaCategoria);
+					});
 
 			// Verificar y crear subcategorías para "Comida"
 			Categoria subcategoriaPizza = categoriaRepository.findByDenominacionAndCategoriaPadre("Pizza", categoriaComida)
@@ -331,7 +339,7 @@ public class MiPriApiApplication {
 						ArticuloInsumo nuevoInsumo = ArticuloInsumo.builder()
 								.denominacion("Manteca")
 								.unidadMedida(unidadMedidaRepository.findByDenominacion("Gramos").orElse(null))
-								.categoria(categoriaRepository.findByDenominacion("Comida").orElse(null)) // Asignar categoría
+								.categoria(categoriaRepository.findByDenominacion("Insumos").orElse(null)) // Asignar categoría
 								.precioCompra(80.0)
 								.precioVenta(null) // Asignar precio de venta
 								.stockActual(50)
@@ -346,7 +354,7 @@ public class MiPriApiApplication {
 						ArticuloInsumo nuevoInsumo = ArticuloInsumo.builder()
 								.denominacion("Harina")
 								.unidadMedida(unidadMedidaRepository.findByDenominacion("Gramos").orElse(null))
-								.categoria(categoriaRepository.findByDenominacion("Comida").orElse(null)) // Asignar categoría
+								.categoria(categoriaRepository.findByDenominacion("Insumos").orElse(null)) // Asignar categoría
 								.precioCompra(50.0)
 								.precioVenta(null) // Asignar precio de venta
 								.stockActual(100)
@@ -361,7 +369,7 @@ public class MiPriApiApplication {
 						ArticuloInsumo nuevoInsumo = ArticuloInsumo.builder()
 								.denominacion("Azúcar")
 								.unidadMedida(unidadMedidaRepository.findByDenominacion("Gramos").orElse(null))
-								.categoria(categoriaRepository.findByDenominacion("Comida").orElse(null)) // Asignar categoría
+								.categoria(categoriaRepository.findByDenominacion("Insumos").orElse(null)) // Asignar categoría
 								.precioCompra(40.0)
 								.precioVenta(null)
 								.stockActual(150)
@@ -377,7 +385,7 @@ public class MiPriApiApplication {
 						ArticuloInsumo nuevoInsumo = ArticuloInsumo.builder()
 								.denominacion("Sal")
 								.unidadMedida(unidadMedidaRepository.findByDenominacion("Gramos").orElse(null))
-								.categoria(categoriaRepository.findByDenominacion("Comida").orElse(null)) // Asignar categoría
+								.categoria(categoriaRepository.findByDenominacion("Insumos").orElse(null)) // Asignar categoría
 								.precioCompra(10.0)
 								.precioVenta(null) // Asignar precio de venta
 								.stockActual(200)

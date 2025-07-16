@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -54,6 +55,18 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
 
     @PostMapping("/crearArticuloManufacturado")
     public ResponseEntity<ArticuloManufacturadoDetalleDTO> crearArticuloManufacturado(@RequestBody ArticuloManufacturadoDetalleDTO articuloDTO) throws Exception {
+        // Verificar stock suficiente para todos los insumos antes de crear el artículo
+        for (ArticuloManufacturadoDetalleDTO.DetalleDTO detalleDTO : articuloDTO.getDetalles()) {
+            ArticuloInsumo insumo = articuloInsumoService.buscarPorId(detalleDTO.getItem().getId())
+                    .orElseThrow(() -> new Exception("Insumo no encontrado"));
+            int cantidadAUsar = detalleDTO.getCantidad();
+            int stockActual = insumo.getStockActual();
+            int stockMinimo = insumo.getStockMinimo();
+            if (stockActual - cantidadAUsar < stockMinimo) {
+                throw new Exception("Stock insuficiente para el insumo: " + insumo.getDenominacion());
+            }
+        }
+
         // Crear el ArticuloManufacturado
         ArticuloManufacturado articuloManufacturado = new ArticuloManufacturado();
         articuloManufacturado.setDenominacion(articuloDTO.getDenominacion());
@@ -62,33 +75,35 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
         articuloManufacturado.setTiempoEstimadoMinutos(articuloDTO.getTiempoEstimadoMinutos());
         articuloManufacturado.setPreparacion(articuloDTO.getPreparacion());
 
-        // Calcular el precio base de los insumos
+        // Calcular el precio base de los insumos usando precioCompra
         double precioTotalInsumos = 0.0;
         for (ArticuloManufacturadoDetalleDTO.DetalleDTO detalleDTO : articuloDTO.getDetalles()) {
             ArticuloInsumo insumo = articuloInsumoService.buscarPorId(detalleDTO.getItem().getId()).orElseThrow(() -> new Exception("Insumo no encontrado"));
-            precioTotalInsumos += insumo.getPrecioVenta() * detalleDTO.getCantidad();
+            precioTotalInsumos += insumo.getPrecioCompra() * detalleDTO.getCantidad();
         }
 
-        // Si el precio viene en el body, validar que no sea menor al total de insumos
+        // Validar precio de venta
         if (articuloDTO.getPrecioVenta() != null) {
             if (articuloDTO.getPrecioVenta() < precioTotalInsumos) {
                 throw new Exception("El precio de venta no puede ser menor a la suma de los insumos (" + precioTotalInsumos + ")");
             }
             articuloManufacturado.setPrecioVenta(articuloDTO.getPrecioVenta());
         } else {
-            // Si no viene, calcularlo automáticamente (por ejemplo, multiplicando por 3)
             articuloManufacturado.setPrecioVenta(precioTotalInsumos * 3);
         }
 
         // Guardar el ArticuloManufacturado
         ArticuloManufacturado articuloGuardado = articuloManufacturadoService.crear(articuloManufacturado);
 
-        // Asignar los insumos (detalles)
+        // Descontar stock de los insumos y guardar los detalles
         for (ArticuloManufacturadoDetalleDTO.DetalleDTO detalleDTO : articuloDTO.getDetalles()) {
+            ArticuloInsumo insumo = articuloInsumoService.buscarPorId(detalleDTO.getItem().getId()).orElseThrow(() -> new Exception("Insumo no encontrado"));
+
+
             ArticuloManufacturadoDetalle detalle = new ArticuloManufacturadoDetalle();
             detalle.setArticuloManufacturado(articuloGuardado);
             detalle.setCantidad(detalleDTO.getCantidad());
-            detalle.setArticuloInsumo(articuloInsumoService.buscarPorId(detalleDTO.getItem().getId()).orElseThrow(() -> new Exception("Insumo no encontrado")));
+            detalle.setArticuloInsumo(insumo);
             articuloManufacturadoDetalleService.crear(detalle);
         }
 
@@ -164,6 +179,28 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/manufacturables")
+    public ResponseEntity<List<ArticuloManufacturadoDetalleDTO>> listarManufacturables() throws Exception {
+        List<ArticuloManufacturado> todos = articuloManufacturadoService.listarTodos();
+        List<ArticuloManufacturadoDetalleDTO> disponibles = new ArrayList<>();
+
+        for (ArticuloManufacturado manu : todos) {
+            boolean puedeHacerse = true;
+            for (ArticuloManufacturadoDetalle det : manu.getDetalles()) {
+                ArticuloInsumo insumo = det.getArticuloInsumo();
+                if (insumo.getStockActual() < det.getCantidad()) {
+                    puedeHacerse = false;
+                    break;
+                }
+            }
+            if (puedeHacerse) {
+                // Use the mapper to convert to DTO
+                disponibles.add(mapper.toDTOFromArticuloManufacturado(manu));
+            }
+        }
+        return ResponseEntity.ok(disponibles);
     }
 
 }

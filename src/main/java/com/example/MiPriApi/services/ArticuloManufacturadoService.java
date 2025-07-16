@@ -36,6 +36,15 @@ public class ArticuloManufacturadoService extends BaseService<ArticuloManufactur
         }
     }
 
+    @Transactional
+    public List<ArticuloManufacturado> listarTodos() throws Exception {
+        try {
+            return articuloManufacturadoRepository.findAll();
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
     @Autowired
     private ArticuloManufacturadoDetalleRepository detalleRepository;
 

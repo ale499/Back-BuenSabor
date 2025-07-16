@@ -9,5 +9,5 @@ public class DetallePedidoRequestDTO {
     private Double precioArticulo;
     private Integer cantidad;
     private Double subTotal;
-    private String TipoArticulo; // Puede ser "articuloManufacturado" o "articuloSimple"
+    private String tipoArticulo; // Puede ser "articuloManufacturado" o "articuloSimple"
 }
