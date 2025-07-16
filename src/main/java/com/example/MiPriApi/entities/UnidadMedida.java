@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 
-public class UnidadMedida extends Base{
+public class    UnidadMedida extends Base{
 
     private String denominacion;
 

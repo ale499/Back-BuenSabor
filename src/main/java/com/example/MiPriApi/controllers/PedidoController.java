@@ -35,6 +35,14 @@ public class PedidoController extends BaseController<Pedido, Long>{
         return ResponseEntity.ok(pedidos);
     }
 
+    //listar pedidos por email del cliente
+
+    @GetMapping("/cliente/email/{email}")
+    public ResponseEntity<List<Pedido>> listarPorClienteEmail(@PathVariable String email) throws Exception {
+        List<Pedido> pedidos = pedidoService.listarPorClienteEmail(email);
+        return ResponseEntity.ok(pedidos);
+    }
+
     @GetMapping("/empleado/{idEmpleado}")
     public ResponseEntity<List<Pedido>> listarPorEmpleado(@PathVariable Long idEmpleado) throws Exception {
         List<Pedido> pedidos = pedidoService.listarPorEmpleado(idEmpleado);

@@ -70,6 +70,17 @@ public class PedidoService extends BaseService<Pedido, Long> {
         }
     }
 
+    //lista pedidos por email del cliente
+
+    @Transactional
+    public List<Pedido> listarPorClienteEmail(String email) throws Exception {
+        try {
+            return pedidoRepository.findAllByClienteEmail(email);
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
     @Transactional
     public List<Pedido> listarPorEmpleado(Long idEmpleado) throws Exception {
         try {
@@ -292,9 +303,8 @@ public class PedidoService extends BaseService<Pedido, Long> {
         // Establecer fecha del pedido
         pedido.setFechaPedido(LocalDate.now());
 
-        // Calcular total del pedido y asociar detalles
+        // Asociar detalles al pedido
         if (pedido.getDetalles() != null) {
-            double total = 0.0;
             for (DetallePedido detalle : pedido.getDetalles()) {
                 detalle.setPedido(pedido);
 
@@ -305,36 +315,26 @@ public class PedidoService extends BaseService<Pedido, Long> {
                 } else if (detalle.getArticulo() instanceof ArticuloManufacturado) {
                     articulo = articuloManufacturadoRepository.findById(detalle.getArticulo().getId())
                             .orElseThrow(() -> new Exception("Manufacturado no encontrado"));
-
-                    // Procesar detalles del artículo manufacturado
-                    ArticuloManufacturado manufacturado = (ArticuloManufacturado) articulo;
-                    for (ArticuloManufacturadoDetalle manufacturadoDetalle : manufacturado.getDetalles()) {
-                        System.out.println("Insumo: " + manufacturadoDetalle.getArticuloInsumo().getDenominacion());
-                    }
                 } else {
                     throw new Exception("Tipo de artículo no válido");
                 }
-
                 detalle.setArticulo(articulo);
-                total += articulo.getPrecioVenta() * detalle.getCantidad();
             }
-            pedido.setTotal(total);
-        } else {
-            pedido.setTotal(0.0);
         }
+
+        // 👉 Usa el total que viene del frontend (no lo recalcules)
+        // Si por seguridad querés validar, podés comparar y lanzar error si hay mucha diferencia
 
         // Guardar pedido en la base de datos
         Pedido guardado = pedidoRepository.save(pedido);
 
-        // Crear preferencia de pago en Mercado Pago
+        // Crear preferencia de pago en Mercado Pago usando el total del pedido
         List<ItemDTO> items = new ArrayList<>();
-        for (DetallePedido detalle : guardado.getDetalles()) {
-            items.add(new ItemDTO(
-                    detalle.getArticulo().getDenominacion(),
-                    detalle.getCantidad(),
-                    BigDecimal.valueOf(detalle.getArticulo().getPrecioVenta())
-            ));
-        }
+        items.add(new ItemDTO(
+                "Pedido #" + guardado.getId(),
+                1,
+                BigDecimal.valueOf(guardado.getTotal()) // Usa el total enviado
+        ));
 
         try {
             String initPoint = mercadoPagoService.procesarPago(items);
