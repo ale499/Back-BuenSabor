@@ -13,6 +13,9 @@ public interface PedidoRepository extends BaseRepository<Pedido, Long> {
     List<Pedido> findAllByEmpleadoId(Long idEmpleado);
     List<Pedido> findAllBySucursalId(Long idSucursal);
 
+    //permite buscar pedidos por email de auth0 del cliente
+    List<Pedido> findAllByClienteEmail(String email);
+
     @Query("SELECT COALESCE(MAX(am.tiempoEstimadoMinutos), 0) " +
             "FROM Pedido p " +
             "JOIN p.detalles d " +
