@@ -1,5 +1,6 @@
 package com.example.MiPriApi.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -20,6 +21,7 @@ public class ArticuloManufacturadoDetalle extends Base{
 
     @ManyToOne
     @JoinColumn(name = "ArticuloManufacturadoId", nullable = false)
+    @JsonIgnore
     private ArticuloManufacturado articuloManufacturado;
 
     @ManyToOne
