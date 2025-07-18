@@ -59,6 +59,13 @@ public class ImageController {
         }
     }
 
+    @GetMapping("/byEntity")
+    public ResponseEntity<List<Map<String, Object>>> getImagesByEntity(
+            @RequestParam Long entityId,
+            @RequestParam String entityType) {
+        return imageService.getImagesByEntity(entityId, entityType);
+    }
+
     @PostMapping("/uploadToEntity")
     public ResponseEntity<String> uploadImageToEntity(
             @RequestParam("entityId") Long entityId,

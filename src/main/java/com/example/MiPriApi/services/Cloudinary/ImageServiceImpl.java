@@ -192,4 +192,58 @@ public class ImageServiceImpl implements ImageService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al asociar la imagen");
         }
     }
+
+    @Override
+    public ResponseEntity<List<Map<String, Object>>> getImagesByEntity(Long entityId, String entityType) {
+        List<Map<String, Object>> imageList = new ArrayList<>();
+        try {
+            List<Image> images = new ArrayList<>();
+            switch (entityType.toLowerCase()) {
+                case "insumo":
+                    ArticuloInsumo insumo = articuloInsumoRepository.findById(entityId)
+                            .orElseThrow(() -> new Exception("Articulo Insumo not found"));
+                    images = new ArrayList<>(insumo.getImagenesArticulos());
+                    break;
+                case "manufacturado":
+                    ArticuloManufacturado manufacturado = articuloManufacturadoRepository.findById(entityId)
+                            .orElseThrow(() -> new Exception("Articulo Manufacturado not found"));
+                    images = new ArrayList<>(manufacturado.getImagenesArticulos());
+                    break;
+                case "promocion":
+                    Promocion promocion = promocionRepository.findById(entityId)
+                            .orElseThrow(() -> new Exception("Promocion not found"));
+                    images = new ArrayList<>(promocion.getImagenesPromocion());
+                    break;
+                case "administrador":
+                    Administrador admin = administradorRepository.findById(entityId)
+                            .orElseThrow(() -> new Exception("Administrador not found"));
+                    if (admin.getImagen() != null) images.add(admin.getImagen());
+                    break;
+                case "cliente":
+                    Cliente cliente = clienteRepository.findById(entityId)
+                            .orElseThrow(() -> new Exception("Cliente not found"));
+                    if (cliente.getImagen() != null) images.add(cliente.getImagen());
+                    break;
+                case "empleado":
+                    Empleado empleado = empleadoRepository.findById(entityId)
+                            .orElseThrow(() -> new Exception("Empleado not found"));
+                    if (empleado.getImagen() != null) images.add(empleado.getImagen());
+                    break;
+                default:
+                    throw new Exception("Unsupported entity type");
+            }
+
+            for (Image image : images) {
+                Map<String, Object> imageMap = new HashMap<>();
+                imageMap.put("id", image.getId());
+                imageMap.put("name", image.getName());
+                imageMap.put("url", image.getUrl());
+                imageList.add(imageMap);
+            }
+            return ResponseEntity.ok(imageList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
 }
