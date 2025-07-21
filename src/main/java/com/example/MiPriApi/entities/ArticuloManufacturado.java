@@ -1,10 +1,7 @@
 package com.example.MiPriApi.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.HashSet;
@@ -17,6 +14,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(exclude = "detalles")
+@EqualsAndHashCode(exclude = "detalles")
 @SuperBuilder
 public class ArticuloManufacturado extends Articulo{
 
@@ -25,6 +24,8 @@ public class ArticuloManufacturado extends Articulo{
     private Integer tiempoEstimadoMinutos;
 
     private String preparacion;
+
+    private Double valorAgregado;
 
 
     @OneToMany(mappedBy = "articuloManufacturado", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)

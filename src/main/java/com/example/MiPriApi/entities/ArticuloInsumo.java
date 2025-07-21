@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 
 
 @Entity
-@Table(name = "articuloInsumos")
+@Table(name = "articulo_insumos")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,5 +22,9 @@ public class ArticuloInsumo extends Articulo {
     private Integer stockMaximo;
     private Integer stockMinimo;
     private Boolean esParaElaborar;
+
+
+    @Builder.Default
+    private Integer stockPendiente = 0;
 
 }

@@ -1,6 +1,7 @@
 package com.example.MiPriApi.repositories;
 
 import com.example.MiPriApi.entities.DetallePedido;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

@@ -77,7 +77,7 @@ public class ArticuloInsumoController extends BaseController<ArticuloInsumo, Lon
                 dto.setCategoria(categoriaDTO);
 
                 dto.setUnidadMedida(articulo.getUnidadMedida().getDenominacion());
-                dto.setPrecioVenta(articulo.getPrecioVenta());
+                dto.setPrecioVenta(articulo.getPrecioVenta() != null ? articulo.getPrecioVenta() : 0.0);
                 dto.setPrecioCompra(articulo.getPrecioCompra());
                 dto.setStockActual(articulo.getStockActual());
                 dto.setStockMaximo(articulo.getStockMaximo());
@@ -89,6 +89,7 @@ public class ArticuloInsumoController extends BaseController<ArticuloInsumo, Lon
 
             return ResponseEntity.ok(articuloInsumoDTOs);
         } catch (Exception ex) {
+            ex.printStackTrace();
             return ResponseEntity.status(500).body(null); // Devuelve un error 500 en caso de excepción
         }
 
