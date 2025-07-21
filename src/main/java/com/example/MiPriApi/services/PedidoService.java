@@ -253,6 +253,31 @@ public class PedidoService extends BaseService<Pedido, Long> {
         // Establecer fecha del pedido
         pedido.setFechaPedido(LocalDate.now());
 
+        // NUEVO: Verificar y guardar cliente si es necesario
+        if (pedido.getCliente() != null && pedido.getCliente().getEmail() != null) {
+            String email = pedido.getCliente().getEmail();
+            Cliente clienteExistente = clienteRepository.findByEmail(email)
+                    .orElse(null);
+
+            if (clienteExistente == null) {
+                // Si no existe, guardarlo primero
+                clienteExistente = clienteRepository.save(pedido.getCliente());
+                System.out.println("Cliente nuevo creado con ID: " + clienteExistente.getId());
+            } else {
+                System.out.println("Cliente existente encontrado con ID: " + clienteExistente.getId());
+            }
+
+            // Asignar el cliente existente o recién guardado al pedido
+            pedido.setCliente(clienteExistente);
+        } else if (pedido.getCliente() != null && pedido.getCliente().getId() != null) {
+            // Si viene con ID, verificar que exista
+            Cliente clienteExistente = clienteRepository.findById(pedido.getCliente().getId())
+                    .orElseThrow(() -> new Exception("Cliente no encontrado con ID: " + pedido.getCliente().getId()));
+            pedido.setCliente(clienteExistente);
+        } else {
+            throw new Exception("Se requiere un cliente con email o ID para crear un pedido");
+        }
+
         // Asociar detalles al pedido
         if (pedido.getDetalles() != null) {
             for (DetallePedido detalle : pedido.getDetalles()) {
