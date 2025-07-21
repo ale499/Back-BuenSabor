@@ -246,4 +246,35 @@ public class ImageServiceImpl implements ImageService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
+
+    @Transactional
+    public ResponseEntity<String> deleteImageFromEntity(Long entityId, String entityType, UUID imageId, String publicId) {
+        try {
+            switch (entityType.toLowerCase()) {
+                case "insumo":
+                    ArticuloInsumo insumo = articuloInsumoRepository.findById(entityId)
+                            .orElseThrow(() -> new Exception("Articulo Insumo not found"));
+                    boolean removedInsumo = insumo.getImagenesArticulos().removeIf(img -> img.getId().equals(imageId));
+                    if (!removedInsumo) return ResponseEntity.badRequest().body("Image not found in ArticuloInsumo");
+                    articuloInsumoRepository.save(insumo);
+                    break;
+                case "manufacturado":
+                    ArticuloManufacturado manufacturado = articuloManufacturadoRepository.findById(entityId)
+                            .orElseThrow(() -> new Exception("Articulo Manufacturado not found"));
+                    boolean removedManu = manufacturado.getImagenesArticulos().removeIf(img -> img.getId().equals(imageId));
+                    if (!removedManu) return ResponseEntity.badRequest().body("Image not found in ArticuloManufacturado");
+                    articuloManufacturadoRepository.save(manufacturado);
+                    break;
+                // Add cases for other entity types if needed
+                default:
+                    return ResponseEntity.badRequest().body("Unsupported entity type");
+            }
+            imageRepository.deleteById(imageId);
+            cloudinaryService.deleteImage(publicId, imageId);
+            return ResponseEntity.ok("Image deleted from entity");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error deleting image from entity");
+        }
+    }
 }
