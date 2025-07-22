@@ -39,7 +39,12 @@ public class ArticuloManufacturadoDetalleMapper {
             detalleDTO.setCantidad(d.getCantidad());
 
             ArticuloManufacturadoDetalleDTO.DetalleDTO.ItemDTO itemDTO = new ArticuloManufacturadoDetalleDTO.DetalleDTO.ItemDTO();
-            itemDTO.setId(d.getArticuloInsumo().getId());
+            if (detalle.getArticuloInsumo() != null) {
+                Long id = detalle.getArticuloInsumo().getId();
+             // lógica con id
+            } else {
+                throw new IllegalStateException("ArticuloInsumo es requerido para este detalle");
+            }
             itemDTO.setDenominacion(d.getArticuloInsumo().getDenominacion());
             itemDTO.setCategoriaId(d.getArticuloInsumo().getCategoria().getId());
             itemDTO.setUnidadMedida(d.getArticuloInsumo().getUnidadMedida().getDenominacion());
