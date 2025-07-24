@@ -6,14 +6,13 @@ import com.example.MiPriApi.services.CategoriaService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/categoria")
 public class CategoriaController extends BaseController<Categoria, Long>{
     public CategoriaController(CategoriaService service) {
@@ -23,10 +22,14 @@ public class CategoriaController extends BaseController<Categoria, Long>{
     @Autowired
     private CategoriaService categoriaService;
 
+
     @RequestMapping("/subcategoria/{idCP}")
-    public Optional<Categoria> agregarSubcategoria(@PathVariable Long id_CP, @RequestBody Categoria subCategoria) throws Exception {
-        Categoria catPadre= categoriaService.agregarSubcategoria(id_CP, subCategoria);
-        return Optional.ofNullable(catPadre);
+    public ResponseEntity<Categoria> agregarSubcategoria(@PathVariable Long idCP, @RequestBody Categoria subCategoria) throws Exception {
+        Categoria catPadre = categoriaService.agregarSubcategoria(idCP, subCategoria);
+        if (catPadre == null) {
+            return ResponseEntity.notFound().build(); // Devuelve 404 si no se encuentra la categoría padre
+        }
+        return ResponseEntity.ok(catPadre); // Devuelve 200 con la categoría padre
     }
 
     @RequestMapping("/categoriaPadre/{id}")
@@ -35,9 +38,38 @@ public class CategoriaController extends BaseController<Categoria, Long>{
         return ResponseEntity.ok(categorias);
     }
 
+
     @RequestMapping("/sucursal/{idSucursal}")
     public ResponseEntity<List<Categoria>> listarPorSucursal(@PathVariable Long idSucursal) throws Exception{
         List<Categoria> categorias = categoriaService.listarPorSucursal(idSucursal);
         return ResponseEntity.ok(categorias);
+    }
+
+    @RequestMapping("/listar")
+    public ResponseEntity<List<Categoria>> listarCategoriasPrincipales() {
+        try {
+            List<Categoria> categoriasPrincipales = categoriaService.listarCategoriasPrincipales();
+            return ResponseEntity.ok(categoriasPrincipales);
+        } catch (Exception ex) {
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
+    @RequestMapping("/subcategoria/actualizar/{id}")
+    public ResponseEntity<Categoria> actualizarSubcategoria(@PathVariable Long id, @RequestBody Categoria subCategoria) throws Exception {
+        Categoria subCategoriaActualizada = categoriaService.actualizarSubcategoria(id, subCategoria);
+        if (subCategoriaActualizada == null) {
+            return ResponseEntity.notFound().build(); // Devuelve 404 si no se encuentra la subcategoría
+        }
+        return ResponseEntity.ok(subCategoriaActualizada); // Devuelve 200 con la subcategoría actualizada
+    }
+
+    @DeleteMapping("/subcategoria/eliminar/{id}")
+    public ResponseEntity<Void> eliminarSubcategoria(@PathVariable Long id) throws Exception {
+        boolean eliminado = categoriaService.eliminarSubcategoria(id);
+        if (!eliminado) {
+            return ResponseEntity.notFound().build(); // Devuelve 404 si no se encuentra la subcategoría
+        }
+        return ResponseEntity.noContent().build(); // Devuelve 204 si se elimina correctamente
     }
 }

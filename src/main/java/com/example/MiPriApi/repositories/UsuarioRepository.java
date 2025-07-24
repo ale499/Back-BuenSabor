@@ -4,7 +4,11 @@ import com.example.MiPriApi.entities.Usuario;
 
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
-public interface UsuarioRepository extends BaseRepository<Usuario, Long>{
+public interface UsuarioRepository extends BaseRepository<Usuario, Long> {
+    Optional<Usuario> findByUsername(String userName);
+    Optional<Usuario> findByEmail(String email);
 
 }

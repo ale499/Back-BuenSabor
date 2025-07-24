@@ -1,6 +1,7 @@
 package com.example.MiPriApi.repositories;
 
 import com.example.MiPriApi.entities.Pedido;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -9,10 +10,25 @@ import java.util.List;
 public interface PedidoRepository extends BaseRepository<Pedido, Long> {
 
     List<Pedido> findAllByClienteId(Long idCliente);
-
     List<Pedido> findAllByEmpleadoId(Long idEmpleado);
-
     List<Pedido> findAllBySucursalId(Long idSucursal);
 
-}
+    //permite buscar pedidos por email de auth0 del cliente
+    List<Pedido> findAllByClienteEmail(String email);
 
+    @Query("SELECT COALESCE(MAX(am.tiempoEstimadoMinutos), 0) " +
+            "FROM Pedido p " +
+            "JOIN p.detalles d " +
+            "JOIN ArticuloManufacturado am ON d.articulo = am " +
+            "WHERE p.estado = com.example.MiPriApi.entities.enums.Estado.PREPARACION")
+    int maxTiempoEstimadoEnCocina();
+
+    @Query("SELECT MAX(p.numeroPedido) FROM Pedido p")
+    Integer findMaxNumeroPedido();
+
+    // Metodo para sumar el total de pedidos por estado
+    @Query("SELECT SUM(p.total) FROM Pedido p WHERE p.estado = :estado")
+    Double sumTotalByEstado(String estado);
+
+
+}

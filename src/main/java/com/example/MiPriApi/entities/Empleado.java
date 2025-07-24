@@ -1,22 +1,22 @@
 package com.example.MiPriApi.entities;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.example.MiPriApi.entities.enums.Rol;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import lombok.*;
 
 @Entity
-@Table(name = "empleados")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Empleado extends Persona {
+public class Empleado extends Base{
 
-    @ManyToOne
-    @JoinColumn(name = "sucursalId")
-    private Sucursal sucursal;
+    private String nombre;
+    private String apellido;
+    private Rol rol;
 
     @OneToOne
     @JoinColumn(name = "usuarioEmpleado")
@@ -24,5 +24,5 @@ public class Empleado extends Persona {
 
     @OneToOne
     @JoinColumn(name = "imagenEmpleado")
-    private Imagen imagen;
+    private Image imagen;
 }

@@ -1,6 +1,7 @@
 package com.example.MiPriApi.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,19 +18,23 @@ import java.util.Set;
 public class Categoria extends Base {
 
     private String denominacion;
-    @OneToMany(mappedBy = "categoriaPadre")
-    @Builder.Default
-    private Set<Categoria> subcategorias = new HashSet<>();
+    private Boolean esInsumo;
+
+
 
     @ManyToOne
     @JoinColumn(name = "categoriaPadreId")
     @JsonIgnore
     private Categoria categoriaPadre;
 
+    @OneToMany(mappedBy = "categoriaPadre")
+    @Builder.Default
+    private Set<Categoria> subcategorias = new HashSet<>();
+
     @ManyToMany
     @JoinTable(name = "categoriaSucursal",
             joinColumns = @JoinColumn(name = "categoriaId"),
             inverseJoinColumns = @JoinColumn(name = "sucursalId"))
     @Builder.Default
-    private Set<Sucursal> sucursals = new HashSet<>();
+    private Set<Sucursal> sucursales = new HashSet<>();
 }

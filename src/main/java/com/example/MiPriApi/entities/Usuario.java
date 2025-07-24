@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "usuario")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,6 +13,13 @@ import lombok.*;
 public class Usuario extends Base{
 
     private String auth0Id;
-    @Column
-    private String userName;
+
+    @Column(unique = true)
+    private String username;
+    private String email;
+
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    private Rol rol;
 }

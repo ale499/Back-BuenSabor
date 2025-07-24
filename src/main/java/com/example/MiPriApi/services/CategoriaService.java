@@ -1,12 +1,17 @@
 package com.example.MiPriApi.services;
 
+import com.example.MiPriApi.entities.ArticuloInsumo;
+import com.example.MiPriApi.entities.UnidadMedida;
+import com.example.MiPriApi.repositories.ArticuloInsumoRepository;
 import com.example.MiPriApi.entities.Categoria;
 import com.example.MiPriApi.repositories.CategoriaRepository;
+import com.example.MiPriApi.repositories.UnidadMedidaRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoriaService extends BaseService<Categoria, Long>{
@@ -14,23 +19,38 @@ public class CategoriaService extends BaseService<Categoria, Long>{
         super(categoriaRepository);
     }
 
+
+
+    @Autowired
+    private UnidadMedidaRepository unidadMedidaRepository;
     @Autowired
     private CategoriaRepository categoriaRepository;
+    @Autowired
+    private ArticuloInsumoRepository articuloInsumoRepository;
+
+
+
+
+    public ArticuloInsumo crearInsumo(ArticuloInsumo insumo) {
+        Categoria categoria = categoriaRepository.findById(insumo.getCategoria().getId()).orElseThrow();
+        insumo.setCategoria(categoria);
+
+        UnidadMedida unidadMedida = unidadMedidaRepository.findById(insumo.getUnidadMedida().getId()).orElseThrow();
+        insumo.setUnidadMedida(unidadMedida);
+
+        return articuloInsumoRepository.save(insumo);
+    }
 
     @Transactional
-    public Categoria agregarSubcategoria(Long idCategoriaPadre, Categoria nuevasubCategoria) throws Exception{
-
-        try{
-            Categoria cagetoriaPadre = categoriaRepository.findById(idCategoriaPadre).orElse(null);
-            if (cagetoriaPadre == null){
-
-                nuevasubCategoria.setCategoriaPadre(cagetoriaPadre);
-                categoriaRepository.save(nuevasubCategoria);
-                return nuevasubCategoria;
-            }else{
-                return null;
+    public Categoria agregarSubcategoria(Long idCategoriaPadre, Categoria nuevasubCategoria) throws Exception {
+        try {
+            Categoria categoriaPadre = categoriaRepository.findById(idCategoriaPadre).orElse(null);
+            if (categoriaPadre == null) {
+                return null; // No se encontró la categoría padre
             }
-        }catch (Exception ex){
+            nuevasubCategoria.setCategoriaPadre(categoriaPadre); // Asigna la categoría padre
+            return categoriaRepository.save(nuevasubCategoria); // Guarda la subcategoría
+        } catch (Exception ex) {
             throw new Exception(ex.getMessage());
         }
     }
@@ -44,11 +64,52 @@ public class CategoriaService extends BaseService<Categoria, Long>{
         }
     }
 
+
     @Transactional
     public List<Categoria> listarPorSucursal(Long idSucursal)throws Exception{
         try{
-            return categoriaRepository.findAllBysucursalsId(idSucursal);
+            return categoriaRepository.findAllBysucursalesId(idSucursal);
         }catch (Exception ex){
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    @Transactional
+    public List<Categoria> listarCategoriasPrincipales() throws Exception {
+        try {
+            return categoriaRepository.findAll().stream()
+                    .filter(categoria -> categoria.getCategoriaPadre() == null)
+                    .collect(Collectors.toList());
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    @Transactional
+    public Categoria actualizarSubcategoria(Long id, Categoria subCategoria) throws Exception {
+        try {
+            Categoria subCategoriaExistente = categoriaRepository.findById(id).orElse(null);
+            if (subCategoriaExistente == null) {
+                return null; // No se encontró la subcategoría
+            }
+            subCategoriaExistente.setDenominacion(subCategoria.getDenominacion());
+            subCategoriaExistente.setEsInsumo(subCategoria.getEsInsumo());
+            return categoriaRepository.save(subCategoriaExistente); // Actualiza y guarda la subcategoría
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    @Transactional
+    public boolean eliminarSubcategoria(Long id) throws Exception {
+        try {
+            Categoria subCategoria = categoriaRepository.findById(id).orElse(null);
+            if (subCategoria == null) {
+                return false; // No se encontró la subcategoría
+            }
+            categoriaRepository.delete(subCategoria); // Elimina la subcategoría
+            return true;
+        } catch (Exception ex) {
             throw new Exception(ex.getMessage());
         }
     }

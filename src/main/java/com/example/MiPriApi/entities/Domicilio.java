@@ -23,6 +23,8 @@ public class Domicilio extends Base{
     private String calle;
 
     private Integer numero;
+    private Integer piso;
+    private Integer nroDpto;
     @Column(name = "codigoPostal")
     private Integer cp;
 

@@ -2,7 +2,10 @@ package com.example.MiPriApi.services;
 
 import com.example.MiPriApi.entities.ArticuloInsumo;
 import com.example.MiPriApi.entities.ArticuloManufacturado;
+import com.example.MiPriApi.entities.ArticuloManufacturadoDetalle;
 import com.example.MiPriApi.repositories.ArticuloInsumoRepository;
+import com.example.MiPriApi.repositories.ArticuloManufacturadoDetalleRepository;
+import com.example.MiPriApi.repositories.ArticuloManufacturadoRepository;
 import com.example.MiPriApi.repositories.BaseRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,12 @@ public class ArticuloInsumoService extends BaseService<ArticuloInsumo, Long>{
     @Autowired
     public ArticuloInsumoRepository articuloInsumoRepository;
 
+    @Autowired
+    public ArticuloManufacturadoRepository articuloManufacturadoRepository;
+
+    @Autowired
+    public ArticuloManufacturadoDetalleRepository articuloManufacturadoDetalleRepository;
+
     @Transactional
     public List<ArticuloInsumo> listarPorCategoria(Long idCategoria)throws Exception{
         try {
@@ -27,4 +36,61 @@ public class ArticuloInsumoService extends BaseService<ArticuloInsumo, Long>{
             throw new Exception(ex.getMessage());
         }
     }
+
+    @Transactional
+    public List<ArticuloInsumo> buscarPorDenominacion(String denominacion) throws Exception {
+        try {
+            return articuloInsumoRepository.findByDenominacionContainingIgnoreCase(denominacion);
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    @Transactional
+    public List<ArticuloInsumo> findAll() throws Exception {
+        try {
+            return articuloInsumoRepository.findAll();
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    @Transactional
+    public ArticuloInsumo modificar(Long id, ArticuloInsumo insumo) throws Exception {
+        ArticuloInsumo existente = buscarPorId(id)
+                .orElseThrow(() -> new Exception("Insumo no encontrado"));
+
+        // ... (actualiza los campos del insumo)
+        existente.setDenominacion(insumo.getDenominacion());
+        existente.setCategoria(insumo.getCategoria());
+        existente.setUnidadMedida(insumo.getUnidadMedida());
+        existente.setPrecioVenta(insumo.getPrecioVenta());
+        existente.setPrecioCompra(insumo.getPrecioCompra());
+        existente.setStockActual(insumo.getStockActual());
+        existente.setStockMaximo(insumo.getStockMaximo());
+        existente.setStockMinimo(insumo.getStockMinimo());
+        existente.setEsParaElaborar(insumo.getEsParaElaborar());
+
+
+        ArticuloInsumo actualizado = articuloInsumoRepository.save(existente);
+
+        // Recalcular precios de manufacturados que usan este insumo
+        List<ArticuloManufacturadoDetalle> detalles = articuloManufacturadoDetalleRepository.findAllByArticuloInsumoId(id);
+        for (ArticuloManufacturadoDetalle detalle : detalles) {
+            ArticuloManufacturado manufacturado = detalle.getArticuloManufacturado();
+            // Cargar detalles desde el repositorio para evitar lista vacía
+            List<ArticuloManufacturadoDetalle> detallesManufacturado = articuloManufacturadoDetalleRepository.findAllByArticuloManufacturadoId(manufacturado.getId());
+            double sumaInsumos = 0.0;
+            for (ArticuloManufacturadoDetalle d : detallesManufacturado) {
+                sumaInsumos += d.getArticuloInsumo().getPrecioCompra() * d.getCantidad();
+            }
+            double valorAgregado = manufacturado.getValorAgregado() != null ? manufacturado.getValorAgregado() : 0.0;
+            double nuevoPrecio = sumaInsumos + valorAgregado;
+            manufacturado.setPrecioVenta(nuevoPrecio);
+            articuloManufacturadoRepository.save(manufacturado);
+        }
+
+        return actualizado;
+    }
+
 }

@@ -6,22 +6,25 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 
 @Entity
-@Table(name = "articuloInsumos")
+@Table(name = "articulo_insumos")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 public class ArticuloInsumo extends Articulo {
 
-    private String denominacion;
     private Double precioCompra;
-    private Double precioVenta;
     private Integer stockActual;
     private Integer stockMaximo;
     private Integer stockMinimo;
     private Boolean esParaElaborar;
+
+
+    @Builder.Default
+    private Integer stockPendiente = 0;
 
 }

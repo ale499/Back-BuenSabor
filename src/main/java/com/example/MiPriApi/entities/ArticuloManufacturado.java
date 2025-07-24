@@ -1,19 +1,22 @@
 package com.example.MiPriApi.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import java.util.List;
 
 @Entity
 @Table(name = "articuloManufacturados")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@ToString(exclude = "detalles")
+@EqualsAndHashCode(exclude = "detalles")
+@SuperBuilder
 public class ArticuloManufacturado extends Articulo{
 
     private String descripcion;
@@ -22,7 +25,11 @@ public class ArticuloManufacturado extends Articulo{
 
     private String preparacion;
 
+    private Double valorAgregado;
 
+
+    @OneToMany(mappedBy = "articuloManufacturado", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<ArticuloManufacturadoDetalle> detalles = new HashSet<>();
 
 
 }
