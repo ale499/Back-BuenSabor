@@ -368,4 +368,56 @@ public class PedidoService extends BaseService<Pedido, Long> {
             throw new RuntimeException("Error al procesar el pago con Mercado Pago: " + e.getMessage());
         }
     }
+    /**
+     * Cambia el estado de un pedido.
+     *
+     * @param idPedido    ID del pedido a modificar.
+     * @param nuevoEstado Nuevo estado del pedido.
+     * @throws Exception Si el pedido no existe o hay un error al guardarlo.
+     */
+    @Transactional
+    public void cambiarEstado(Long idPedido, Estado nuevoEstado) throws Exception {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new Exception("Pedido no encontrado"));
+        pedido.setEstado(nuevoEstado);
+        pedidoRepository.save(pedido);
+
+        // Convertir el pedido a DTO para enviarlo por WebSocket
+        PedidoRequestDTO pedidoDTO = convertirPedidoADTO(pedido);
+
+        // Notificar al cliente sobre el cambio de estado
+        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), pedidoDTO);
+
+        System.out.println("Notificación WebSocket enviada al cliente ID: " + pedido.getCliente().getId());
+    }
+
+    // Método para convertir Pedido a PedidoRequestDTO
+    private PedidoRequestDTO convertirPedidoADTO(Pedido pedido) {
+        PedidoRequestDTO dto = new PedidoRequestDTO();
+        dto.setClienteId(pedido.getCliente().getId());
+        dto.setEstado(pedido.getEstado().toString());
+        dto.setTotal(pedido.getTotal());
+        dto.setTotalCosto(pedido.getTotalCosto());
+
+        // Convertir detalles si es necesario
+        List<DetallePedidoRequestDTO> itemsDTO = new ArrayList<>();
+        for (DetallePedido detalle : pedido.getDetalles()) {
+            DetallePedidoRequestDTO itemDTO = new DetallePedidoRequestDTO();
+            itemDTO.setArticuloId(detalle.getArticulo().getId());
+            itemDTO.setCantidad(detalle.getCantidad());
+            itemDTO.setSubTotal(detalle.getSubTotal());
+
+            // Determinar tipo de artículo
+            if (detalle.getArticulo() instanceof ArticuloInsumo) {
+                itemDTO.setTipoArticulo("INSUMO");
+            } else if (detalle.getArticulo() instanceof ArticuloManufacturado) {
+                itemDTO.setTipoArticulo("MANUFACTURADO");
+            }
+
+            itemsDTO.add(itemDTO);
+        }
+        dto.setItems(itemsDTO);
+
+        return dto;
+    }
 }

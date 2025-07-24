@@ -128,7 +128,7 @@ public class MiPriApiApplication {
 					});
 
 			// Verificar y crear cliente
-			Cliente cliente = clienteRepository.findByUsuario_Username("clienteUser")
+		/*	Cliente cliente = clienteRepository.findByUsuario_Username("clienteUser")
 					.orElseGet(() -> {
 						Cliente nuevoCliente = Cliente.builder()
 								.nombre("Cliente")
@@ -143,7 +143,7 @@ public class MiPriApiApplication {
 					});
 
 			System.out.println("Cliente de prueba creado con éxito.");
-
+        */
 			// Crear una sucursal
 			Sucursal sucursal = sucursalRepository.findByNombre("Sucursal Centro")
 					.orElseGet(() -> {
