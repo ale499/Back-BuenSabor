@@ -25,4 +25,10 @@ public interface PedidoRepository extends BaseRepository<Pedido, Long> {
 
     @Query("SELECT MAX(p.numeroPedido) FROM Pedido p")
     Integer findMaxNumeroPedido();
+
+    // Metodo para sumar el total de pedidos por estado
+    @Query("SELECT SUM(p.total) FROM Pedido p WHERE p.estado = :estado")
+    Double sumTotalByEstado(String estado);
+
+
 }
