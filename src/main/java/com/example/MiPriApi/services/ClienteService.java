@@ -105,4 +105,10 @@ public class ClienteService extends BaseService<Cliente, Long> {
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
         return cliente.getPedidos();
     }
+
+    public Cliente buscarPorEmail(String email) throws Exception {
+        return clienteRepository.findByEmail(email)
+                .orElseThrow(() -> new Exception("Cliente no encontrado con email: " + email));
+    }
+
 }

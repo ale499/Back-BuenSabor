@@ -48,6 +48,8 @@ dependencies {
 	//WebSocket
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
+	//pruebas
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
 
 }
 
