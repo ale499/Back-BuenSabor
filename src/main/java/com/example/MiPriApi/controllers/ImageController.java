@@ -2,6 +2,7 @@ package com.example.MiPriApi.controllers;
 
 
 import com.example.MiPriApi.services.Cloudinary.ImageService;
+import com.example.MiPriApi.services.Cloudinary.ImageServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +48,29 @@ public class ImageController {
             return ResponseEntity.status(500).body("An error occurred"); // Respuesta HTTP 500 si ocurre un error inesperado
         }
     }
+    // Metodo POST para eliminar la primera imagen de una entidad
+    @PostMapping("/deleteFirstImageFromEntity")
+    public ResponseEntity<String> deleteFirstImageFromEntity(
+            @RequestParam("entityId") Long entityId,
+            @RequestParam("entityType") String entityType) {
+        try {
+            // Get images for the entity
+            List<Map<String, Object>> images = imageService.getImagesByEntity(entityId, entityType).getBody();
+            if (images == null || images.isEmpty()) {
+                return ResponseEntity.badRequest().body("No images found for entity");
+            }
+            // Get first image's id and publicId
+            Map<String, Object> image = images.get(0);
+            UUID imageId = UUID.fromString(image.get("id").toString());
+            String publicId = image.get("url").toString(); // If you store publicId separately, adjust this
+
+            // Call delete logic
+            return ((ImageServiceImpl) imageService).deleteImageFromEntity(entityId, entityType, imageId, publicId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error deleting image from entity");
+        }
+    }
 
     // Metodo GET para obtener todas las imágenes almacenadas
     @GetMapping("/getImages")
@@ -57,6 +81,13 @@ public class ImageController {
             e.printStackTrace();
             return null; // Manejo básico de errores, se puede mejorar para devolver una respuesta más específica
         }
+    }
+
+    @GetMapping("/byEntity")
+    public ResponseEntity<List<Map<String, Object>>> getImagesByEntity(
+            @RequestParam Long entityId,
+            @RequestParam String entityType) {
+        return imageService.getImagesByEntity(entityId, entityType);
     }
 
     @PostMapping("/uploadToEntity")

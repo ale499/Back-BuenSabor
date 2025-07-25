@@ -449,7 +449,9 @@ public class MiPriApiApplication {
 		};
 
 	}
-  /*
+
+	/*
+
 	@Bean
 	public CommandLineRunner run(RoleAuth0Service roleService,
 								 RoleBBDDService roleServicebbdd,
@@ -503,6 +505,73 @@ public class MiPriApiApplication {
 
 	}
 
+	@Bean
+	public CommandLineRunner runChefDelivery(RoleAuth0Service roleService,
+											 RoleBBDDService roleServicebbdd,
+											 UserAuth0Service userService,
+											 UserBBDDService userBBDDService) {
+		return args -> {
+			// Create Chef role
+			RoleDTO rolChefDTO = new RoleDTO();
+			rolChefDTO.setName("Chef");
+			rolChefDTO.setDescription("Chef del local");
+			crearRolInicial(rolChefDTO, roleService, roleServicebbdd);
+
+			// Create Delivery role
+			RoleDTO rolDeliveryDTO = new RoleDTO();
+			rolDeliveryDTO.setName("Delivery");
+			rolDeliveryDTO.setDescription("Repartidor del local");
+			crearRolInicial(rolDeliveryDTO, roleService, roleServicebbdd);
+
+			// Create Chef user
+			Roles rolChef = roleServicebbdd.findByName("Chef");
+			UserDTO chefDTO = new UserDTO();
+			chefDTO.setEmail("chef@buensabor.com");
+			chefDTO.setName("Chef");
+			chefDTO.setNickName("chef principal");
+			chefDTO.setPassword("Chef@chef");
+			chefDTO.setConnection("Username-Password-Authentication");
+			chefDTO.setRoles(List.of(rolChef.getAuth0RoleId()));
+
+			com.auth0.json.mgmt.users.User newChefUser = userService.createUser(chefDTO);
+			userService.assignRoles(newChefUser.getId(), chefDTO.getRoles());
+
+			User chefBBDD = User.builder()
+					.auth0Id(newChefUser.getId())
+					.name(newChefUser.getName())
+					.roles(Set.of(rolChef))
+					.nickName(chefDTO.getNickName())
+					.userEmail(newChefUser.getEmail())
+					.build();
+			userBBDDService.save(chefBBDD);
+
+			// Create Delivery user
+			Roles rolDelivery = roleServicebbdd.findByName("Delivery");
+			UserDTO deliveryDTO = new UserDTO();
+			deliveryDTO.setEmail("delivery@buensabor.com");
+			deliveryDTO.setName("Delivery");
+			deliveryDTO.setNickName("delivery principal");
+			deliveryDTO.setPassword("Delivery@delivery");
+			deliveryDTO.setConnection("Username-Password-Authentication");
+			deliveryDTO.setRoles(List.of(rolDelivery.getAuth0RoleId()));
+
+			com.auth0.json.mgmt.users.User newDeliveryUser = userService.createUser(deliveryDTO);
+			userService.assignRoles(newDeliveryUser.getId(), deliveryDTO.getRoles());
+
+			User deliveryBBDD = User.builder()
+					.auth0Id(newDeliveryUser.getId())
+					.name(newDeliveryUser.getName())
+					.roles(Set.of(rolDelivery))
+					.nickName(deliveryDTO.getNickName())
+					.userEmail(newDeliveryUser.getEmail())
+					.build();
+			userBBDDService.save(deliveryBBDD);
+
+			System.out.println("Roles y usuarios Chef y Delivery creados correctamente.");
+		};
+	}
+
+
 	private void crearRolInicial(RoleDTO roleDTO,
 								 RoleAuth0Service roleService,
 								 RoleBBDDService roleServicebbdd) throws Exception {
@@ -533,6 +602,6 @@ public class MiPriApiApplication {
 		}
 	}
 
+*/
 
-   */
 }

@@ -51,4 +51,22 @@ public class StockService {
             }
         }
     }
+
+    public void revertirStockPendiente(Pedido pedido) {
+        List<DetallePedido> detalles = pedido.getDetalles();
+        for (DetallePedido detalle : detalles) {
+            Articulo articulo = detalle.getArticulo();
+            if (articulo instanceof ArticuloInsumo insumo) {
+                insumo.setStockPendiente(insumo.getStockPendiente() - detalle.getCantidad());
+                articuloInsumoRepository.save(insumo);
+            } else if (articulo instanceof ArticuloManufacturado manufacturado) {
+                for (ArticuloManufacturadoDetalle det : manufacturado.getDetalles()) {
+                    ArticuloInsumo insumo = det.getArticuloInsumo();
+                    int cantidadTotal = det.getCantidad() * detalle.getCantidad();
+                    insumo.setStockPendiente(insumo.getStockPendiente() - cantidadTotal);
+                    articuloInsumoRepository.save(insumo);
+                }
+            }
+        }
+    }
 }

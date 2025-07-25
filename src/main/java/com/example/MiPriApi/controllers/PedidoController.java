@@ -114,6 +114,17 @@ public class PedidoController extends BaseController<Pedido, Long>{
         pedidoService.confirmarPedido(idPedido, request);
         return ResponseEntity.ok("Pedido confirmado correctamente");
     }
+
+    @PostMapping("/{idPedido}/cancelar")
+    public ResponseEntity<?> cancelarPedido(@PathVariable Long idPedido) {
+        try {
+            pedidoService.cancelarPedido(idPedido);
+            return ResponseEntity.ok("Pedido cancelado correctamente");
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
+
     @GetMapping("/{id}/detalles")
     public ResponseEntity<List<DetallePedidoResponseDTO>> obtenerDetalles(@PathVariable Long id) throws Exception {
         Pedido pedido = pedidoService.buscarPorId(id)

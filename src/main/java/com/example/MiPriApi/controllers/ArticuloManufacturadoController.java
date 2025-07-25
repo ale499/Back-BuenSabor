@@ -41,17 +41,11 @@ public class ArticuloManufacturadoController extends BaseController<ArticuloManu
     }
 
     @PutMapping("/modificar/{id}")
-    public ResponseEntity<ArticuloManufacturado> modificarArticuloManufacturado(@PathVariable Long id, @RequestBody ArticuloManufacturado articuloManufacturado) throws Exception {
-        ArticuloManufacturado articuloExistente = service.buscarPorId(id).orElseThrow(() -> new Exception("Artículo manufacturado no encontrado"));
-        articuloExistente.setDescripcion(articuloManufacturado.getDescripcion());
-        articuloExistente.setTiempoEstimadoMinutos(articuloManufacturado.getTiempoEstimadoMinutos());
-        articuloExistente.setPreparacion(articuloManufacturado.getPreparacion());
-        articuloExistente.setDenominacion(articuloManufacturado.getDenominacion());
-        articuloExistente.setPrecioVenta(articuloManufacturado.getPrecioVenta());
-        articuloExistente.setCategoria(articuloManufacturado.getCategoria());
-        articuloExistente.setUnidadMedida(articuloManufacturado.getUnidadMedida());
-        articuloExistente.setTiempoPreparacion(articuloManufacturado.getTiempoPreparacion());
-        return ResponseEntity.ok(service.actualizar(articuloExistente));
+    public ResponseEntity<ArticuloManufacturado> modificarArticuloManufacturado(
+            @PathVariable Long id,
+            @RequestBody ArticuloManufacturado articuloManufacturado) throws Exception {
+        ArticuloManufacturado actualizado = service.modificarConDetalles(id, articuloManufacturado);
+        return ResponseEntity.ok(actualizado);
     }
 
     @GetMapping("/buscarPorDenominacion")

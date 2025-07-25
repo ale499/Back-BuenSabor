@@ -171,7 +171,7 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
         pedido = pedidoRepository.save(pedido);
 
-// Save DetallePedido items
+       // Save DetallePedido items
         List<DetallePedido> detalles = new ArrayList<>();
         for (DetallePedidoRequestDTO item : pedidoRequest.getItems()) {
             Articulo articulo;
@@ -274,9 +274,18 @@ public class PedidoService extends BaseService<Pedido, Long> {
         return suma;
     }
 
+    public void cancelarPedido(Long idPedido) throws Exception {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new Exception("Pedido not found with ID: " + idPedido));
+        stockService.revertirStockPendiente(pedido);
+        pedido.setEstado(Estado.CANCELADO);
+        pedidoRepository.save(pedido);
+    }
+
     public void eliminarPedido(Long idPedido) throws Exception {
         Pedido pedido = pedidoRepository.findById(idPedido)
                 .orElseThrow(() -> new Exception("Pedido not found with ID: " + idPedido));
+        stockService.revertirStockPendiente(pedido);
         pedidoRepository.delete(pedido);
     }
 
