@@ -20,6 +20,7 @@ public abstract class Persona extends Base implements Serializable{
     protected String nombre;
     protected String apellido;
     protected String telefono;
+    @Column(unique = true)
     protected String email;
     protected String fechaNacimiento;
 

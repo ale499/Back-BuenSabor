@@ -18,5 +18,3 @@ public class PedidoWebSocketController {
         messagingTemplate.convertAndSend("/topic/pedidos/" + clienteId, pedido);
     }
 }
-
-

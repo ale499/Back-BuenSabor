@@ -312,6 +312,31 @@ public class PedidoService extends BaseService<Pedido, Long> {
         // Establecer fecha del pedido
         pedido.setFechaPedido(LocalDate.now());
 
+        // NUEVO: Verificar y guardar cliente si es necesario
+        if (pedido.getCliente() != null && pedido.getCliente().getEmail() != null) {
+            String email = pedido.getCliente().getEmail();
+            Cliente clienteExistente = clienteRepository.findByEmail(email)
+                    .orElse(null);
+
+            if (clienteExistente == null) {
+                // Si no existe, guardarlo primero
+                clienteExistente = clienteRepository.save(pedido.getCliente());
+                System.out.println("Cliente nuevo creado con ID: " + clienteExistente.getId());
+            } else {
+                System.out.println("Cliente existente encontrado con ID: " + clienteExistente.getId());
+            }
+
+            // Asignar el cliente existente o recién guardado al pedido
+            pedido.setCliente(clienteExistente);
+        } else if (pedido.getCliente() != null && pedido.getCliente().getId() != null) {
+            // Si viene con ID, verificar que exista
+            Cliente clienteExistente = clienteRepository.findById(pedido.getCliente().getId())
+                    .orElseThrow(() -> new Exception("Cliente no encontrado con ID: " + pedido.getCliente().getId()));
+            pedido.setCliente(clienteExistente);
+        } else {
+            throw new Exception("Se requiere un cliente con email o ID para crear un pedido");
+        }
+
         // Asociar detalles al pedido
         if (pedido.getDetalles() != null) {
             for (DetallePedido detalle : pedido.getDetalles()) {
@@ -351,5 +376,57 @@ public class PedidoService extends BaseService<Pedido, Long> {
         } catch (MPException | MPApiException e) {
             throw new RuntimeException("Error al procesar el pago con Mercado Pago: " + e.getMessage());
         }
+    }
+    /**
+     * Cambia el estado de un pedido.
+     *
+     * @param idPedido    ID del pedido a modificar.
+     * @param nuevoEstado Nuevo estado del pedido.
+     * @throws Exception Si el pedido no existe o hay un error al guardarlo.
+     */
+    @Transactional
+    public void cambiarEstado(Long idPedido, Estado nuevoEstado) throws Exception {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new Exception("Pedido no encontrado"));
+        pedido.setEstado(nuevoEstado);
+        pedidoRepository.save(pedido);
+
+        // Convertir el pedido a DTO para enviarlo por WebSocket
+        PedidoRequestDTO pedidoDTO = convertirPedidoADTO(pedido);
+
+        // Notificar al cliente sobre el cambio de estado
+        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), pedidoDTO);
+
+        System.out.println("Notificación WebSocket enviada al cliente ID: " + pedido.getCliente().getId());
+    }
+
+    // Método para convertir Pedido a PedidoRequestDTO
+    private PedidoRequestDTO convertirPedidoADTO(Pedido pedido) {
+        PedidoRequestDTO dto = new PedidoRequestDTO();
+        dto.setClienteId(pedido.getCliente().getId());
+        dto.setEstado(pedido.getEstado().toString());
+        dto.setTotal(pedido.getTotal());
+        dto.setTotalCosto(pedido.getTotalCosto());
+
+        // Convertir detalles si es necesario
+        List<DetallePedidoRequestDTO> itemsDTO = new ArrayList<>();
+        for (DetallePedido detalle : pedido.getDetalles()) {
+            DetallePedidoRequestDTO itemDTO = new DetallePedidoRequestDTO();
+            itemDTO.setArticuloId(detalle.getArticulo().getId());
+            itemDTO.setCantidad(detalle.getCantidad());
+            itemDTO.setSubTotal(detalle.getSubTotal());
+
+            // Determinar tipo de artículo
+            if (detalle.getArticulo() instanceof ArticuloInsumo) {
+                itemDTO.setTipoArticulo("INSUMO");
+            } else if (detalle.getArticulo() instanceof ArticuloManufacturado) {
+                itemDTO.setTipoArticulo("MANUFACTURADO");
+            }
+
+            itemsDTO.add(itemDTO);
+        }
+        dto.setItems(itemsDTO);
+
+        return dto;
     }
 }

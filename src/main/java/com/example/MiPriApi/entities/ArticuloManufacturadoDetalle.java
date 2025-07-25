@@ -7,13 +7,15 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Table(name = "articuloManufacturadoDetalles")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = "detalles")
-@EqualsAndHashCode(exclude = "detalles")
+@ToString(exclude = "articuloManufacturado")
+@EqualsAndHashCode(exclude = "articuloManufacturado")
 @Builder
 public class ArticuloManufacturadoDetalle extends Base{
 
@@ -21,10 +23,11 @@ public class ArticuloManufacturadoDetalle extends Base{
 
     @ManyToOne
     @JoinColumn(name = "ArticuloManufacturadoId", nullable = false)
-    @JsonIgnore
+    @JsonBackReference
     private ArticuloManufacturado articuloManufacturado;
 
     @ManyToOne
     @JoinColumn(name = "articuloInsumoId")
+
     private ArticuloInsumo articuloInsumo;
 }
