@@ -30,7 +30,6 @@ public class ArticuloManufacturado extends Articulo{
 
 
     @OneToMany(mappedBy = "articuloManufacturado", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JsonManagedReference
     private Set<ArticuloManufacturadoDetalle> detalles = new HashSet<>();
 
 

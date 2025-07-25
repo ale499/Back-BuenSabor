@@ -23,7 +23,7 @@ public class ArticuloManufacturadoDetalle extends Base{
 
     @ManyToOne
     @JoinColumn(name = "ArticuloManufacturadoId", nullable = false)
-    @JsonBackReference
+    @JsonIgnore
     private ArticuloManufacturado articuloManufacturado;
 
     @ManyToOne
