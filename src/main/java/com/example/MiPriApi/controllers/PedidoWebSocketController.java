@@ -16,5 +16,6 @@ public class PedidoWebSocketController {
 
     public void notificarCliente(Long clienteId, PedidoRequestDTO pedido) {
         messagingTemplate.convertAndSend("/topic/pedidos/" + clienteId, pedido);
+        messagingTemplate.convertAndSend("/topic/pedidos", pedido);
     }
 }
