@@ -123,6 +123,50 @@ public class PedidoService extends BaseService<Pedido, Long> {
         pedido.setDomicilio(domicilio);
         pedido.setSucursal(sucursal);
 
+        //Esto es para el set detalles (detalles de los pedidos)
+        // Save DetallePedido items
+        List<DetallePedido> detalles = new ArrayList<>();
+        for (DetallePedidoRequestDTO item : pedidoRequest.getItems()) {
+            Articulo articulo;
+            if ("INSUMO".equalsIgnoreCase(item.getTipoArticulo())) {
+                articulo = articuloInsumoRepository.findById(item.getArticuloId())
+                        .orElseThrow(() -> new Exception("Insumo no encontrado"));
+                ArticuloInsumo insumo = (ArticuloInsumo) articulo;
+                int disponible = insumo.getStockActual() - insumo.getStockPendiente();
+                if (disponible < item.getCantidad()) {
+                    throw new Exception("Stock insuficiente para " + insumo.getDenominacion());
+                }
+                insumo.setStockPendiente(insumo.getStockPendiente() + item.getCantidad());
+                articuloInsumoRepository.save(insumo);
+            } else if ("MANUFACTURADO".equalsIgnoreCase(item.getTipoArticulo())) {
+                articulo = articuloManufacturadoRepository.findById(item.getArticuloId())
+                        .orElseThrow(() -> new Exception("Manufacturado no encontrado"));
+                ArticuloManufacturado manufacturado = (ArticuloManufacturado) articulo;
+                for (ArticuloManufacturadoDetalle det : manufacturado.getDetalles()) {
+                    ArticuloInsumo insumo = det.getArticuloInsumo();
+                    int cantidadTotal = det.getCantidad() * item.getCantidad();
+                    int disponible = insumo.getStockActual() - insumo.getStockPendiente();
+                    if (disponible < cantidadTotal) {
+                        throw new Exception("Stock insuficiente para " + insumo.getDenominacion());
+                    }
+                    insumo.setStockPendiente(insumo.getStockPendiente() + cantidadTotal);
+                    articuloInsumoRepository.save(insumo);
+                }
+            } else {
+                throw new Exception("Tipo de artículo no válido");
+            }
+
+            DetallePedido detalle = new DetallePedido();
+            detalle.setPedido(pedido);
+            detalle.setArticulo(articulo);
+            detalle.setCantidad(item.getCantidad());
+            detalle.setSubTotal(item.getSubTotal());
+            detalles.add(detalle);
+        }
+
+        pedido.setDetalles(detalles);
+        pedidoRepository.save(pedido);
+
         if (pedidoRequest.getEmpleadoId() != null) {
             Empleado empleado = empleadoRepository.findById(pedidoRequest.getEmpleadoId())
                     .orElseThrow(() -> new Exception("Empleado no encontrado"));
@@ -171,47 +215,13 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
         pedido = pedidoRepository.save(pedido);
 
-       // Save DetallePedido items
-        List<DetallePedido> detalles = new ArrayList<>();
-        for (DetallePedidoRequestDTO item : pedidoRequest.getItems()) {
-            Articulo articulo;
-            if ("INSUMO".equalsIgnoreCase(item.getTipoArticulo())) {
-                articulo = articuloInsumoRepository.findById(item.getArticuloId())
-                        .orElseThrow(() -> new Exception("Insumo no encontrado"));
-                ArticuloInsumo insumo = (ArticuloInsumo) articulo;
-                int disponible = insumo.getStockActual() - insumo.getStockPendiente();
-                if (disponible < item.getCantidad()) {
-                    throw new Exception("Stock insuficiente para " + insumo.getDenominacion());
-                }
-                insumo.setStockPendiente(insumo.getStockPendiente() + item.getCantidad());
-                articuloInsumoRepository.save(insumo);
-            } else if ("MANUFACTURADO".equalsIgnoreCase(item.getTipoArticulo())) {
-                articulo = articuloManufacturadoRepository.findById(item.getArticuloId())
-                        .orElseThrow(() -> new Exception("Manufacturado no encontrado"));
-                ArticuloManufacturado manufacturado = (ArticuloManufacturado) articulo;
-                for (ArticuloManufacturadoDetalle det : manufacturado.getDetalles()) {
-                    ArticuloInsumo insumo = det.getArticuloInsumo();
-                    int cantidadTotal = det.getCantidad() * item.getCantidad();
-                    int disponible = insumo.getStockActual() - insumo.getStockPendiente();
-                    if (disponible < cantidadTotal) {
-                        throw new Exception("Stock insuficiente para " + insumo.getDenominacion());
-                    }
-                    insumo.setStockPendiente(insumo.getStockPendiente() + cantidadTotal);
-                    articuloInsumoRepository.save(insumo);
-                }
-            } else {
-                throw new Exception("Tipo de artículo no válido");
-            }
 
-            DetallePedido detalle = new DetallePedido();
-            detalle.setPedido(pedido);
-            detalle.setArticulo(articulo);
-            detalle.setCantidad(item.getCantidad());
-            detalle.setSubTotal(item.getSubTotal());
-            detalles.add(detalle);
-        }
         detallePedidoRepository.saveAll(detalles);
 
+        PedidoRequestDTO dto = convertirPedidoADTO(pedido);
+        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
+
+        // Convertir a DTO y notificar por WebSocket
         pedido.setDetalles(detalles);
         pedidoRepository.save(pedido);
     }
