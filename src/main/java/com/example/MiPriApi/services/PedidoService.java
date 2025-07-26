@@ -280,6 +280,10 @@ public class PedidoService extends BaseService<Pedido, Long> {
         stockService.revertirStockPendiente(pedido);
         pedido.setEstado(Estado.CANCELADO);
         pedidoRepository.save(pedido);
+
+        // Notificar al cliente por WebSocket
+        PedidoRequestDTO pedidoDTO = convertirPedidoADTO(pedido);
+        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), pedidoDTO);
     }
 
     public void eliminarPedido(Long idPedido) throws Exception {
@@ -287,6 +291,11 @@ public class PedidoService extends BaseService<Pedido, Long> {
                 .orElseThrow(() -> new Exception("Pedido not found with ID: " + idPedido));
         stockService.revertirStockPendiente(pedido);
         pedidoRepository.delete(pedido);
+
+        // Notificar al cliente por WebSocket (puedes enviar solo el ID y estado ELIMINADO)
+        PedidoRequestDTO pedidoDTO = convertirPedidoADTO(pedido);
+        pedidoDTO.setEstado("ELIMINADO");
+        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), pedidoDTO);
     }
 
     @Transactional
@@ -403,6 +412,7 @@ public class PedidoService extends BaseService<Pedido, Long> {
     // Método para convertir Pedido a PedidoRequestDTO
     private PedidoRequestDTO convertirPedidoADTO(Pedido pedido) {
         PedidoRequestDTO dto = new PedidoRequestDTO();
+        dto.setId(pedido.getId());
         dto.setClienteId(pedido.getCliente().getId());
         dto.setEstado(pedido.getEstado().toString());
         dto.setTotal(pedido.getTotal());

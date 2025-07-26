@@ -27,7 +27,7 @@ public class MercadoPagoService {
         MercadoPagoConfig.setAccessToken(accessToken);
 
            PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                .success("http://localhost:5173")
+                .success("https://el-buen-sabor-web.vercel.app/")
                 .failure("http://localhost:8080/pago-fallido")
                 .pending("http://localhost:8080/pago-pendiente")
                 .build();
