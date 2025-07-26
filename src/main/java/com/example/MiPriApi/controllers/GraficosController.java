@@ -1,4 +1,5 @@
 package com.example.MiPriApi.controllers;
+import com.example.MiPriApi.entities.enums.Estado;
 import com.example.MiPriApi.repositories.DetallePedidoRepository;
 import com.example.MiPriApi.repositories.PedidoRepository;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +25,7 @@ public class GraficosController {
     @GetMapping("/ventas/total")
     public Double getTotalVentas() {
         // Asume que el estado CONFIRMADO es un enum o string
-        return pedidoRepository.sumTotalByEstado("CONFIRMADO");
+        return pedidoRepository.sumTotalByEstado(Estado.PENDIENTE);
     }
 
     @GetMapping("/pedidos/total")

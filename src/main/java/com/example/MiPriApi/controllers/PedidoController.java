@@ -38,6 +38,8 @@ public class PedidoController extends BaseController<Pedido, Long>{
 
     //listar pedidos por email del cliente
 
+
+
     @GetMapping("/cliente/email/{email}")
     public ResponseEntity<List<Pedido>> listarPorClienteEmail(@PathVariable String email) throws Exception {
         List<Pedido> pedidos = pedidoService.listarPorClienteEmail(email);
