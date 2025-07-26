@@ -218,12 +218,13 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
         detallePedidoRepository.saveAll(detalles);
 
+        pedido.setDetalles(detalles);
+        pedidoRepository.save(pedido);
+
+        // Notificar al cliente por WebSocket
         PedidoRequestDTO dto = convertirPedidoADTO(pedido);
         pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
 
-        // Convertir a DTO y notificar por WebSocket
-        pedido.setDetalles(detalles);
-        pedidoRepository.save(pedido);
     }
 
     @Transactional
