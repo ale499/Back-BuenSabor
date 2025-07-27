@@ -1,19 +1,18 @@
 package com.example.MiPriApi.services;
 
 import com.example.MiPriApi.controllers.PedidoWebSocketController;
-import com.example.MiPriApi.entities.DTO.DetallePedidoRequestDTO;
-import com.example.MiPriApi.entities.DTO.ItemDTO;
-import com.example.MiPriApi.entities.DTO.PedidoRequestDTO;
-import com.example.MiPriApi.entities.DTO.ConfirmarPedidoRequestDTO;
+import com.example.MiPriApi.entities.DTO.*;
 import com.example.MiPriApi.entities.*;
 import com.example.MiPriApi.entities.enums.Estado;
 import com.example.MiPriApi.entities.enums.FormaPago;
 import com.example.MiPriApi.entities.enums.TipoEnvio;
 import com.example.MiPriApi.repositories.*;
+import com.example.MiPriApi.services.Mappers.PedidoResponseMapper;
 import com.mercadopago.exceptions.MPApiException;
 import com.mercadopago.exceptions.MPException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Service;
 
 
@@ -222,8 +221,9 @@ public class PedidoService extends BaseService<Pedido, Long> {
         pedidoRepository.save(pedido);
 
         // Notificar al cliente por WebSocket
-        PedidoRequestDTO dto = convertirPedidoADTO(pedido);
+        PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
         pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
+
 
     }
 
@@ -257,11 +257,10 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
             detalles.add(detalle);
 
-            pedidoWebSocketController.notificarCliente(
-                    pedido.getCliente().getId(),
-                    pedidoRequest
-            );
+
         }
+        PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
+        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
 
         // Relación bidireccional
         pedido.setDetalles(detalles);
@@ -293,8 +292,9 @@ public class PedidoService extends BaseService<Pedido, Long> {
         pedidoRepository.save(pedido);
 
         // Notificar al cliente por WebSocket
-        PedidoRequestDTO pedidoDTO = convertirPedidoADTO(pedido);
-        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), pedidoDTO);
+        PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
+        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
+
     }
 
     public void eliminarPedido(Long idPedido) throws Exception {
@@ -304,12 +304,14 @@ public class PedidoService extends BaseService<Pedido, Long> {
         pedidoRepository.delete(pedido);
 
         // Notificar al cliente por WebSocket (puedes enviar solo el ID y estado ELIMINADO)
-        PedidoRequestDTO pedidoDTO = convertirPedidoADTO(pedido);
-        pedidoDTO.setEstado("ELIMINADO");
+        PedidoResponseDTO pedidoDTO = PedidoResponseMapper.toDTO(pedido);
+        pedidoDTO.setEstado("ELIMINADO"); // si querés marcarlo eliminado explícitamente
         pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), pedidoDTO);
+
     }
 
     @Transactional
+    @SendTo("/topic/pedidos")
     public void confirmarPedido(Long idPedido, ConfirmarPedidoRequestDTO request) throws Exception {
         Pedido pedido = pedidoRepository.findById(idPedido)
                 .orElseThrow(() -> new Exception("Pedido no encontrado"));
@@ -324,6 +326,8 @@ public class PedidoService extends BaseService<Pedido, Long> {
         pedido.setHoraEstimadaFinalizacion(horaEstimada);
 
         pedidoRepository.save(pedido);
+        PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
+        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
     }
 
 
@@ -405,17 +409,16 @@ public class PedidoService extends BaseService<Pedido, Long> {
      * @throws Exception Si el pedido no existe o hay un error al guardarlo.
      */
     @Transactional
+    @SendTo("/topic/pedidos")
     public void cambiarEstado(Long idPedido, Estado nuevoEstado) throws Exception {
         Pedido pedido = pedidoRepository.findById(idPedido)
                 .orElseThrow(() -> new Exception("Pedido no encontrado"));
         pedido.setEstado(nuevoEstado);
         pedidoRepository.save(pedido);
 
-        // Convertir el pedido a DTO para enviarlo por WebSocket
-        PedidoRequestDTO pedidoDTO = convertirPedidoADTO(pedido);
+        PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
+        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
 
-        // Notificar al cliente sobre el cambio de estado
-        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), pedidoDTO);
 
         System.out.println("Notificación WebSocket enviada al cliente ID: " + pedido.getCliente().getId());
     }
