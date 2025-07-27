@@ -7,22 +7,19 @@ import com.example.MiPriApi.entities.enums.TipoEnvio;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "pedidos")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class Pedido extends Base{
 
     private Integer numeroPedido;
@@ -61,6 +58,17 @@ public class Pedido extends Base{
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference // Permite la serialización de los detalles del pedido sin causar recursividad infinita
     private List<DetallePedido> detalles; // <-- Agrega esta línea
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Pedido pedido = (Pedido) o;
+        return getId() != null && getId().equals(pedido.getId());
+    }
 
+    @Override
+    public int hashCode() {
+        return getId() != null ? getId().hashCode() : 0;
+    }
 
 }

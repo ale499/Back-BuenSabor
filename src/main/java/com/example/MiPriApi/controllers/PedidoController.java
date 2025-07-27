@@ -2,6 +2,7 @@ package com.example.MiPriApi.controllers;
 
 import com.example.MiPriApi.entities.*;
 import com.example.MiPriApi.entities.DTO.*;
+import com.example.MiPriApi.entities.enums.Estado;
 import com.example.MiPriApi.services.*;
 import com.example.MiPriApi.repositories.*;
 import com.example.MiPriApi.services.Mappers.PedidoMapper;
@@ -36,6 +37,8 @@ public class PedidoController extends BaseController<Pedido, Long>{
     }
 
     //listar pedidos por email del cliente
+
+
 
     @GetMapping("/cliente/email/{email}")
     public ResponseEntity<List<Pedido>> listarPorClienteEmail(@PathVariable String email) throws Exception {
@@ -133,5 +136,11 @@ public class PedidoController extends BaseController<Pedido, Long>{
         return ResponseEntity.ok(dtoList);
     }
 
-
+    @PostMapping("/{idPedido}/estado")
+    public ResponseEntity<?> cambiarEstadoPedido(
+            @PathVariable Long idPedido,
+            @RequestParam Estado nuevoEstado) throws Exception {
+        pedidoService.cambiarEstado(idPedido, nuevoEstado);
+        return ResponseEntity.ok("Estado del pedido actualizado correctamente");
+    }
 }

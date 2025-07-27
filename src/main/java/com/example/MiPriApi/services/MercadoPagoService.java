@@ -26,13 +26,13 @@ public class MercadoPagoService {
     public String crearPreferencia(List<PreferenceItemRequest> items) throws MPException, MPApiException {
         MercadoPagoConfig.setAccessToken(accessToken);
 
-        PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                .success("https://www.bbc.com/mundo/noticias-59971766")
+           PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
+                .success("https://el-buen-sabor-web.vercel.app/")
                 .failure("http://localhost:8080/pago-fallido")
                 .pending("http://localhost:8080/pago-pendiente")
                 .build();
 
-        PreferenceRequest preferenceRequest = PreferenceRequest.builder()
+           PreferenceRequest preferenceRequest = PreferenceRequest.builder()
                 .items(items)
                 .backUrls(backUrls)
                 .autoReturn("approved")

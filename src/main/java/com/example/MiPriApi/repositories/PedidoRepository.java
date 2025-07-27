@@ -1,6 +1,7 @@
 package com.example.MiPriApi.repositories;
 
 import com.example.MiPriApi.entities.Pedido;
+import com.example.MiPriApi.entities.enums.Estado;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -28,7 +29,7 @@ public interface PedidoRepository extends BaseRepository<Pedido, Long> {
 
     // Metodo para sumar el total de pedidos por estado
     @Query("SELECT SUM(p.total) FROM Pedido p WHERE p.estado = :estado")
-    Double sumTotalByEstado(String estado);
+    Double sumTotalByEstado(Estado estado);
 
 
 }

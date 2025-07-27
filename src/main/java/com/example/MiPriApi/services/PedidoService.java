@@ -1,19 +1,18 @@
 package com.example.MiPriApi.services;
 
 import com.example.MiPriApi.controllers.PedidoWebSocketController;
-import com.example.MiPriApi.entities.DTO.DetallePedidoRequestDTO;
-import com.example.MiPriApi.entities.DTO.ItemDTO;
-import com.example.MiPriApi.entities.DTO.PedidoRequestDTO;
-import com.example.MiPriApi.entities.DTO.ConfirmarPedidoRequestDTO;
+import com.example.MiPriApi.entities.DTO.*;
 import com.example.MiPriApi.entities.*;
 import com.example.MiPriApi.entities.enums.Estado;
 import com.example.MiPriApi.entities.enums.FormaPago;
 import com.example.MiPriApi.entities.enums.TipoEnvio;
 import com.example.MiPriApi.repositories.*;
+import com.example.MiPriApi.services.Mappers.PedidoResponseMapper;
 import com.mercadopago.exceptions.MPApiException;
 import com.mercadopago.exceptions.MPException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Service;
 
 
@@ -123,6 +122,50 @@ public class PedidoService extends BaseService<Pedido, Long> {
         pedido.setDomicilio(domicilio);
         pedido.setSucursal(sucursal);
 
+        //Esto es para el set detalles (detalles de los pedidos)
+        // Save DetallePedido items
+        List<DetallePedido> detalles = new ArrayList<>();
+        for (DetallePedidoRequestDTO item : pedidoRequest.getItems()) {
+            Articulo articulo;
+            if ("INSUMO".equalsIgnoreCase(item.getTipoArticulo())) {
+                articulo = articuloInsumoRepository.findById(item.getArticuloId())
+                        .orElseThrow(() -> new Exception("Insumo no encontrado"));
+                ArticuloInsumo insumo = (ArticuloInsumo) articulo;
+                int disponible = insumo.getStockActual() - insumo.getStockPendiente();
+                if (disponible < item.getCantidad()) {
+                    throw new Exception("Stock insuficiente para " + insumo.getDenominacion());
+                }
+                insumo.setStockPendiente(insumo.getStockPendiente() + item.getCantidad());
+                articuloInsumoRepository.save(insumo);
+            } else if ("MANUFACTURADO".equalsIgnoreCase(item.getTipoArticulo())) {
+                articulo = articuloManufacturadoRepository.findById(item.getArticuloId())
+                        .orElseThrow(() -> new Exception("Manufacturado no encontrado"));
+                ArticuloManufacturado manufacturado = (ArticuloManufacturado) articulo;
+                for (ArticuloManufacturadoDetalle det : manufacturado.getDetalles()) {
+                    ArticuloInsumo insumo = det.getArticuloInsumo();
+                    int cantidadTotal = det.getCantidad() * item.getCantidad();
+                    int disponible = insumo.getStockActual() - insumo.getStockPendiente();
+                    if (disponible < cantidadTotal) {
+                        throw new Exception("Stock insuficiente para " + insumo.getDenominacion());
+                    }
+                    insumo.setStockPendiente(insumo.getStockPendiente() + cantidadTotal);
+                    articuloInsumoRepository.save(insumo);
+                }
+            } else {
+                throw new Exception("Tipo de artículo no válido");
+            }
+
+            DetallePedido detalle = new DetallePedido();
+            detalle.setPedido(pedido);
+            detalle.setArticulo(articulo);
+            detalle.setCantidad(item.getCantidad());
+            detalle.setSubTotal(item.getSubTotal());
+            detalles.add(detalle);
+        }
+
+        pedido.setDetalles(detalles);
+        pedidoRepository.save(pedido);
+
         if (pedidoRequest.getEmpleadoId() != null) {
             Empleado empleado = empleadoRepository.findById(pedidoRequest.getEmpleadoId())
                     .orElseThrow(() -> new Exception("Empleado no encontrado"));
@@ -171,49 +214,17 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
         pedido = pedidoRepository.save(pedido);
 
-       // Save DetallePedido items
-        List<DetallePedido> detalles = new ArrayList<>();
-        for (DetallePedidoRequestDTO item : pedidoRequest.getItems()) {
-            Articulo articulo;
-            if ("INSUMO".equalsIgnoreCase(item.getTipoArticulo())) {
-                articulo = articuloInsumoRepository.findById(item.getArticuloId())
-                        .orElseThrow(() -> new Exception("Insumo no encontrado"));
-                ArticuloInsumo insumo = (ArticuloInsumo) articulo;
-                int disponible = insumo.getStockActual() - insumo.getStockPendiente();
-                if (disponible < item.getCantidad()) {
-                    throw new Exception("Stock insuficiente para " + insumo.getDenominacion());
-                }
-                insumo.setStockPendiente(insumo.getStockPendiente() + item.getCantidad());
-                articuloInsumoRepository.save(insumo);
-            } else if ("MANUFACTURADO".equalsIgnoreCase(item.getTipoArticulo())) {
-                articulo = articuloManufacturadoRepository.findById(item.getArticuloId())
-                        .orElseThrow(() -> new Exception("Manufacturado no encontrado"));
-                ArticuloManufacturado manufacturado = (ArticuloManufacturado) articulo;
-                for (ArticuloManufacturadoDetalle det : manufacturado.getDetalles()) {
-                    ArticuloInsumo insumo = det.getArticuloInsumo();
-                    int cantidadTotal = det.getCantidad() * item.getCantidad();
-                    int disponible = insumo.getStockActual() - insumo.getStockPendiente();
-                    if (disponible < cantidadTotal) {
-                        throw new Exception("Stock insuficiente para " + insumo.getDenominacion());
-                    }
-                    insumo.setStockPendiente(insumo.getStockPendiente() + cantidadTotal);
-                    articuloInsumoRepository.save(insumo);
-                }
-            } else {
-                throw new Exception("Tipo de artículo no válido");
-            }
 
-            DetallePedido detalle = new DetallePedido();
-            detalle.setPedido(pedido);
-            detalle.setArticulo(articulo);
-            detalle.setCantidad(item.getCantidad());
-            detalle.setSubTotal(item.getSubTotal());
-            detalles.add(detalle);
-        }
         detallePedidoRepository.saveAll(detalles);
 
         pedido.setDetalles(detalles);
         pedidoRepository.save(pedido);
+
+        // Notificar al cliente por WebSocket
+        PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
+        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
+
+
     }
 
     @Transactional
@@ -246,11 +257,10 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
             detalles.add(detalle);
 
-            pedidoWebSocketController.notificarCliente(
-                    pedido.getCliente().getId(),
-                    pedidoRequest
-            );
+
         }
+        PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
+        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
 
         // Relación bidireccional
         pedido.setDetalles(detalles);
@@ -280,6 +290,11 @@ public class PedidoService extends BaseService<Pedido, Long> {
         stockService.revertirStockPendiente(pedido);
         pedido.setEstado(Estado.CANCELADO);
         pedidoRepository.save(pedido);
+
+        // Notificar al cliente por WebSocket
+        PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
+        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
+
     }
 
     public void eliminarPedido(Long idPedido) throws Exception {
@@ -287,9 +302,16 @@ public class PedidoService extends BaseService<Pedido, Long> {
                 .orElseThrow(() -> new Exception("Pedido not found with ID: " + idPedido));
         stockService.revertirStockPendiente(pedido);
         pedidoRepository.delete(pedido);
+
+        // Notificar al cliente por WebSocket (puedes enviar solo el ID y estado ELIMINADO)
+        PedidoResponseDTO pedidoDTO = PedidoResponseMapper.toDTO(pedido);
+        pedidoDTO.setEstado("ELIMINADO"); // si querés marcarlo eliminado explícitamente
+        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), pedidoDTO);
+
     }
 
     @Transactional
+    @SendTo("/topic/pedidos")
     public void confirmarPedido(Long idPedido, ConfirmarPedidoRequestDTO request) throws Exception {
         Pedido pedido = pedidoRepository.findById(idPedido)
                 .orElseThrow(() -> new Exception("Pedido no encontrado"));
@@ -304,6 +326,8 @@ public class PedidoService extends BaseService<Pedido, Long> {
         pedido.setHoraEstimadaFinalizacion(horaEstimada);
 
         pedidoRepository.save(pedido);
+        PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
+        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
     }
 
 
@@ -311,6 +335,31 @@ public class PedidoService extends BaseService<Pedido, Long> {
     public Map<String, Object> guardarPedidoConPago(Pedido pedido) throws Exception {
         // Establecer fecha del pedido
         pedido.setFechaPedido(LocalDate.now());
+
+        // NUEVO: Verificar y guardar cliente si es necesario
+        if (pedido.getCliente() != null && pedido.getCliente().getEmail() != null) {
+            String email = pedido.getCliente().getEmail();
+            Cliente clienteExistente = clienteRepository.findByEmail(email)
+                    .orElse(null);
+
+            if (clienteExistente == null) {
+                // Si no existe, guardarlo primero
+                clienteExistente = clienteRepository.save(pedido.getCliente());
+                System.out.println("Cliente nuevo creado con ID: " + clienteExistente.getId());
+            } else {
+                System.out.println("Cliente existente encontrado con ID: " + clienteExistente.getId());
+            }
+
+            // Asignar el cliente existente o recién guardado al pedido
+            pedido.setCliente(clienteExistente);
+        } else if (pedido.getCliente() != null && pedido.getCliente().getId() != null) {
+            // Si viene con ID, verificar que exista
+            Cliente clienteExistente = clienteRepository.findById(pedido.getCliente().getId())
+                    .orElseThrow(() -> new Exception("Cliente no encontrado con ID: " + pedido.getCliente().getId()));
+            pedido.setCliente(clienteExistente);
+        } else {
+            throw new Exception("Se requiere un cliente con email o ID para crear un pedido");
+        }
 
         // Asociar detalles al pedido
         if (pedido.getDetalles() != null) {
@@ -351,5 +400,57 @@ public class PedidoService extends BaseService<Pedido, Long> {
         } catch (MPException | MPApiException e) {
             throw new RuntimeException("Error al procesar el pago con Mercado Pago: " + e.getMessage());
         }
+    }
+    /**
+     * Cambia el estado de un pedido.
+     *
+     * @param idPedido    ID del pedido a modificar.
+     * @param nuevoEstado Nuevo estado del pedido.
+     * @throws Exception Si el pedido no existe o hay un error al guardarlo.
+     */
+    @Transactional
+    @SendTo("/topic/pedidos")
+    public void cambiarEstado(Long idPedido, Estado nuevoEstado) throws Exception {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new Exception("Pedido no encontrado"));
+        pedido.setEstado(nuevoEstado);
+        pedidoRepository.save(pedido);
+
+        PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
+        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
+
+
+        System.out.println("Notificación WebSocket enviada al cliente ID: " + pedido.getCliente().getId());
+    }
+
+    // Método para convertir Pedido a PedidoRequestDTO
+    private PedidoRequestDTO convertirPedidoADTO(Pedido pedido) {
+        PedidoRequestDTO dto = new PedidoRequestDTO();
+        dto.setId(pedido.getId());
+        dto.setClienteId(pedido.getCliente().getId());
+        dto.setEstado(pedido.getEstado().toString());
+        dto.setTotal(pedido.getTotal());
+        dto.setTotalCosto(pedido.getTotalCosto());
+
+        // Convertir detalles si es necesario
+        List<DetallePedidoRequestDTO> itemsDTO = new ArrayList<>();
+        for (DetallePedido detalle : pedido.getDetalles()) {
+            DetallePedidoRequestDTO itemDTO = new DetallePedidoRequestDTO();
+            itemDTO.setArticuloId(detalle.getArticulo().getId());
+            itemDTO.setCantidad(detalle.getCantidad());
+            itemDTO.setSubTotal(detalle.getSubTotal());
+
+            // Determinar tipo de artículo
+            if (detalle.getArticulo() instanceof ArticuloInsumo) {
+                itemDTO.setTipoArticulo("INSUMO");
+            } else if (detalle.getArticulo() instanceof ArticuloManufacturado) {
+                itemDTO.setTipoArticulo("MANUFACTURADO");
+            }
+
+            itemsDTO.add(itemDTO);
+        }
+        dto.setItems(itemsDTO);
+
+        return dto;
     }
 }
