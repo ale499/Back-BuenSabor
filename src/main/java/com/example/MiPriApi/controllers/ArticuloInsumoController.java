@@ -5,6 +5,7 @@ import com.example.MiPriApi.entities.ArticuloInsumo;
 import com.example.MiPriApi.services.CategoriaService;
 import com.example.MiPriApi.services.ArticuloInsumoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -100,6 +101,16 @@ public class ArticuloInsumoController extends BaseController<ArticuloInsumo, Lon
     public ResponseEntity<ArticuloInsumo> modificar(@PathVariable Long id, @RequestBody ArticuloInsumo insumo) throws Exception {
         ArticuloInsumo actualizado = articuloInsumoService.modificar(id, insumo);
         return ResponseEntity.ok(actualizado);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ArticuloInsumo>> listar() {
+        try {
+            List<ArticuloInsumo> articulos = service.listar(); // Usar listar() no findAll()
+            return ResponseEntity.ok(articulos);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 }

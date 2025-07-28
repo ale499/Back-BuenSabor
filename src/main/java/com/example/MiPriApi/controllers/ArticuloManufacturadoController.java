@@ -5,6 +5,7 @@ import com.example.MiPriApi.entities.DTO.ArticuloManufacturadoDetalleDTO;
 import com.example.MiPriApi.services.Mappers.ArticuloManufacturadoDetalleMapper;
 import com.example.MiPriApi.services.ArticuloManufacturadoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,8 +50,27 @@ public class ArticuloManufacturadoController extends BaseController<ArticuloManu
     }
 
     @GetMapping("/buscarPorDenominacion")
-    public ResponseEntity<List<ArticuloManufacturado>> buscarPorDenominacion(@RequestParam String denominacion) throws Exception {
-        List<ArticuloManufacturado> articulos = service.buscarPorDenominacion(denominacion);
-        return ResponseEntity.ok(articulos);
+    public ResponseEntity<List<ArticuloManufacturado>> buscarPorDenominacion(@RequestParam String denominacion) {
+        try {
+            List<ArticuloManufacturado> todosLosArticulos = service.listar();
+            List<ArticuloManufacturado> articulosFiltrados = todosLosArticulos
+                    .stream()
+                    .filter(art -> art.getDenominacion().toLowerCase().contains(denominacion.toLowerCase()))
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(articulosFiltrados);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    // AGREGAR ESTE MÉTODO:
+    @GetMapping
+    public ResponseEntity<List<ArticuloManufacturado>> listar() {
+        try {
+            List<ArticuloManufacturado> articulos = service.listar(); // Usar listar() no findAll()
+            return ResponseEntity.ok(articulos);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

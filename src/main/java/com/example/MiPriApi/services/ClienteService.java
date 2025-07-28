@@ -111,4 +111,5 @@ public class ClienteService extends BaseService<Cliente, Long> {
                 .orElseThrow(() -> new Exception("Cliente no encontrado con email: " + email));
     }
 
+
 }

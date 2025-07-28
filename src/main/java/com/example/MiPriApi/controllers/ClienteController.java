@@ -50,4 +50,14 @@ public class ClienteController extends BaseController<Cliente, Long> {
         List<Pedido> pedidos = clienteService.obtenerPedidosPorUsername(username);
         return ResponseEntity.ok(pedidos);
     }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<Cliente> getClienteByEmail(@PathVariable String email) {
+        try{
+            Cliente cliente = clienteService.buscarPorEmail(email);
+            return ResponseEntity.ok(cliente);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
