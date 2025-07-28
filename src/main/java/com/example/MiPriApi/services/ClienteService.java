@@ -48,6 +48,21 @@ public class ClienteService extends BaseService<Cliente, Long> {
         return clienteRepository.save(cliente);
     }
 
+
+    // Asociar domicilio al cliente
+    public Cliente asociarDomicilios(Long clienteId, Set<Long> domicilioIds) {
+        Cliente cliente = clienteRepository.findById(clienteId)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+        Set<Domicilio> domicilios = new HashSet<>();
+        for (Long domicilioId : domicilioIds) {
+            Domicilio domicilio = domicilioRepository.findById(domicilioId)
+                    .orElseThrow(() -> new RuntimeException("Domicilio no encontrado"));
+            domicilios.add(domicilio);
+        }
+        cliente.setDomicilios(domicilios);
+        return clienteRepository.save(cliente);
+    }
+
     // Actualizar datos del cliente autenticado
     public Cliente actualizarDatosPorId(Long id, Cliente nuevosDatos) {
         Cliente cliente = clienteRepository.findById(id)
