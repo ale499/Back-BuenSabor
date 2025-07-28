@@ -2,8 +2,10 @@ package com.example.MiPriApi.services;
 
 import com.example.MiPriApi.entities.ArticuloManufacturado;
 import com.example.MiPriApi.entities.ArticuloManufacturadoDetalle;
+import com.example.MiPriApi.entities.Categoria;
 import com.example.MiPriApi.repositories.ArticuloManufacturadoDetalleRepository;
 import com.example.MiPriApi.repositories.ArticuloManufacturadoRepository;
+import com.example.MiPriApi.repositories.CategoriaRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,9 @@ public class ArticuloManufacturadoService extends BaseService<ArticuloManufactur
 
     @Autowired
     private ArticuloManufacturadoRepository articuloManufacturadoRepository;
+
+    @Autowired
+    private CategoriaRepository categoriaRepository;
 
     @Transactional
     public List<ArticuloManufacturado> listarPorCategoria(Long idCategoria)throws Exception{
@@ -76,6 +81,15 @@ public class ArticuloManufacturadoService extends BaseService<ArticuloManufactur
         existente.setCategoria(nuevo.getCategoria());
         existente.setUnidadMedida(nuevo.getUnidadMedida());
         existente.setTiempoPreparacion(nuevo.getTiempoPreparacion());
+
+
+        // Fetch and set full Categoria entity
+        if (nuevo.getCategoria() != null && nuevo.getCategoria().getId() != null) {
+            Categoria categoriaCompleta = categoriaRepository.findById(nuevo.getCategoria().getId()).orElse(null);
+            existente.setCategoria(categoriaCompleta);
+        } else {
+            existente.setCategoria(null);
+        }
 
         // Update details correctly
         detalleRepository.deleteAll(existente.getDetalles());

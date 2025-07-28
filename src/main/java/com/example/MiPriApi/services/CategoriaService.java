@@ -86,15 +86,17 @@ public class CategoriaService extends BaseService<Categoria, Long>{
     }
 
     @Transactional
-    public Categoria actualizarSubcategoria(Long id, Categoria subCategoria) throws Exception {
+    public Categoria actualizarSubcategoria(Long id, Long idCategoriaPadre, Categoria subCategoria) throws Exception {
         try {
             Categoria subCategoriaExistente = categoriaRepository.findById(id).orElse(null);
             if (subCategoriaExistente == null) {
-                return null; // No se encontró la subcategoría
+                return null;
             }
+            Categoria nuevaCategoriaPadre = categoriaRepository.findById(idCategoriaPadre).orElse(null);
+            subCategoriaExistente.setCategoriaPadre(nuevaCategoriaPadre);
             subCategoriaExistente.setDenominacion(subCategoria.getDenominacion());
             subCategoriaExistente.setEsInsumo(subCategoria.getEsInsumo());
-            return categoriaRepository.save(subCategoriaExistente); // Actualiza y guarda la subcategoría
+            return categoriaRepository.save(subCategoriaExistente);
         } catch (Exception ex) {
             throw new Exception(ex.getMessage());
         }

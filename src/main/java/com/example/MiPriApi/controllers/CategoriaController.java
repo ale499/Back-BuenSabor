@@ -57,12 +57,15 @@ public class CategoriaController extends BaseController<Categoria, Long>{
     }
 
     @RequestMapping("/subcategoria/actualizar/{id}")
-    public ResponseEntity<Categoria> actualizarSubcategoria(@PathVariable Long id, @RequestBody Categoria subCategoria) throws Exception {
-        Categoria subCategoriaActualizada = categoriaService.actualizarSubcategoria(id, subCategoria);
+    public ResponseEntity<Categoria> actualizarSubcategoria(
+            @PathVariable Long id,
+            @RequestParam Long idCategoriaPadre,
+            @RequestBody Categoria subCategoria) throws Exception {
+        Categoria subCategoriaActualizada = categoriaService.actualizarSubcategoria(id, idCategoriaPadre, subCategoria);
         if (subCategoriaActualizada == null) {
-            return ResponseEntity.notFound().build(); // Devuelve 404 si no se encuentra la subcategoría
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(subCategoriaActualizada); // Devuelve 200 con la subcategoría actualizada
+        return ResponseEntity.ok(subCategoriaActualizada);
     }
 
     @DeleteMapping("/subcategoria/eliminar/{id}")
