@@ -24,8 +24,7 @@ public class GraficosController {
 
     @GetMapping("/ventas/total")
     public Double getTotalVentas() {
-        // Asume que el estado CONFIRMADO es un enum o string
-        return pedidoRepository.sumTotalByEstado(Estado.PENDIENTE);
+        return pedidoRepository.sumTotalByEstado(Estado.ENTREGADO);
     }
 
     @GetMapping("/pedidos/total")
