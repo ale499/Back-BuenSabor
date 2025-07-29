@@ -105,7 +105,7 @@ public class PedidoService extends BaseService<Pedido, Long> {
     }
 
     @Transactional
-    public void crearPedidoDesdeCarrito(PedidoRequestDTO pedidoRequest) throws Exception {
+    public Pedido crearPedidoDesdeCarrito(PedidoRequestDTO pedidoRequest) throws Exception {
         if (pedidoRequest.getClienteId() == null) throw new Exception("El ID del cliente no puede ser nulo");
         if (pedidoRequest.getDomicilioId() == null) throw new Exception("El ID del domicilio no puede ser nulo");
         if (pedidoRequest.getSucursalId() == null) throw new Exception("El ID de la sucursal no puede ser nulo");
@@ -224,7 +224,7 @@ public class PedidoService extends BaseService<Pedido, Long> {
         PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
         pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
 
-
+        return pedido;
     }
 
     @Transactional

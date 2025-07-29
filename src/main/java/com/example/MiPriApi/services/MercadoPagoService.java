@@ -26,10 +26,10 @@ public class MercadoPagoService {
     public String crearPreferencia(List<PreferenceItemRequest> items) throws MPException, MPApiException {
         MercadoPagoConfig.setAccessToken(accessToken);
 
-           PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                .success("https://el-buen-sabor-web.vercel.app/")
-                .failure("http://localhost:8080/pago-fallido")
-                .pending("http://localhost:8080/pago-pendiente")
+        PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
+                .success("http://localhost:5173/payment-return?status=success")
+                .failure("http://localhost:5173/payment-return?status=failure")
+                .pending("http://localhost:5173/payment-return?status=pending")
                 .build();
 
            PreferenceRequest preferenceRequest = PreferenceRequest.builder()

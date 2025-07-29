@@ -7,17 +7,21 @@ import com.example.MiPriApi.services.*;
 import com.example.MiPriApi.repositories.*;
 import com.example.MiPriApi.services.Mappers.PedidoMapper;
 import com.mercadopago.MercadoPagoConfig;
+import com.mercadopago.client.preference.PreferenceBackUrlsRequest;
 import com.mercadopago.client.preference.PreferenceClient;
 import com.mercadopago.client.preference.PreferenceItemRequest;
 import com.mercadopago.client.preference.PreferenceRequest;
 import com.mercadopago.resources.preference.Preference;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/pedido")
@@ -29,6 +33,9 @@ public class PedidoController extends BaseController<Pedido, Long>{
 
     @Autowired
     private PedidoService pedidoService;
+
+    @Value("${mercado-pago.access-token}")
+    private String accessToken;
 
     @GetMapping("/cliente/{idCliente}")
     public ResponseEntity<List<Pedido>> listarPorCliente(@PathVariable Long idCliente) throws Exception {
@@ -75,7 +82,7 @@ public class PedidoController extends BaseController<Pedido, Long>{
     public ResponseEntity<String> pagarPedido(@PathVariable Long idPedido) throws Exception {
         Pedido pedido = pedidoService.buscarPedidoPorId(idPedido);
 
-        MercadoPagoConfig.setAccessToken("TU_ACCESS_TOKEN");
+        MercadoPagoConfig.setAccessToken(MercadoPagoConfig.getAccessToken());
 
         PreferenceItemRequest item = PreferenceItemRequest.builder()
                 .title("Pedido #" + pedido.getId())
@@ -85,7 +92,14 @@ public class PedidoController extends BaseController<Pedido, Long>{
 
         PreferenceRequest preferenceRequest = PreferenceRequest.builder()
                 .items(List.of(item))
+                .backUrls(PreferenceBackUrlsRequest.builder()
+                        .success("http://localhost:5173/payment-return?status=success")
+                        .failure("http://localhost:5173/payment-return?status=failure")
+                        .pending("http://localhost:5173/payment-return?status=pending")
+                        .build())
+                .autoReturn("approved")
                 .build();
+
 
         PreferenceClient client = new PreferenceClient();
         Preference preference = client.create(preferenceRequest);
@@ -95,8 +109,14 @@ public class PedidoController extends BaseController<Pedido, Long>{
 
     @PostMapping("/crear")
     public ResponseEntity<?> crearPedidoDesdeCarrito(@RequestBody PedidoRequestDTO pedidoRequest) throws Exception {
-        pedidoService.crearPedidoDesdeCarrito(pedidoRequest);
-        return ResponseEntity.ok("Pedido creado correctamente");
+        Pedido pedido = pedidoService.crearPedidoDesdeCarrito(pedidoRequest);
+
+        // Retornar el ID del pedido creado junto con un mensaje
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", pedido.getId());
+        response.put("mensaje", "Pedido creado correctamente");
+
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{idPedido}/eliminar")
