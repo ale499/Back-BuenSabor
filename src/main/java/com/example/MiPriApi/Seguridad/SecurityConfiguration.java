@@ -49,6 +49,7 @@ public class SecurityConfiguration {
                                         .requestMatchers("/api/public").permitAll()
                                         .requestMatchers("/api/admin/users/getUserById").authenticated()
                                         .requestMatchers("/articuloManufacturadoDetalle/**").permitAll()
+                                        .requestMatchers("/articuloManufacturadoDetalle/manufacturables").permitAll()
                                         .requestMatchers("/articuloInsumo/**").permitAll()
                                         .requestMatchers("/api/admin/users/updatePassword").permitAll() // Permitir acceso sin autenticación
                                         .requestMatchers("/api/admin/users/createUserClient").authenticated()
