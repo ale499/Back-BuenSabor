@@ -137,6 +137,14 @@ public class PedidoController extends BaseController<Pedido, Long>{
         return ResponseEntity.ok("Pedido confirmado correctamente");
     }
 
+    @PostMapping("/{idPedido}/agregar-tiempo")
+    public ResponseEntity<?> agregarTiempoAHoraEstimada(
+            @PathVariable Long idPedido,
+            @RequestParam int minutos) throws Exception {
+        pedidoService.agregarMinutosAHoraEstimada(idPedido, minutos);
+        return ResponseEntity.ok("Tiempo agregado correctamente");
+    }
+
     @PostMapping("/{idPedido}/cancelar")
     public ResponseEntity<?> cancelarPedido(@PathVariable Long idPedido) {
         try {

@@ -330,6 +330,20 @@ public class PedidoService extends BaseService<Pedido, Long> {
         pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
     }
 
+    @Transactional
+    public void agregarMinutosAHoraEstimada(Long idPedido, int minutos) throws Exception {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new Exception("Pedido no encontrado"));
+        if (pedido.getHoraEstimadaFinalizacion() == null) {
+            throw new Exception("La hora estimada de finalización no está definida");
+        }
+        pedido.setHoraEstimadaFinalizacion(pedido.getHoraEstimadaFinalizacion().plusMinutes(minutos));
+        pedidoRepository.save(pedido);
+
+        PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
+        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
+    }
+
 
     @Transactional
     public Map<String, Object> guardarPedidoConPago(Pedido pedido) throws Exception {
@@ -423,7 +437,7 @@ public class PedidoService extends BaseService<Pedido, Long> {
         System.out.println("Notificación WebSocket enviada al cliente ID: " + pedido.getCliente().getId());
     }
 
-    // Método para convertir Pedido a PedidoRequestDTO
+    // Metodo para convertir Pedido a PedidoRequestDTO
     private PedidoRequestDTO convertirPedidoADTO(Pedido pedido) {
         PedidoRequestDTO dto = new PedidoRequestDTO();
         dto.setId(pedido.getId());
