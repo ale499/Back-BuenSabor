@@ -182,25 +182,41 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
     }
 
     @GetMapping("/manufacturables")
-    public ResponseEntity<List<ArticuloManufacturadoDetalleDTO>> listarManufacturables() throws Exception {
+    public ResponseEntity<Map<String, Object>> listarManufacturablesYBebidas() throws Exception {
+        // Manufacturables logic (original)
         List<ArticuloManufacturado> todos = articuloManufacturadoService.listarTodos();
         List<ArticuloManufacturadoDetalleDTO> disponibles = new ArrayList<>();
+        List<String> categoriasPermitidas = List.of("gaseosas", "jugos", "cervezas");
 
         for (ArticuloManufacturado manu : todos) {
             boolean puedeHacerse = true;
             for (ArticuloManufacturadoDetalle det : manu.getDetalles()) {
                 ArticuloInsumo insumo = det.getArticuloInsumo();
-                if (insumo.getStockActual() < det.getCantidad()) {
+                String categoriaNombre = insumo.getCategoria().getDenominacion().toLowerCase();
+                if (!categoriasPermitidas.contains(categoriaNombre) || insumo.getStockActual() < det.getCantidad()) {
                     puedeHacerse = false;
                     break;
                 }
             }
             if (puedeHacerse) {
-                // Use the mapper to convert to DTO
                 disponibles.add(mapper.toDTOFromArticuloManufacturado(manu));
             }
         }
-        return ResponseEntity.ok(disponibles);
-    }
 
+        // Bebidas logic
+        List<ArticuloInsumo> todosInsumos = articuloInsumoService.findAll();        List<ArticuloInsumo> bebidas = todosInsumos.stream()
+                .filter(insumo -> {
+                    String cat = insumo.getCategoria().getDenominacion();
+                    return cat != null && categoriasPermitidas.contains(cat.toLowerCase());
+                })
+                .collect(Collectors.toList());
+
+        // Combine both in a response map
+        Map<String, Object> response = Map.of(
+                "manufacturables", disponibles,
+                "bebidas", bebidas
+        );
+
+        return ResponseEntity.ok(response);
+    }
 }
