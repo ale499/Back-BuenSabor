@@ -182,8 +182,7 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
     }
 
     @GetMapping("/manufacturables")
-    public ResponseEntity<Map<String, Object>> listarManufacturablesYBebidas() throws Exception {
-        // Manufacturables: only check stock
+    public ResponseEntity<List<Object>> listarManufacturablesYBebidas() throws Exception {
         List<ArticuloManufacturado> todos = articuloManufacturadoService.listarTodos();
         List<ArticuloManufacturadoDetalleDTO> disponibles = new ArrayList<>();
 
@@ -201,7 +200,6 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
             }
         }
 
-        // Bebidas: filter by allowed categories
         List<String> categoriasPermitidas = List.of("gaseosas", "jugos", "cervezas");
         List<ArticuloInsumo> todosInsumos = articuloInsumoService.findAll();
         List<ArticuloInsumo> bebidas = todosInsumos.stream()
@@ -211,10 +209,9 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
                 })
                 .collect(Collectors.toList());
 
-        Map<String, Object> response = Map.of(
-                "manufacturables", disponibles,
-                "bebidas", bebidas
-        );
+        List<Object> response = new ArrayList<>();
+        response.addAll(disponibles);
+        response.addAll(bebidas);
 
         return ResponseEntity.ok(response);
     }
