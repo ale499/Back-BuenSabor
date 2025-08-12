@@ -185,6 +185,20 @@ public class UserController {
         }
     }
 
+    @GetMapping("/clients")
+    public ResponseEntity<List<User>> getAllClients() {
+        try {
+            List<User> allUsers = userBBDDService.findAll();
+            List<User> clients = allUsers.stream()
+                    .filter(user -> user.getRoles().stream()
+                            .anyMatch(role -> "client".equalsIgnoreCase(role.getName())))
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(clients);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
+
     @PostMapping("/removeRolesUser")
     public ResponseEntity<?> removeRoles(@RequestBody AssingRoleDTO request) {
         try {
