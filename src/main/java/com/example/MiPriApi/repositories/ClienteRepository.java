@@ -13,6 +13,7 @@ public interface ClienteRepository extends BaseRepository<Cliente, Long> {
 
     Optional<Cliente> findByEmail(String email);
 
-
+    Optional<Cliente> findByUsuario_Auth0Id(String auth0Id);
 
 }
+

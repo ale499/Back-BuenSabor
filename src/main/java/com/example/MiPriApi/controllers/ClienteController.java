@@ -60,4 +60,6 @@ public class ClienteController extends BaseController<Cliente, Long> {
             return ResponseEntity.notFound().build();
         }
     }
+
+
 }

@@ -66,6 +66,13 @@ public class UserAuth0Service {
     public void deleteUser(String id) throws Exception {
         managementAPI.users().delete(id).execute();
     }
+
+    // Método para obtener usuarios que tienen un rol específico
+    public List<User> getUsersByRole(String roleId) throws Exception {
+        // Buscar usuarios con el rol específico
+        return managementAPI.roles().listUsers(roleId, null).execute().getItems();
+    }
+
     //asignamos roles a un usuario
     public void assignRoles(String userId, List<String> roleIds) throws Exception {
         managementAPI.users().addRoles(userId, roleIds).execute();
@@ -73,5 +80,14 @@ public class UserAuth0Service {
     //removemosRoles de un usuario
     public void removeRoles(String userId, List<String> roleIds) throws Exception {
         managementAPI.users().removeRoles(userId, roleIds).execute();
+    }
+
+    // Método para obtener el ID de un rol por su nombre
+    public String getRoleIdByName(String roleName) throws Exception {
+        return managementAPI.roles().list(null).execute().getItems().stream()
+                .filter(role -> roleName.equalsIgnoreCase(role.getName()))
+                .findFirst()
+                .map(role -> role.getId())
+                .orElse(null);
     }
 }

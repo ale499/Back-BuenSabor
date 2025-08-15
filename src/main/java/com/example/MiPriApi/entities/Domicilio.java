@@ -27,6 +27,7 @@ public class Domicilio extends Base{
     private Integer nroDpto;
     @Column(name = "codigoPostal")
     private Integer cp;
+    private Integer telefono;
 
     @ManyToOne
     @JoinColumn(name = "localidadId")
