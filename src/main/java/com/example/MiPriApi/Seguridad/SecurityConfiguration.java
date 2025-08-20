@@ -55,7 +55,7 @@ public class SecurityConfiguration {
                                         .requestMatchers("/api/admin/users/updatePassword").permitAll() // Permitir acceso sin autenticación
                                         .requestMatchers("/api/admin/users/createUserClient").authenticated()
                                         .requestMatchers("/api/admin/roles/getRoleByName").authenticated()
-                                        .requestMatchers("/api/admin/users/clients").permitAll()                                        .requestMatchers("/api/client/**").hasAnyAuthority("Cliente","Administrador")
+                                        .requestMatchers("/api/admin/users/clients").permitAll()
                                         .requestMatchers("/api/kitchener/**").hasAnyAuthority("Cocinero","Administrador")
                                         .requestMatchers("/api/admin/**").hasAuthority("Administrador")
                                         .requestMatchers("/ws/**").permitAll() // Permitir acceso público a WebSocket
