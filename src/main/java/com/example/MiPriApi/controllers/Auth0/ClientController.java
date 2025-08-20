@@ -102,4 +102,18 @@ public class ClientController {
         }
     }
 
+    @GetMapping("/auth0/{auth0Id}/datos-completos")
+    public ResponseEntity<ClienteAuth0> obtenerClienteConDomicilios(@PathVariable String auth0Id) {
+        try {
+            String decodedAuth0Id = URLDecoder.decode(auth0Id, StandardCharsets.UTF_8);
+            ClienteAuth0 cliente = clienteAuth0Service.buscarPorAuth0Id(decodedAuth0Id);
+            if (cliente == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(cliente);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
 }
