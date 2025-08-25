@@ -30,9 +30,7 @@ public class Cliente extends Persona{
     @Builder.Default
     private Set<Domicilio> domicilios = new HashSet<>();
 
-    @OneToMany(mappedBy = "cliente")
-    @JsonManagedReference
-    private List<Pedido> pedidos;
+
 
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "usuario_id")

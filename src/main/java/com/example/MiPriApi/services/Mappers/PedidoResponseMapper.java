@@ -15,8 +15,7 @@ public class PedidoResponseMapper {
         PedidoResponseDTO dto = new PedidoResponseDTO();
         dto.setId(pedido.getId());
         dto.setNumeroPedido(pedido.getNumeroPedido());
-        dto.setClienteId(pedido.getCliente() != null ? pedido.getCliente().getId() : null);
-        dto.setEmpleadoId(pedido.getEmpleado() != null ? pedido.getEmpleado().getId() : null);
+        dto.setClienteId(pedido.getClienteAuth0() != null ? pedido.getClienteAuth0().getId() : null);        dto.setEmpleadoId(pedido.getEmpleado() != null ? pedido.getEmpleado().getId() : null);
         dto.setSucursalId(pedido.getSucursal() != null ? pedido.getSucursal().getId() : null);
         dto.setEstado(pedido.getEstado().toString());
         dto.setTotal(pedido.getTotal());

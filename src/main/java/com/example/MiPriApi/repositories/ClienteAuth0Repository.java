@@ -12,5 +12,7 @@ public interface ClienteAuth0Repository extends BaseRepository<ClienteAuth0, Lon
 
     Optional<ClienteAuth0> findByEmail(String email);
 
+
+
     boolean existsByAuth0Id(String auth0Id);
 }

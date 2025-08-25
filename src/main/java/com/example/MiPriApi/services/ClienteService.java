@@ -113,12 +113,12 @@ public class ClienteService extends BaseService<Cliente, Long> {
                 password.matches(".*\\W.*");
     }
 
-    // Obtener historial de pedidos por username
-    public List<Pedido> obtenerPedidosPorUsername(String username) {
-        Cliente cliente = clienteRepository.findByUsuario_Username(username)
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
-        return cliente.getPedidos();
-    }
+//    // Obtener historial de pedidos por username
+//    public List<Pedido> obtenerPedidosPorUsername(String username) {
+//        Cliente cliente = clienteRepository.findByUsuario_Username(username)
+//                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+//        return cliente.getPedidos();
+//    }
 
     public Cliente buscarPorEmail(String email) throws Exception {
         return clienteRepository.findByEmail(email)

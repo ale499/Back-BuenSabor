@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 public class PedidoRequestDTO {
     private long id;
-    private Long clienteId;
+    private String clienteAuth0Id;
     private Double total;
     private Integer numeroPedido;
     private Long empleadoId;

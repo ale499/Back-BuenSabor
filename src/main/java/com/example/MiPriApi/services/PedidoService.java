@@ -47,6 +47,8 @@ public class PedidoService extends BaseService<Pedido, Long> {
     private DomicilioRepository domicilioRepository;
     @Autowired
     private SucursalRepository sucursalRepository;
+    @Autowired
+    private ClienteAuth0Repository clienteAuth0Repository;
 
 
     @Autowired
@@ -60,21 +62,30 @@ public class PedidoService extends BaseService<Pedido, Long> {
         super(pedidoRepository);
     }
 
-    @Transactional
-    public List<Pedido> listarPorCliente(Long idCliente) throws Exception {
-        try {
-            return pedidoRepository.findAllByClienteId(idCliente);
-        } catch (Exception ex) {
-            throw new Exception(ex.getMessage());
-        }
-    }
+//    @Transactional
+//    public List<Pedido> listarPorCliente(Long idCliente) throws Exception {
+//        try {
+//            return pedidoRepository.findAllByClienteId(idCliente);
+//        } catch (Exception ex) {
+//            throw new Exception(ex.getMessage());
+//        }
+//    }
 
     //lista pedidos por email del cliente
 
     @Transactional
     public List<Pedido> listarPorClienteEmail(String email) throws Exception {
         try {
-            return pedidoRepository.findAllByClienteEmail(email);
+            return pedidoRepository.findAllByClienteAuth0_Email(email);
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    @Transactional
+    public List<Pedido> listarPorClienteAuth0Id(String auth0Id) throws Exception {
+        try {
+            return pedidoRepository.findAllByClienteAuth0_Auth0Id(auth0Id);
         } catch (Exception ex) {
             throw new Exception(ex.getMessage());
         }
@@ -106,19 +117,18 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
     @Transactional
     public Pedido crearPedidoDesdeCarrito(PedidoRequestDTO pedidoRequest) throws Exception {
-        if (pedidoRequest.getClienteId() == null) throw new Exception("El ID del cliente no puede ser nulo");
-        if (pedidoRequest.getDomicilioId() == null) throw new Exception("El ID del domicilio no puede ser nulo");
+        if (pedidoRequest.getClienteAuth0Id() == null) throw new Exception("El Auth0 ID del cliente no puede ser nulo");        if (pedidoRequest.getDomicilioId() == null) throw new Exception("El ID del domicilio no puede ser nulo");
         if (pedidoRequest.getSucursalId() == null) throw new Exception("El ID de la sucursal no puede ser nulo");
 
-        Cliente cliente = clienteRepository.findById(pedidoRequest.getClienteId())
-                .orElseThrow(() -> new Exception("Cliente no encontrado"));
+        ClienteAuth0 clienteAuth0 = clienteAuth0Repository.findByAuth0Id(pedidoRequest.getClienteAuth0Id())
+                .orElseThrow(() -> new Exception("ClienteAuth0 no encontrado"));
         Domicilio domicilio = domicilioRepository.findById(pedidoRequest.getDomicilioId())
                 .orElseThrow(() -> new Exception("Domicilio no encontrado"));
         Sucursal sucursal = sucursalRepository.findById(pedidoRequest.getSucursalId())
                 .orElseThrow(() -> new Exception("Sucursal no encontrada"));
 
         Pedido pedido = new Pedido();
-        pedido.setCliente(cliente);
+        pedido.setClienteAuth0(clienteAuth0);
         pedido.setDomicilio(domicilio);
         pedido.setSucursal(sucursal);
 
@@ -222,54 +232,12 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
         // Notificar al cliente por WebSocket
         PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
-        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
+        pedidoWebSocketController.notificarCliente(pedido.getClienteAuth0().getId(), dto);
 
         return pedido;
     }
 
-    @Transactional
-    public Pedido crearPedido(PedidoRequestDTO pedidoRequest) throws Exception {
-        Pedido pedido = new Pedido();
-        // podés setearle datos si necesitás (fecha, estado, cliente, etc.)
 
-        // 💾 Guardar el pedido primero para obtener el ID
-        pedido = pedidoRepository.save(pedido);
-
-        List<DetallePedido> detalles = new ArrayList<>();
-        for (DetallePedidoRequestDTO item : pedidoRequest.getItems()) {
-            Articulo articulo;
-
-            if ("INSUMO".equalsIgnoreCase(item.getTipoArticulo())) {
-                articulo = articuloInsumoRepository.findById(item.getArticuloId())
-                        .orElseThrow(() -> new Exception("Insumo no encontrado"));
-            } else if ("MANUFACTURADO".equalsIgnoreCase(item.getTipoArticulo())) {
-                articulo = articuloManufacturadoRepository.findById(item.getArticuloId())
-                        .orElseThrow(() -> new Exception("Manufacturado no encontrado"));
-            } else {
-                throw new Exception("Tipo de artículo no válido");
-            }
-
-            DetallePedido detalle = new DetallePedido();
-            detalle.setPedido(pedido); // ahora sí, pedido ya tiene ID
-            detalle.setArticulo(articulo);
-            detalle.setCantidad(item.getCantidad());
-            detalle.setSubTotal(item.getSubTotal());
-
-            detalles.add(detalle);
-
-
-        }
-        PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
-        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
-
-        // Relación bidireccional
-        pedido.setDetalles(detalles);
-
-        // 💾 Ahora sí, guardar los detalles (gracias al cascade ALL, incluso podrías omitir esto)
-        detallePedidoRepository.saveAll(detalles);
-
-        return pedido;
-    }
 
     private Integer generarNumeroPedido() {
         Integer maxNumero = pedidoRepository.findMaxNumeroPedido();
@@ -293,7 +261,7 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
         // Notificar al cliente por WebSocket
         PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
-        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
+        pedidoWebSocketController.notificarCliente(pedido.getClienteAuth0().getId(), dto);
 
     }
 
@@ -306,8 +274,7 @@ public class PedidoService extends BaseService<Pedido, Long> {
         // Notificar al cliente por WebSocket (puedes enviar solo el ID y estado ELIMINADO)
         PedidoResponseDTO pedidoDTO = PedidoResponseMapper.toDTO(pedido);
         pedidoDTO.setEstado("ELIMINADO"); // si querés marcarlo eliminado explícitamente
-        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), pedidoDTO);
-
+        pedidoWebSocketController.notificarCliente(pedido.getClienteAuth0().getId(), pedidoDTO);
     }
 
     @Transactional
@@ -327,7 +294,7 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
         pedidoRepository.save(pedido);
         PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
-        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
+        pedidoWebSocketController.notificarCliente(pedido.getClienteAuth0().getId(), dto);
     }
 
     @Transactional
@@ -341,41 +308,38 @@ public class PedidoService extends BaseService<Pedido, Long> {
         pedidoRepository.save(pedido);
 
         PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
-        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
+        pedidoWebSocketController.notificarCliente(pedido.getClienteAuth0().getId(), dto);
     }
 
 
     @Transactional
     public Map<String, Object> guardarPedidoConPago(Pedido pedido) throws Exception {
-        // Establecer fecha del pedido
+        // Set order date
         pedido.setFechaPedido(LocalDate.now());
 
-        // NUEVO: Verificar y guardar cliente si es necesario
-        if (pedido.getCliente() != null && pedido.getCliente().getEmail() != null) {
-            String email = pedido.getCliente().getEmail();
-            Cliente clienteExistente = clienteRepository.findByEmail(email)
+        // Check and save ClienteAuth0 if necessary
+        if (pedido.getClienteAuth0() != null && pedido.getClienteAuth0().getEmail() != null) {
+            String email = pedido.getClienteAuth0().getEmail();
+            ClienteAuth0 clienteExistente = clienteAuth0Repository.findByEmail(email)
                     .orElse(null);
 
             if (clienteExistente == null) {
-                // Si no existe, guardarlo primero
-                clienteExistente = clienteRepository.save(pedido.getCliente());
-                System.out.println("Cliente nuevo creado con ID: " + clienteExistente.getId());
+                clienteExistente = clienteAuth0Repository.save(pedido.getClienteAuth0());
+                System.out.println("Nuevo ClienteAuth0 creado con ID: " + clienteExistente.getId());
             } else {
-                System.out.println("Cliente existente encontrado con ID: " + clienteExistente.getId());
+                System.out.println("ClienteAuth0 existente encontrado con ID: " + clienteExistente.getId());
             }
 
-            // Asignar el cliente existente o recién guardado al pedido
-            pedido.setCliente(clienteExistente);
-        } else if (pedido.getCliente() != null && pedido.getCliente().getId() != null) {
-            // Si viene con ID, verificar que exista
-            Cliente clienteExistente = clienteRepository.findById(pedido.getCliente().getId())
-                    .orElseThrow(() -> new Exception("Cliente no encontrado con ID: " + pedido.getCliente().getId()));
-            pedido.setCliente(clienteExistente);
+            pedido.setClienteAuth0(clienteExistente);
+        } else if (pedido.getClienteAuth0() != null && pedido.getClienteAuth0().getId() != null) {
+            ClienteAuth0 clienteExistente = clienteAuth0Repository.findById(pedido.getClienteAuth0().getId())
+                    .orElseThrow(() -> new Exception("ClienteAuth0 no encontrado con ID: " + pedido.getClienteAuth0().getId()));
+            pedido.setClienteAuth0(clienteExistente);
         } else {
-            throw new Exception("Se requiere un cliente con email o ID para crear un pedido");
+            throw new Exception("Se requiere un clienteAuth0 con email o ID para crear un pedido");
         }
 
-        // Asociar detalles al pedido
+        // Associate details to the order
         if (pedido.getDetalles() != null) {
             for (DetallePedido detalle : pedido.getDetalles()) {
                 detalle.setPedido(pedido);
@@ -394,18 +358,15 @@ public class PedidoService extends BaseService<Pedido, Long> {
             }
         }
 
-        // 👉 Usa el total que viene del frontend (no lo recalcules)
-        // Si por seguridad querés validar, podés comparar y lanzar error si hay mucha diferencia
-
-        // Guardar pedido en la base de datos
+        // Save order in the database
         Pedido guardado = pedidoRepository.save(pedido);
 
-        // Crear preferencia de pago en Mercado Pago usando el total del pedido
+        // Create Mercado Pago payment preference
         List<ItemDTO> items = new ArrayList<>();
         items.add(new ItemDTO(
                 "Pedido #" + guardado.getId(),
                 1,
-                BigDecimal.valueOf(guardado.getTotal()) // Usa el total enviado
+                BigDecimal.valueOf(guardado.getTotal())
         ));
 
         try {
@@ -431,17 +392,17 @@ public class PedidoService extends BaseService<Pedido, Long> {
         pedidoRepository.save(pedido);
 
         PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
-        pedidoWebSocketController.notificarCliente(pedido.getCliente().getId(), dto);
+        pedidoWebSocketController.notificarCliente(pedido.getClienteAuth0().getId(), dto);
 
 
-        System.out.println("Notificación WebSocket enviada al cliente ID: " + pedido.getCliente().getId());
+        System.out.println("Notificación WebSocket enviada al cliente ID: " + pedido.getClienteAuth0().getId());
     }
 
     // Metodo para convertir Pedido a PedidoRequestDTO
     private PedidoRequestDTO convertirPedidoADTO(Pedido pedido) {
         PedidoRequestDTO dto = new PedidoRequestDTO();
         dto.setId(pedido.getId());
-        dto.setClienteId(pedido.getCliente().getId());
+        dto.setClienteAuth0Id(pedido.getClienteAuth0().getAuth0Id());
         dto.setEstado(pedido.getEstado().toString());
         dto.setTotal(pedido.getTotal());
         dto.setTotalCosto(pedido.getTotalCosto());
