@@ -26,9 +26,9 @@ public class MercadoPagoController {
     private PedidoService pedidoService;
 
     @PostMapping
-    public String crearPago(@RequestBody List<ItemDTO> items) {
+    public String crearPago(@RequestBody List<ItemDTO> items, @RequestParam Long idPedido) {
         try {
-            return mercadoPagoService.procesarPago(items);
+            return mercadoPagoService.procesarPago(items, idPedido);
         } catch (Exception e) {
             return "Error al procesar el pago";
         }

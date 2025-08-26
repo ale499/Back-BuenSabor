@@ -377,7 +377,7 @@ public class PedidoService extends BaseService<Pedido, Long> {
         ));
 
         try {
-            String initPoint = mercadoPagoService.procesarPago(items);
+            String initPoint = mercadoPagoService.procesarPago(items, guardado.getId());
             return Map.of("id", guardado.getId(), "initPoint", initPoint);
         } catch (MPException | MPApiException e) {
             throw new RuntimeException("Error al procesar el pago con Mercado Pago: " + e.getMessage());
@@ -397,7 +397,7 @@ public class PedidoService extends BaseService<Pedido, Long> {
         ));
 
         try {
-            String initPoint = mercadoPagoService.procesarPago(items);
+            String initPoint = mercadoPagoService.procesarPago(items, pedido.getId());
             return Map.of("id", pedido.getId(), "initPoint", initPoint);
         } catch (MPException | MPApiException e) {
             throw new RuntimeException("Error al procesar el pago con Mercado Pago: " + e.getMessage());
