@@ -2,6 +2,7 @@ package com.example.MiPriApi.controllers;
 
 import com.example.MiPriApi.entities.ArticuloManufacturado;
 import com.example.MiPriApi.entities.DTO.ItemDTO;
+import com.example.MiPriApi.entities.DTO.PedidoRequestDTO;
 import com.example.MiPriApi.entities.DetallePedido;
 import com.example.MiPriApi.entities.Pedido;
 import com.example.MiPriApi.entities.enums.TipoEnvio;
@@ -34,8 +35,7 @@ public class MercadoPagoController {
     }
 
     @PostMapping("/prueba-pago")
-    public Map<String, Object> probarGuardarPedidoConPago(@RequestBody Pedido pedido) throws Exception {
-        // Llamar al metodo guardarPedidoConPago con el pedido recibido
-        return pedidoService.guardarPedidoConPago(pedido);
+    public Map<String, Object> probarGuardarPedidoConPago(@RequestBody PedidoRequestDTO pedidoRequest) throws Exception {
+        return pedidoService.guardarPedidoConPagoDTO(pedidoRequest);
     }
 }

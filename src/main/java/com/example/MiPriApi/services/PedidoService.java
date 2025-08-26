@@ -115,6 +115,9 @@ public class PedidoService extends BaseService<Pedido, Long> {
                 .orElseThrow(() -> new Exception("Pedido no encontrado con ID: " + idPedido));
     }
 
+
+    private static final double DELIVERY_COST = 500.0;
+
     @Transactional
     public Pedido crearPedidoDesdeCarrito(PedidoRequestDTO pedidoRequest) throws Exception {
         if (pedidoRequest.getClienteAuth0Id() == null) throw new Exception("El Auth0 ID del cliente no puede ser nulo");        if (pedidoRequest.getDomicilioId() == null) throw new Exception("El ID del domicilio no puede ser nulo");
@@ -213,7 +216,11 @@ public class PedidoService extends BaseService<Pedido, Long> {
             pedido.setTipoEnvio(TipoEnvio.valueOf(pedidoRequest.getTipoEnvio().toUpperCase()));
         }
 
-        pedido.setTotal(pedidoRequest.getTotal());
+        double total = pedidoRequest.getTotal();
+        if ("DELIVERY".equalsIgnoreCase(pedidoRequest.getTipoEnvio())) {
+            total += DELIVERY_COST;
+        }
+        pedido.setTotal(total);
 
         // Total costo
         if (pedidoRequest.getTotalCosto() != null) {
@@ -372,6 +379,26 @@ public class PedidoService extends BaseService<Pedido, Long> {
         try {
             String initPoint = mercadoPagoService.procesarPago(items);
             return Map.of("id", guardado.getId(), "initPoint", initPoint);
+        } catch (MPException | MPApiException e) {
+            throw new RuntimeException("Error al procesar el pago con Mercado Pago: " + e.getMessage());
+        }
+    }
+
+    public Map<String, Object> guardarPedidoConPagoDTO(PedidoRequestDTO pedidoRequest) throws Exception {
+        // Build and save Pedido from DTO
+        Pedido pedido = crearPedidoDesdeCarrito(pedidoRequest);
+
+        // Create Mercado Pago payment preference
+        List<ItemDTO> items = new ArrayList<>();
+        items.add(new ItemDTO(
+                "Pedido #" + pedido.getId(),
+                1,
+                BigDecimal.valueOf(pedido.getTotal())
+        ));
+
+        try {
+            String initPoint = mercadoPagoService.procesarPago(items);
+            return Map.of("id", pedido.getId(), "initPoint", initPoint);
         } catch (MPException | MPApiException e) {
             throw new RuntimeException("Error al procesar el pago con Mercado Pago: " + e.getMessage());
         }

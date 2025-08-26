@@ -27,7 +27,7 @@ public class MercadoPagoService {
         MercadoPagoConfig.setAccessToken(accessToken);
 
         PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                .success("http://localhost:5173/payment-return?status=success")
+                .success("https://www.shutterstock.com/es/image-illustration/success-growth-marketing-symbol-wealth-making-91930553?dd_referrer=https%3A%2F%2Fwww.google.com%2F")
                 .failure("http://localhost:5173/payment-return?status=failure")
                 .pending("http://localhost:5173/payment-return?status=pending")
                 .build();
