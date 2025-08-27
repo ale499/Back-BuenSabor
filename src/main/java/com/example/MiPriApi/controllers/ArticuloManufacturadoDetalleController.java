@@ -182,10 +182,11 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
     }
 
     @GetMapping("/manufacturables")
-    public ResponseEntity<List<Object>> listarManufacturablesYBebidas() throws Exception {
+    public ResponseEntity<List<Map<String, Object>>> listarManufacturablesYBebidas() throws Exception {
         List<ArticuloManufacturado> todos = articuloManufacturadoService.listarTodos();
-        List<ArticuloManufacturadoDetalleDTO> disponibles = new ArrayList<>();
+        List<Map<String, Object>> disponibles = new ArrayList<>();
 
+        // Manufacturados
         for (ArticuloManufacturado manu : todos) {
             boolean puedeHacerse = true;
             for (ArticuloManufacturadoDetalle det : manu.getDetalles()) {
@@ -196,10 +197,15 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
                 }
             }
             if (puedeHacerse) {
-                disponibles.add(mapper.toDTOFromArticuloManufacturado(manu));
+                ArticuloManufacturadoDetalleDTO dto = mapper.toDTOFromArticuloManufacturado(manu);
+                Map<String, Object> map = new java.util.HashMap<>();
+                map.put("type", "MANUFACTURADO");
+                map.put("data", dto);
+                disponibles.add(map);
             }
         }
 
+        // Bebidas (Insumos)
         List<String> categoriasPermitidas = List.of("gaseosas", "jugos", "cervezas");
         List<ArticuloInsumo> todosInsumos = articuloInsumoService.findAll();
         List<ArticuloInsumo> bebidas = todosInsumos.stream()
@@ -209,10 +215,13 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
                 })
                 .collect(Collectors.toList());
 
-        List<Object> response = new ArrayList<>();
-        response.addAll(disponibles);
-        response.addAll(bebidas);
+        for (ArticuloInsumo bebida : bebidas) {
+            Map<String, Object> map = new java.util.HashMap<>();
+            map.put("type", "INSUMO");
+            map.put("data", bebida);
+            disponibles.add(map);
+        }
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(disponibles);
     }
 }
