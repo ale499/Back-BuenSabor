@@ -135,6 +135,9 @@ public class PedidoService extends BaseService<Pedido, Long> {
         pedido.setDomicilio(domicilio);
         pedido.setSucursal(sucursal);
 
+        // Set optional note
+        pedido.setNotaAdicional(pedidoRequest.getNotaAdicional());
+
         //Esto es para el set detalles (detalles de los pedidos)
         // Save DetallePedido items
         List<DetallePedido> detalles = new ArrayList<>();

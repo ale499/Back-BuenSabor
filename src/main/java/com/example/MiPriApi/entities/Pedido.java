@@ -27,6 +27,7 @@ public class Pedido extends Base{
     private Double total = 0.0;
     private Double totalCosto;
     private LocalDate fechaPedido;
+    private String notaAdicional;
 
     @ManyToOne
     @JoinColumn(name = "chefId")

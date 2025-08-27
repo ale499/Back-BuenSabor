@@ -19,4 +19,5 @@ public class PedidoRequestDTO {
     private Double totalCosto;
     private LocalDate fechaPedido;
     private List<DetallePedidoRequestDTO> items;
+    private String notaAdicional;
 }
