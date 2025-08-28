@@ -182,11 +182,11 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
     }
 
     @GetMapping("/manufacturables")
-    public ResponseEntity<List<Map<String, Object>>> listarManufacturablesYBebidas() throws Exception {
-        List<ArticuloManufacturado> todos = articuloManufacturadoService.listarTodos();
-        List<Map<String, Object>> disponibles = new ArrayList<>();
+    public ResponseEntity<List<Object>> listarManufacturablesYBebidas() throws Exception {
+        List<Object> response = new ArrayList<>();
 
         // Manufacturados
+        List<ArticuloManufacturado> todos = articuloManufacturadoService.listarTodos();
         for (ArticuloManufacturado manu : todos) {
             boolean puedeHacerse = true;
             for (ArticuloManufacturadoDetalle det : manu.getDetalles()) {
@@ -198,10 +198,8 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
             }
             if (puedeHacerse) {
                 ArticuloManufacturadoDetalleDTO dto = mapper.toDTOFromArticuloManufacturado(manu);
-                Map<String, Object> map = new java.util.HashMap<>();
-                map.put("type", "MANUFACTURADO");
-                map.put("data", dto);
-                disponibles.add(map);
+                dto.setType("MANUFACTURADO");
+                response.add(dto);
             }
         }
 
@@ -216,12 +214,25 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
                 .collect(Collectors.toList());
 
         for (ArticuloInsumo bebida : bebidas) {
-            Map<String, Object> map = new java.util.HashMap<>();
-            map.put("type", "INSUMO");
-            map.put("data", bebida);
-            disponibles.add(map);
+            Map<String, Object> bebidaMap = new java.util.HashMap<>();
+            bebidaMap.put("id", bebida.getId());
+            bebidaMap.put("deleted", bebida.getDeleted());
+            bebidaMap.put("denominacion", bebida.getDenominacion());
+            bebidaMap.put("categoria", bebida.getCategoria());
+            bebidaMap.put("imagenesArticulos", bebida.getImagenesArticulos());
+            bebidaMap.put("unidadMedida", bebida.getUnidadMedida());
+            bebidaMap.put("precioVenta", bebida.getPrecioVenta());
+            bebidaMap.put("tiempoPreparacion", bebida.getTiempoPreparacion());
+            bebidaMap.put("precioCompra", bebida.getPrecioCompra());
+            bebidaMap.put("stockActual", bebida.getStockActual());
+            bebidaMap.put("stockMaximo", bebida.getStockMaximo());
+            bebidaMap.put("stockMinimo", bebida.getStockMinimo());
+            bebidaMap.put("esParaElaborar", bebida.getEsParaElaborar());
+            bebidaMap.put("stockPendiente", bebida.getStockPendiente());
+            bebidaMap.put("type", "INSUMO"); // Add type here
+            response.add(bebidaMap);
         }
 
-        return ResponseEntity.ok(disponibles);
+        return ResponseEntity.ok(response);
     }
 }
