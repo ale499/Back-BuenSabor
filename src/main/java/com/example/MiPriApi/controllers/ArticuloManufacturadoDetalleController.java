@@ -182,10 +182,11 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
     }
 
     @GetMapping("/manufacturables")
-    public ResponseEntity<List<ArticuloManufacturadoDetalleDTO>> listarManufacturables() throws Exception {
-        List<ArticuloManufacturado> todos = articuloManufacturadoService.listarTodos();
-        List<ArticuloManufacturadoDetalleDTO> disponibles = new ArrayList<>();
+    public ResponseEntity<List<Object>> listarManufacturablesYBebidas() throws Exception {
+        List<Object> response = new ArrayList<>();
 
+        // Manufacturados
+        List<ArticuloManufacturado> todos = articuloManufacturadoService.listarTodos();
         for (ArticuloManufacturado manu : todos) {
             boolean puedeHacerse = true;
             for (ArticuloManufacturadoDetalle det : manu.getDetalles()) {
@@ -196,11 +197,42 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
                 }
             }
             if (puedeHacerse) {
-                // Use the mapper to convert to DTO
-                disponibles.add(mapper.toDTOFromArticuloManufacturado(manu));
+                ArticuloManufacturadoDetalleDTO dto = mapper.toDTOFromArticuloManufacturado(manu);
+                dto.setType("MANUFACTURADO");
+                response.add(dto);
             }
         }
-        return ResponseEntity.ok(disponibles);
-    }
 
+        // Bebidas (Insumos)
+        List<String> categoriasPermitidas = List.of("gaseosas", "jugos", "cervezas");
+        List<ArticuloInsumo> todosInsumos = articuloInsumoService.findAll();
+        List<ArticuloInsumo> bebidas = todosInsumos.stream()
+                .filter(insumo -> {
+                    String cat = insumo.getCategoria().getDenominacion();
+                    return cat != null && categoriasPermitidas.contains(cat.toLowerCase());
+                })
+                .collect(Collectors.toList());
+
+        for (ArticuloInsumo bebida : bebidas) {
+            Map<String, Object> bebidaMap = new java.util.HashMap<>();
+            bebidaMap.put("id", bebida.getId());
+            bebidaMap.put("deleted", bebida.getDeleted());
+            bebidaMap.put("denominacion", bebida.getDenominacion());
+            bebidaMap.put("categoria", bebida.getCategoria());
+            bebidaMap.put("imagenesArticulos", bebida.getImagenesArticulos());
+            bebidaMap.put("unidadMedida", bebida.getUnidadMedida());
+            bebidaMap.put("precioVenta", bebida.getPrecioVenta());
+            bebidaMap.put("tiempoPreparacion", bebida.getTiempoPreparacion());
+            bebidaMap.put("precioCompra", bebida.getPrecioCompra());
+            bebidaMap.put("stockActual", bebida.getStockActual());
+            bebidaMap.put("stockMaximo", bebida.getStockMaximo());
+            bebidaMap.put("stockMinimo", bebida.getStockMinimo());
+            bebidaMap.put("esParaElaborar", bebida.getEsParaElaborar());
+            bebidaMap.put("stockPendiente", bebida.getStockPendiente());
+            bebidaMap.put("type", "INSUMO"); // Add type here
+            response.add(bebidaMap);
+        }
+
+        return ResponseEntity.ok(response);
+    }
 }

@@ -20,4 +20,10 @@ public interface DetallePedidoRepository extends BaseRepository<DetallePedido, L
     // Total de productos vendidos
     @Query("SELECT SUM(d.cantidad) FROM DetallePedido d")
     Long findTotalProductosVendidos();
+
+    @Query("SELECT d.articulo.denominacion, SUM(d.cantidad), SUM(d.subTotal) " +
+            "FROM DetallePedido d " +
+            "WHERE TYPE(d.articulo) = ArticuloManufacturado " +
+            "GROUP BY d.articulo.denominacion")
+    List<Object[]> findVentasPorManufacturado();
 }

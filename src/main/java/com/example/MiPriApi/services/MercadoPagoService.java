@@ -23,16 +23,16 @@ public class MercadoPagoService {
     @Value("${mercado-pago.access-token}")
     private String accessToken;
 
-    public String crearPreferencia(List<PreferenceItemRequest> items) throws MPException, MPApiException {
+    public String crearPreferencia(List<PreferenceItemRequest> items, Long idPedido) throws MPException, MPApiException {
         MercadoPagoConfig.setAccessToken(accessToken);
 
         PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                .success("http://localhost:5173/payment-return?status=success")
-                .failure("http://localhost:5173/payment-return?status=failure")
-                .pending("http://localhost:5173/payment-return?status=pending")
+                .success("https://www.mendoza.gov.ar/prensa/noticia-destacada/&id=" + idPedido)
+                .failure("http://localhost:5173/payment-return?status=failure&id=" + idPedido)
+                .pending("http://localhost:5173/payment-return?status=pending&id=" + idPedido)
                 .build();
 
-           PreferenceRequest preferenceRequest = PreferenceRequest.builder()
+        PreferenceRequest preferenceRequest = PreferenceRequest.builder()
                 .items(items)
                 .backUrls(backUrls)
                 .autoReturn("approved")
@@ -58,7 +58,7 @@ public class MercadoPagoService {
                 .build();
     }
 
-    public String procesarPago(List<ItemDTO> itemsDTO) throws MPException, MPApiException {
+    public String procesarPago(List<ItemDTO> itemsDTO, Long idPedido) throws MPException, MPApiException {
         List<PreferenceItemRequest> itemsMP = new ArrayList<>();
 
         for (ItemDTO item : itemsDTO) {
@@ -69,6 +69,6 @@ public class MercadoPagoService {
             ));
         }
 
-        return crearPreferencia(itemsMP);
+        return crearPreferencia(itemsMP, idPedido);
     }
 }

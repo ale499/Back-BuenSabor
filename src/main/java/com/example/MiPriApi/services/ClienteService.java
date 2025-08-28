@@ -50,9 +50,8 @@ public class ClienteService extends BaseService<Cliente, Long> {
 
 
     // Asociar domicilio al cliente
-    public Cliente asociarDomicilios(Long clienteId, Set<Long> domicilioIds) {
-        Cliente cliente = clienteRepository.findById(clienteId)
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+    public Cliente asociarDomiciliosPorEmail(String email, Set<Long> domicilioIds) throws Exception {
+        Cliente cliente = buscarPorEmail(email); // This already throws if not found
         Set<Domicilio> domicilios = new HashSet<>();
         for (Long domicilioId : domicilioIds) {
             Domicilio domicilio = domicilioRepository.findById(domicilioId)
@@ -114,12 +113,12 @@ public class ClienteService extends BaseService<Cliente, Long> {
                 password.matches(".*\\W.*");
     }
 
-    // Obtener historial de pedidos por username
-    public List<Pedido> obtenerPedidosPorUsername(String username) {
-        Cliente cliente = clienteRepository.findByUsuario_Username(username)
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
-        return cliente.getPedidos();
-    }
+//    // Obtener historial de pedidos por username
+//    public List<Pedido> obtenerPedidosPorUsername(String username) {
+//        Cliente cliente = clienteRepository.findByUsuario_Username(username)
+//                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+//        return cliente.getPedidos();
+//    }
 
     public Cliente buscarPorEmail(String email) throws Exception {
         return clienteRepository.findByEmail(email)

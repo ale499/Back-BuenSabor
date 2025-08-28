@@ -51,6 +51,10 @@ dependencies {
 	//pruebas
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
 
+	//Excel
+	implementation 'org.apache.poi:poi-ooxml:5.2.3'
+
+
 }
 
 tasks.named('test') {

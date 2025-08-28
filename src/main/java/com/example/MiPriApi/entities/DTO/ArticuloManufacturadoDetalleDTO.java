@@ -16,6 +16,7 @@ public class ArticuloManufacturadoDetalleDTO {
     private Integer tiempoEstimadoMinutos;
     private String preparacion;
     private List<DetalleDTO> detalles;
+    private String type;
 
     @Data
     public static class CategoriaDTO {

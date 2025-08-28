@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 public class PedidoRequestDTO {
     private long id;
-    private Long clienteId;
+    private String clienteAuth0Id;
     private Double total;
     private Integer numeroPedido;
     private Long empleadoId;
@@ -19,4 +19,5 @@ public class PedidoRequestDTO {
     private Double totalCosto;
     private LocalDate fechaPedido;
     private List<DetallePedidoRequestDTO> items;
+    private String notaAdicional;
 }

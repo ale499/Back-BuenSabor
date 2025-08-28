@@ -37,9 +37,9 @@ public class PedidoController extends BaseController<Pedido, Long>{
     @Value("${mercado-pago.access-token}")
     private String accessToken;
 
-    @GetMapping("/cliente/{idCliente}")
-    public ResponseEntity<List<Pedido>> listarPorCliente(@PathVariable Long idCliente) throws Exception {
-        List<Pedido> pedidos = pedidoService.listarPorCliente(idCliente);
+    @GetMapping("/cliente/auth0/{auth0Id}")
+    public ResponseEntity<List<Pedido>> listarPorClienteAuth0(@PathVariable String auth0Id) throws Exception {
+        List<Pedido> pedidos = pedidoService.listarPorClienteAuth0Id(auth0Id);
         return ResponseEntity.ok(pedidos);
     }
 
@@ -65,12 +65,12 @@ public class PedidoController extends BaseController<Pedido, Long>{
         return ResponseEntity.ok(pedidos);
     }
 
-    @GetMapping("/historial")
-    public ResponseEntity<List<Pedido>> obtenerHistorialPedidos() throws Exception {
-        String clienteId = SecurityContextHolder.getContext().getAuthentication().getName();
-        List<Pedido> pedidos = pedidoService.listarPorCliente(Long.valueOf(clienteId));
-        return ResponseEntity.ok(pedidos);
-    }
+//    @GetMapping("/historial")
+//    public ResponseEntity<List<Pedido>> obtenerHistorialPedidos() throws Exception {
+//        String clienteId = SecurityContextHolder.getContext().getAuthentication().getName();
+//        List<Pedido> pedidos = pedidoService.listarPorCliente(Long.valueOf(clienteId));
+//        return ResponseEntity.ok(pedidos);
+//    }
 
     @GetMapping("/{idPedido}/detalle")
     public ResponseEntity<Pedido> verDetallePedido(@PathVariable Long idPedido) throws Exception {
@@ -135,6 +135,14 @@ public class PedidoController extends BaseController<Pedido, Long>{
             @RequestBody ConfirmarPedidoRequestDTO request) throws Exception {
         pedidoService.confirmarPedido(idPedido, request);
         return ResponseEntity.ok("Pedido confirmado correctamente");
+    }
+
+    @PostMapping("/{idPedido}/agregar-tiempo")
+    public ResponseEntity<?> agregarTiempoAHoraEstimada(
+            @PathVariable Long idPedido,
+            @RequestParam int minutos) throws Exception {
+        pedidoService.agregarMinutosAHoraEstimada(idPedido, minutos);
+        return ResponseEntity.ok("Tiempo agregado correctamente");
     }
 
     @PostMapping("/{idPedido}/cancelar")

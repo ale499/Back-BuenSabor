@@ -1,21 +1,24 @@
 package com.example.MiPriApi.repositories;
 
+import com.example.MiPriApi.entities.ClienteAuth0;
 import com.example.MiPriApi.entities.Pedido;
 import com.example.MiPriApi.entities.enums.Estado;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PedidoRepository extends BaseRepository<Pedido, Long> {
 
-    List<Pedido> findAllByClienteId(Long idCliente);
+    List<Pedido> findAllByClienteAuth0_Auth0Id(String auth0Id);
     List<Pedido> findAllByEmpleadoId(Long idEmpleado);
     List<Pedido> findAllBySucursalId(Long idSucursal);
 
     //permite buscar pedidos por email de auth0 del cliente
-    List<Pedido> findAllByClienteEmail(String email);
+    List<Pedido> findAllByClienteAuth0_Email(String email);
+
 
     @Query("SELECT COALESCE(MAX(am.tiempoEstimadoMinutos), 0) " +
             "FROM Pedido p " +

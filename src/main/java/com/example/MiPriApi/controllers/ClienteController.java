@@ -44,12 +44,12 @@ public class ClienteController extends BaseController<Cliente, Long> {
         return ResponseEntity.ok("Contraseña actualizada correctamente");
     }
 
-    // Obtener historial de pedidos por username
-    @GetMapping("/pedidos")
-    public ResponseEntity<List<Pedido>> obtenerHistorialPedidos(@RequestParam String username) {
-        List<Pedido> pedidos = clienteService.obtenerPedidosPorUsername(username);
-        return ResponseEntity.ok(pedidos);
-    }
+//    // Obtener historial de pedidos por username
+//    @GetMapping("/pedidos")
+//    public ResponseEntity<List<Pedido>> obtenerHistorialPedidos(@RequestParam String username) {
+//        List<Pedido> pedidos = clienteService.obtenerPedidosPorUsername(username);
+//        return ResponseEntity.ok(pedidos);
+//    }
 
     @GetMapping("/email/{email}")
     public ResponseEntity<Cliente> getClienteByEmail(@PathVariable String email) {
@@ -60,4 +60,6 @@ public class ClienteController extends BaseController<Cliente, Long> {
             return ResponseEntity.notFound().build();
         }
     }
+
+
 }

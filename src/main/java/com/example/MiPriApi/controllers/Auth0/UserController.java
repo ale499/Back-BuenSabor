@@ -14,6 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,7 +46,9 @@ public class UserController {
     @PostMapping("/getUserById")
     public ResponseEntity<?> getUserById(@RequestBody UserDTO userDTO) {
         try {
-            User user = userBBDDService.findById(userDTO.getAuth0Id());
+            // Decode Auth0 ID if it contains encoded characters
+            String decodedAuth0Id = URLDecoder.decode(userDTO.getAuth0Id(), StandardCharsets.UTF_8);
+            User user = userBBDDService.findById(decodedAuth0Id);
             if(user == null) {
                 return ResponseEntity.ok(false);
             }
@@ -82,7 +86,9 @@ public class UserController {
     @PostMapping("/createUserClient")
     public ResponseEntity<?> createUserClient(@RequestBody UserDTO userDTO) {
         try {
-            com.auth0.json.mgmt.users.User userAuth0 = userAuth0Service.getUserById(userDTO.getAuth0Id());
+            // Decode Auth0 ID if it contains encoded characters
+            String decodedAuth0Id = URLDecoder.decode(userDTO.getAuth0Id(), StandardCharsets.UTF_8);
+            com.auth0.json.mgmt.users.User userAuth0 = userAuth0Service.getUserById(decodedAuth0Id);
             if(userAuth0 == null) {
                 return ResponseEntity.internalServerError().body("El usuario no existe");
             }
@@ -111,6 +117,10 @@ public class UserController {
     @PutMapping("/modifyUser")
     public ResponseEntity<?> modifyUser(@RequestBody UserDTO userDTO) {
         try {
+            // Decode Auth0 ID if it contains encoded characters
+            String decodedAuth0Id = URLDecoder.decode(userDTO.getAuth0Id(), StandardCharsets.UTF_8);
+            userDTO.setAuth0Id(decodedAuth0Id);
+
             com.auth0.json.mgmt.users.User newUser = userAuth0Service.modifyUser(userDTO);
 
             Set<Roles> rolesAsignados = userDTO.getRoles().stream()
@@ -137,7 +147,9 @@ public class UserController {
     @PutMapping("/updatePassword")
     public ResponseEntity<?> updatePassword(@RequestParam String userId, @RequestParam String newPassword) {
         try {
-            userAuth0Service.updatePassword(userId, newPassword);
+            // Decode Auth0 ID if it contains encoded characters
+            String decodedUserId = URLDecoder.decode(userId, StandardCharsets.UTF_8);
+            userAuth0Service.updatePassword(decodedUserId, newPassword);
             return ResponseEntity.ok("Contraseña actualizada correctamente.");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error al actualizar la contraseña: " + e.getMessage());
@@ -149,7 +161,9 @@ public class UserController {
     @DeleteMapping("/deleteUserById")
     public ResponseEntity<?> deleteUser(@RequestBody UserDTO userDTO) {
         try {
-            userBBDDService.delete(userDTO.getAuth0Id());
+            // Decode Auth0 ID if it contains encoded characters
+            String decodedAuth0Id = URLDecoder.decode(userDTO.getAuth0Id(), StandardCharsets.UTF_8);
+            userBBDDService.delete(decodedAuth0Id);
             return ResponseEntity.ok("Usuario eliminado (lógico) correctamente.");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error al eliminar usuario: " + e.getMessage());
@@ -159,8 +173,10 @@ public class UserController {
     @DeleteMapping("/deleteUserByIdFisic")
     public ResponseEntity<?> deleteUserFisic(@RequestBody UserDTO userDTO) {
         try {
-            userBBDDService.deleteFisic(userDTO.getAuth0Id());
-            userAuth0Service.deleteUser(userDTO.getAuth0Id());
+            // Decode Auth0 ID if it contains encoded characters
+            String decodedAuth0Id = URLDecoder.decode(userDTO.getAuth0Id(), StandardCharsets.UTF_8);
+            userBBDDService.deleteFisic(decodedAuth0Id);
+            userAuth0Service.deleteUser(decodedAuth0Id);
             return ResponseEntity.ok("Usuario eliminado físicamente.");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error al eliminar físicamente al usuario: " + e.getMessage());
@@ -170,8 +186,10 @@ public class UserController {
     @PostMapping("/addRolesUser")
     public ResponseEntity<?> assignRoles(@RequestBody AssingRoleDTO request) {
         try {
-            userAuth0Service.assignRoles(request.getId(), request.getRoles());
-            User user = userBBDDService.findById(request.getId());
+            // Decode Auth0 ID if it contains encoded characters
+            String decodedId = URLDecoder.decode(request.getId(), StandardCharsets.UTF_8);
+            userAuth0Service.assignRoles(decodedId, request.getRoles());
+            User user = userBBDDService.findById(decodedId);
 
             Set<Roles> rolesAAgregar = request.getRoles().stream()
                     .map(idRol -> roleRepository.findByAuth0RoleId(idRol)
@@ -185,11 +203,29 @@ public class UserController {
         }
     }
 
+    @GetMapping("/clients")
+    public ResponseEntity<List<com.auth0.json.mgmt.users.User>> getAllClients() {
+        try {
+            // Buscar el ID del rol "Client" dinámicamente
+            String clientRoleId = userAuth0Service.getRoleIdByName("client");
+            if (clientRoleId == null) {
+                return ResponseEntity.badRequest().body(null);
+            }
+
+            List<com.auth0.json.mgmt.users.User> clients = userAuth0Service.getUsersByRole(clientRoleId);
+            return ResponseEntity.ok(clients);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
+
     @PostMapping("/removeRolesUser")
     public ResponseEntity<?> removeRoles(@RequestBody AssingRoleDTO request) {
         try {
-            userAuth0Service.removeRoles(request.getId(), request.getRoles());
-            User user = userBBDDService.findById(request.getId());
+            // Decode Auth0 ID if it contains encoded characters
+            String decodedId = URLDecoder.decode(request.getId(), StandardCharsets.UTF_8);
+            userAuth0Service.removeRoles(decodedId, request.getRoles());
+            User user = userBBDDService.findById(decodedId);
 
             Set<Roles> rolesAEliminar = request.getRoles().stream()
                     .map(idRol -> roleRepository.findByAuth0RoleId(idRol)

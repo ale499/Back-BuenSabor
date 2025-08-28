@@ -27,15 +27,16 @@ public class Pedido extends Base{
     private Double total = 0.0;
     private Double totalCosto;
     private LocalDate fechaPedido;
+    private String notaAdicional;
 
     @ManyToOne
     @JoinColumn(name = "chefId")
     private Empleado empleado;
 
     @ManyToOne
-    @JoinColumn(name = "clienteId")
-    @JsonBackReference // Evita la recursividad infinita en la serialización JSON
-    private Cliente cliente;
+    @JoinColumn(name = "cliente_auth0_id")
+    @JsonBackReference
+    private ClienteAuth0 clienteAuth0;
 
 
     @ManyToOne
