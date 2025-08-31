@@ -107,7 +107,7 @@ public class PedidoController extends BaseController<Pedido, Long>{
         return ResponseEntity.ok(preference.getInitPoint());
     }
 
-    @PostMapping("/crear")
+    @PostMapping("/nuevo")
     public ResponseEntity<?> crearPedidoDesdeCarrito(@RequestBody PedidoRequestDTO pedidoRequest) throws Exception {
         Pedido pedido = pedidoService.crearPedidoDesdeCarrito(pedidoRequest);
 
