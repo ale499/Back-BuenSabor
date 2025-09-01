@@ -115,8 +115,18 @@ public class PedidoService extends BaseService<Pedido, Long> {
                 .orElseThrow(() -> new Exception("Pedido no encontrado con ID: " + idPedido));
     }
 
+    //Costo fijo de delivery
+    private static double DELIVERY_COST = 500.0;
 
-    private static final double DELIVERY_COST = 500.0;
+    public static void setDeliveryCost(double newCost) {
+        DELIVERY_COST = newCost;
+    }
+
+    public static double getDeliveryCost() {
+        return DELIVERY_COST;
+    }
+
+
 
     @Transactional
     public Pedido crearPedidoDesdeCarrito(PedidoRequestDTO pedidoRequest) throws Exception {

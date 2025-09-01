@@ -171,4 +171,15 @@ public class PedidoController extends BaseController<Pedido, Long>{
         pedidoService.cambiarEstado(idPedido, nuevoEstado);
         return ResponseEntity.ok("Estado del pedido actualizado correctamente");
     }
+
+    @PostMapping("/delivery-precio")
+    public ResponseEntity<?> setDeliveryCost(@RequestParam double cost) {
+        PedidoService.setDeliveryCost(cost);
+        return ResponseEntity.ok("Costo de envio actualizado a " + cost);
+    }
+
+    @GetMapping("/delivery-actual")
+    public ResponseEntity<Double> getDeliveryCost() {
+        return ResponseEntity.ok(PedidoService.getDeliveryCost());
+    }
 }

@@ -14,5 +14,6 @@ public class ArticuloInsumoDTO {
     private int stockMaximo;
     private int stockMinimo;
     private boolean esParaElaborar;
+    private int stockPendiente;
 
 }

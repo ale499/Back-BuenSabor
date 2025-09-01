@@ -145,14 +145,14 @@ public class MiPriApiApplication {
 			System.out.println("Cliente de prueba creado con éxito.");
         */
 			// Crear una sucursal
-			Sucursal sucursal = sucursalRepository.findByNombre("Sucursal Centro")
+			Sucursal sucursal = sucursalRepository.findByNombre("Buen Sabor")
 					.orElseGet(() -> {
 						Sucursal nuevaSucursal = Sucursal.builder()
-								.nombre("Sucursal Centro")
+								.nombre("Buen Sabor")
 								.horarioApertura(LocalTime.of(9, 0))
-								.horarioCierre(LocalTime.of(18, 0))
-								.telefono("123456789")
-								.email("centro@example.com")
+								.horarioCierre(LocalTime.of(20, 0))
+								.telefono("2613123456")
+								.email("buensabor@gmail.com")
 								.build();
 
 						// Verificar y obtener las categorías existentes
@@ -203,11 +203,43 @@ public class MiPriApiApplication {
 						return domicilioRepository.save(nuevoDomicilio);
 					});
 
+
+			//domicilio para el buen sabor
+			Domicilio domicilioOeste = domicilioRepository.findByCalleAndNumeroAndPisoAndNroDpto("Calle Oeste", 456, 2, 202)
+					.orElseGet(() -> {
+						Domicilio nuevoDomicilio = Domicilio.builder()
+								.calle("Calle Oeste")
+								.numero(456)
+								.piso(2)
+								.nroDpto(202)
+								.cp(5100)
+								.localidad(localidadRepository.findByNombre("Barrio Oeste").orElseGet(() -> {
+									Localidad nuevaLocalidad = Localidad.builder()
+											.nombre("Barrio Oeste")
+											.provincia(provinciaRepository.findByNombre("Provincia Ejemplo").orElseGet(() -> {
+												Provincia nuevaProvincia = Provincia.builder()
+														.nombre("Provincia Ejemplo")
+														.pais(paisRepository.findByNombre("País Ejemplo").orElseGet(() -> {
+															Pais nuevoPais = Pais.builder()
+																	.nombre("País Ejemplo")
+																	.build();
+															return paisRepository.save(nuevoPais);
+														}))
+														.build();
+												return provinciaRepository.save(nuevaProvincia);
+											}))
+											.build();
+									return localidadRepository.save(nuevaLocalidad);
+								}))
+								.build();
+						return domicilioRepository.save(nuevoDomicilio);
+					});
+
 			// Asignar domicilio a la sucursal
-			Sucursal sucursalCentro = sucursalRepository.findByNombre("Sucursal Centro").orElse(null);
-			if (sucursalCentro != null) {
-				sucursalCentro.setDomicilio(domicilioCentro);
-				sucursalRepository.save(sucursalCentro);
+			Sucursal sucursalBuenSabor = sucursalRepository.findByNombre("Buen Sabor").orElse(null);
+			if (sucursalBuenSabor != null) {
+				sucursalBuenSabor.setDomicilio(domicilioOeste);
+				sucursalRepository.save(sucursalBuenSabor);
 			}
 
 			System.out.println("Domicilio asignado a la sucursal con éxito.");

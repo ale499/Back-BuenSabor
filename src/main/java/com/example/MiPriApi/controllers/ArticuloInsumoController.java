@@ -84,6 +84,7 @@ public class ArticuloInsumoController extends BaseController<ArticuloInsumo, Lon
                 dto.setStockMaximo(articulo.getStockMaximo());
                 dto.setStockMinimo(articulo.getStockMinimo());
                 dto.setEsParaElaborar(articulo.getEsParaElaborar());
+                dto.setStockPendiente(articulo.getStockPendiente() != null ? articulo.getStockPendiente() : 0);
 
                 return dto;
             }).collect(Collectors.toList());
