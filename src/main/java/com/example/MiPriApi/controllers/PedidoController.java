@@ -130,10 +130,8 @@ public class PedidoController extends BaseController<Pedido, Long>{
     }
 
     @PostMapping("/{idPedido}/confirmar")
-    public ResponseEntity<?> confirmarPedido(
-            @PathVariable Long idPedido,
-            @RequestBody ConfirmarPedidoRequestDTO request) throws Exception {
-        pedidoService.confirmarPedido(idPedido, request);
+    public ResponseEntity<?> confirmarPedido(@PathVariable Long idPedido) throws Exception {
+        pedidoService.confirmarPedido(idPedido);
         return ResponseEntity.ok("Pedido confirmado correctamente");
     }
 

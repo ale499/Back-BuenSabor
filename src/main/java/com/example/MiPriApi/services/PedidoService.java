@@ -299,13 +299,12 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
     @Transactional
     @SendTo("/topic/pedidos")
-    public void confirmarPedido(Long idPedido, ConfirmarPedidoRequestDTO request) throws Exception {
+    public void confirmarPedido(Long idPedido) throws Exception {
         Pedido pedido = pedidoRepository.findById(idPedido)
                 .orElseThrow(() -> new Exception("Pedido no encontrado"));
 
         pedido.setEstado(Estado.PENDIENTE);
 
-        // Decrement stock for all insumos in the pedido
         stockService.descontarStockIngredientes(pedido);
 
         int minutos = tiempoEstimadoService.calcularTiempoEstimado(pedido);
