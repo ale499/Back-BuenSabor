@@ -27,9 +27,9 @@ public class MercadoPagoService {
         MercadoPagoConfig.setAccessToken(accessToken);
 
         PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                .success("https://www.mendoza.gov.ar/prensa/noticia-destacada/&id=" + idPedido)
-                .failure("http://localhost:5173/payment-return?status=failure&id=" + idPedido)
-                .pending("http://localhost:5173/payment-return?status=pending&id=" + idPedido)
+                .success("https://el-buen-sabor-web-neon.vercel.app/payment-return?id=" + idPedido)
+                .failure("https://el-buen-sabor-web-neon.vercel.app/payment-return?id=" + idPedido)
+                .pending("https://el-buen-sabor-web-neon.vercel.app/payment-return?id=" + idPedido)
                 .build();
 
         PreferenceRequest preferenceRequest = PreferenceRequest.builder()
