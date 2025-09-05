@@ -67,7 +67,7 @@ public class UserAuth0Service {
         managementAPI.users().delete(id).execute();
     }
 
-    // Método para obtener usuarios que tienen un rol específico
+    // Metodo para obtener usuarios que tienen un rol específico
     public List<User> getUsersByRole(String roleId) throws Exception {
         // Buscar usuarios con el rol específico
         return managementAPI.roles().listUsers(roleId, null).execute().getItems();
