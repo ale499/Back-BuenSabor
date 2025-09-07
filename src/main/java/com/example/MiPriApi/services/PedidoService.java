@@ -144,6 +144,7 @@ public class PedidoService extends BaseService<Pedido, Long> {
         pedido.setClienteAuth0(clienteAuth0);
         pedido.setDomicilio(domicilio);
         pedido.setSucursal(sucursal);
+        pedido.setHoraCreacion(LocalTime.now());
 
         // Set optional note
         pedido.setNotaAdicional(pedidoRequest.getNotaAdicional());
@@ -311,6 +312,9 @@ public class PedidoService extends BaseService<Pedido, Long> {
         LocalTime horaEstimada = LocalTime.now().plusMinutes(minutos);
         pedido.setHoraEstimadaFinalizacion(horaEstimada);
 
+        pedido.setTiempoEstimadoDuracion(LocalTime.of(minutos / 60, minutos % 60, 0));
+
+
         pedidoRepository.save(pedido);
         PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
         pedidoWebSocketController.notificarCliente(pedido.getClienteAuth0().getId(), dto);
@@ -328,6 +332,29 @@ public class PedidoService extends BaseService<Pedido, Long> {
 
         PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
         pedidoWebSocketController.notificarCliente(pedido.getClienteAuth0().getId(), dto);
+    }
+
+    @Transactional
+    public void agregarTiempoEstimadoDuracion(Long idPedido, int minutosExtra) throws Exception {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new Exception("Pedido no encontrado"));
+
+        // Update horaEstimadaFinalizacion
+        if (pedido.getHoraEstimadaFinalizacion() != null) {
+            pedido.setHoraEstimadaFinalizacion(pedido.getHoraEstimadaFinalizacion().plusMinutes(minutosExtra));
+        } else {
+            pedido.setHoraEstimadaFinalizacion(LocalTime.now().plusMinutes(minutosExtra));
+        }
+
+        // Update tiempoEstimadoDuracion
+        int totalMinutos = 0;
+        if (pedido.getTiempoEstimadoDuracion() != null) {
+            totalMinutos = pedido.getTiempoEstimadoDuracion().toSecondOfDay() / 60;
+        }
+        totalMinutos += minutosExtra;
+        pedido.setTiempoEstimadoDuracion(LocalTime.of(totalMinutos / 60, totalMinutos % 60, 0));
+
+        pedidoRepository.save(pedido);
     }
 
 

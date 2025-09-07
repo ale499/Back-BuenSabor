@@ -65,6 +65,14 @@ public class PedidoController extends BaseController<Pedido, Long>{
         return ResponseEntity.ok(pedidos);
     }
 
+    @PostMapping("/{idPedido}/agregar-tiempo-duracion")
+    public ResponseEntity<?> agregarTiempoEstimadoDuracion(
+            @PathVariable Long idPedido,
+            @RequestParam int minutosExtra) throws Exception {
+        pedidoService.agregarTiempoEstimadoDuracion(idPedido, minutosExtra);
+        return ResponseEntity.ok("Tiempo estimado de duración actualizado correctamente");
+    }
+
 //    @GetMapping("/historial")
 //    public ResponseEntity<List<Pedido>> obtenerHistorialPedidos() throws Exception {
 //        String clienteId = SecurityContextHolder.getContext().getAuthentication().getName();

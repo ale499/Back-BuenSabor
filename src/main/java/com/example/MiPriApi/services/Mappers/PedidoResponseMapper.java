@@ -22,12 +22,15 @@ public class PedidoResponseMapper {
         dto.setTotalCosto(pedido.getTotalCosto());
         dto.setFechaPedido(pedido.getFechaPedido());
         dto.setHoraEstimadaFinalizacion(pedido.getHoraEstimadaFinalizacion());
+        dto.setHoraCreacion(pedido.getHoraCreacion());
 
         // Calcular minutos estimados
         if (pedido.getHoraEstimadaFinalizacion() != null) {
             int minutos = pedido.getHoraEstimadaFinalizacion().toSecondOfDay() / 60
                     - LocalTime.now().toSecondOfDay() / 60;
             dto.setTiempoEstimadoMinutos(Math.max(minutos, 0));
+            dto.setTiempoEstimadoDuracion(LocalTime.of(minutos / 60, minutos % 60, 0));
+
         }
 
         List<DetallePedidoRequestDTO> items = new ArrayList<>();
