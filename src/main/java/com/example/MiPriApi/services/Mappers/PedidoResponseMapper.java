@@ -31,6 +31,9 @@ public class PedidoResponseMapper {
             int minutosPositivos = Math.max(minutos, 0);
             dto.setTiempoEstimadoMinutos(minutosPositivos);
             dto.setTiempoEstimadoDuracion(LocalTime.of(minutosPositivos / 60, minutosPositivos % 60, 0));
+        } else {
+            dto.setTiempoEstimadoMinutos(0);
+            dto.setTiempoEstimadoDuracion(LocalTime.of(0, 0, 0));
         }
 
         List<DetallePedidoRequestDTO> items = new ArrayList<>();
