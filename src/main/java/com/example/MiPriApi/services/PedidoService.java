@@ -355,6 +355,9 @@ public class PedidoService extends BaseService<Pedido, Long> {
         pedido.setTiempoEstimadoDuracion(LocalTime.of(totalMinutos / 60, totalMinutos % 60, 0));
 
         pedidoRepository.save(pedido);
+
+        PedidoResponseDTO dto = PedidoResponseMapper.toDTO(pedido);
+        pedidoWebSocketController.notificarCliente(pedido.getClienteAuth0().getId(), dto);
     }
 
 
