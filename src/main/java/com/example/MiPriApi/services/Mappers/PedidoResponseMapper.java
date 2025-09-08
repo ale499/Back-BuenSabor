@@ -24,15 +24,25 @@ public class PedidoResponseMapper {
         dto.setHoraEstimadaFinalizacion(pedido.getHoraEstimadaFinalizacion());
         dto.setHoraCreacion(pedido.getHoraCreacion());
 
-        // Calcular minutos estimados
+        // Calculate remaining minutes until completion (for tiempoEstimadoMinutos)
         if (pedido.getHoraEstimadaFinalizacion() != null) {
-            int minutos = pedido.getHoraEstimadaFinalizacion().toSecondOfDay() / 60
-                    - LocalTime.now().toSecondOfDay() / 60;
-            int minutosPositivos = Math.max(minutos, 0);
+            int nowSeconds = LocalTime.now().toSecondOfDay();
+            int endSeconds = pedido.getHoraEstimadaFinalizacion().toSecondOfDay();
+            int diffSeconds = endSeconds - nowSeconds;
+            if (diffSeconds < 0) {
+                // Add 24 hours if the end time is on the next day
+                diffSeconds += 24 * 60 * 60;
+            }
+            int minutosPositivos = Math.max(diffSeconds / 60, 0);
             dto.setTiempoEstimadoMinutos(minutosPositivos);
-            dto.setTiempoEstimadoDuracion(LocalTime.of(minutosPositivos / 60, minutosPositivos % 60, 0));
         } else {
             dto.setTiempoEstimadoMinutos(0);
+        }
+
+        // Use the stored tiempoEstimadoDuracion from the entity
+        if (pedido.getTiempoEstimadoDuracion() != null) {
+            dto.setTiempoEstimadoDuracion(pedido.getTiempoEstimadoDuracion());
+        } else {
             dto.setTiempoEstimadoDuracion(LocalTime.of(0, 0, 0));
         }
 
