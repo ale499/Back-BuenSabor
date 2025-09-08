@@ -63,7 +63,7 @@ public class ArticuloManufacturadoController extends BaseController<ArticuloManu
         }
     }
 
-    // AGREGAR ESTE MÉTODO:
+    // AGREGAR ESTE METODO:
     @GetMapping
     public ResponseEntity<List<ArticuloManufacturado>> listar() {
         try {

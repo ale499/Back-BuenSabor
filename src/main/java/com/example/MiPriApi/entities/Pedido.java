@@ -23,10 +23,12 @@ import java.util.List;
 public class Pedido extends Base{
 
     private Integer numeroPedido;
+    private LocalTime horaCreacion;
     private LocalTime horaEstimadaFinalizacion;
     private Double total = 0.0;
     private Double totalCosto;
     private LocalDate fechaPedido;
+    private LocalTime tiempoEstimadoDuracion;
     private String notaAdicional;
 
     @ManyToOne

@@ -18,6 +18,8 @@ public class PedidoResponseDTO {
     private Double totalCosto;
     private LocalDate fechaPedido;
     private LocalTime horaEstimadaFinalizacion;
+    private LocalTime horaCreacion;
     private Integer tiempoEstimadoMinutos;
+    private LocalTime tiempoEstimadoDuracion;
     private List<DetallePedidoRequestDTO> items;
 }
