@@ -7,6 +7,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ArticuloService {
 
@@ -19,5 +21,9 @@ public class ArticuloService {
         articulo.setDescuento(descuento);
         articulo.setPrecioDescuento(precioDescuento);
         return articuloRepository.save(articulo);
+    }
+
+    public List<Articulo> findAll() {
+        return articuloRepository.findAll();
     }
 }

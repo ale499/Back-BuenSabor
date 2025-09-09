@@ -6,12 +6,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/articulos")
 public class ArticuloController {
 
     @Autowired
     private ArticuloService articuloService;
+
+    @GetMapping
+    public ResponseEntity<List<Articulo>> getAllArticulos() {
+        List<Articulo> articulos = articuloService.findAll();
+        return ResponseEntity.ok(articulos);
+    }
 
     @PutMapping("/{id}/descuento")
     public ResponseEntity<Articulo> asignarDescuento(
