@@ -3,8 +3,10 @@ package com.example.MiPriApi.repositories;
 import com.example.MiPriApi.entities.DetallePedido;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -24,6 +26,14 @@ public interface DetallePedidoRepository extends BaseRepository<DetallePedido, L
     @Query("SELECT d.articulo.denominacion, SUM(d.cantidad), SUM(d.subTotal) " +
             "FROM DetallePedido d " +
             "WHERE TYPE(d.articulo) = ArticuloManufacturado " +
+            "AND d.pedido.fechaPedido BETWEEN :inicio AND :fin " +
             "GROUP BY d.articulo.denominacion")
-    List<Object[]> findVentasPorManufacturado();
+    List<Object[]> findVentasPorManufacturadoEnPeriodo(@Param("inicio") LocalDate inicio, @Param("fin") LocalDate fin);
+
+    @Query("SELECT d.articulo.denominacion, SUM(d.cantidad) " +
+            "FROM DetallePedido d " +
+            "WHERE d.pedido.fechaPedido BETWEEN :inicio AND :fin " +
+            "GROUP BY d.articulo.denominacion " +
+            "ORDER BY SUM(d.cantidad) DESC")
+    List<Object[]> findProductosMasVendidosEnPeriodo(@Param("inicio") LocalDate inicio, @Param("fin") LocalDate fin);
 }

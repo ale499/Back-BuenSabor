@@ -60,6 +60,9 @@ public class SecurityConfiguration {
                                         .requestMatchers("/api/admin/**").hasAuthority("Administrador")
                                         .requestMatchers("/api/pagos/**").permitAll()
                                         .requestMatchers("/pedido/**").permitAll()
+                                        .requestMatchers("/promocion/**").permitAll()
+                                        .requestMatchers("/detallePromocion").permitAll()
+                                        .requestMatchers("/articulos/**").permitAll()
                                         .requestMatchers("/ws/**").permitAll() // Permitir acceso público a WebSocket
 
                                         .anyRequest().authenticated()

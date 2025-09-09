@@ -182,11 +182,15 @@ public class PedidoService extends BaseService<Pedido, Long> {
                 throw new Exception("Tipo de artículo no válido");
             }
 
+            double precioFinal = articulo.getDescuento() != null && articulo.getDescuento()
+                    ? articulo.getPrecioDescuento()
+                    : articulo.getPrecioVenta();
+
             DetallePedido detalle = new DetallePedido();
             detalle.setPedido(pedido);
             detalle.setArticulo(articulo);
             detalle.setCantidad(item.getCantidad());
-            detalle.setSubTotal(item.getSubTotal());
+            detalle.setSubTotal(precioFinal * item.getCantidad());
             detalles.add(detalle);
         }
 

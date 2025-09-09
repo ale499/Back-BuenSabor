@@ -39,4 +39,7 @@ public class Promocion extends Base{
             inverseJoinColumns = @JoinColumn(name = "sucursalId"))
     @Builder.Default
     private Set<Sucursal> sucursales = new HashSet<>();
+
+    @OneToMany(mappedBy = "promocion", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<DetallePromocion> detalles = new HashSet<>();
 }
