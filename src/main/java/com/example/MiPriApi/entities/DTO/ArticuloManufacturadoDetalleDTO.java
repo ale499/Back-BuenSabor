@@ -17,6 +17,8 @@ public class ArticuloManufacturadoDetalleDTO {
     private String preparacion;
     private List<DetalleDTO> detalles;
     private String type;
+    private Boolean descuento;
+    private Double precioDescuento;
 
     @Data
     public static class CategoriaDTO {

@@ -181,11 +181,12 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
         return ResponseEntity.ok(dtos);
     }
 
+
     @GetMapping("/manufacturables")
     public ResponseEntity<List<Object>> listarManufacturablesYBebidas() throws Exception {
         List<Object> response = new ArrayList<>();
 
-        // Manufacturados
+        // Manufacturables
         List<ArticuloManufacturado> todos = articuloManufacturadoService.listarTodos();
         for (ArticuloManufacturado manu : todos) {
             boolean puedeHacerse = true;
@@ -199,11 +200,14 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
             if (puedeHacerse) {
                 ArticuloManufacturadoDetalleDTO dto = mapper.toDTOFromArticuloManufacturado(manu);
                 dto.setType("MANUFACTURADO");
+                // Add discount fields if applicable
+                dto.setDescuento(manu.getDescuento());
+                dto.setPrecioDescuento(manu.getPrecioDescuento());
                 response.add(dto);
             }
         }
 
-        // Bebidas (Insumos)
+        // Drinks (Insumos)
         List<String> categoriasPermitidas = List.of("gaseosas", "jugos", "cervezas");
         List<ArticuloInsumo> todosInsumos = articuloInsumoService.findAll();
         List<ArticuloInsumo> bebidas = todosInsumos.stream()
@@ -229,7 +233,10 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
             bebidaMap.put("stockMinimo", bebida.getStockMinimo());
             bebidaMap.put("esParaElaborar", bebida.getEsParaElaborar());
             bebidaMap.put("stockPendiente", bebida.getStockPendiente());
-            bebidaMap.put("type", "INSUMO"); // Add type here
+            bebidaMap.put("type", "INSUMO");
+            // Add discount fields if applicable
+            bebidaMap.put("descuento", bebida.getDescuento());
+            bebidaMap.put("precioDescuento", bebida.getPrecioDescuento());
             response.add(bebidaMap);
         }
 
