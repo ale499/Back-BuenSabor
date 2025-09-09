@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -144,8 +146,7 @@ public class PedidoService extends BaseService<Pedido, Long> {
         pedido.setClienteAuth0(clienteAuth0);
         pedido.setDomicilio(domicilio);
         pedido.setSucursal(sucursal);
-        pedido.setHoraCreacion(LocalTime.now());
-
+        pedido.setHoraCreacion(ZonedDateTime.now(ZoneId.of("America/Argentina/Buenos_Aires")).toLocalTime());
         // Set optional note
         pedido.setNotaAdicional(pedidoRequest.getNotaAdicional());
 
