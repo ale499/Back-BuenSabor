@@ -203,6 +203,7 @@ public class ArticuloManufacturadoDetalleController extends BaseController<Artic
                 // Add discount fields if applicable
                 dto.setDescuento(manu.getDescuento());
                 dto.setPrecioDescuento(manu.getPrecioDescuento());
+                dto.setDeleted(manu.getDeleted()); // Add deleted field
                 response.add(dto);
             }
         }
