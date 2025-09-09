@@ -20,7 +20,7 @@ public class DetallePromocion extends Base{
     private int cantidad;
 
     @ManyToOne
-    @JoinColumn(name = "detallePromocionId", nullable = false)
+    @JoinColumn(name = "promocion_id", nullable = false)
     private Promocion promocion;
 
     @ManyToOne

@@ -46,4 +46,8 @@ public abstract class Articulo extends Base{
 
     protected Double precioVenta;
     private int tiempoPreparacion;
+
+    private Boolean descuento = false;
+    private Double precioDescuento;
+
 }
