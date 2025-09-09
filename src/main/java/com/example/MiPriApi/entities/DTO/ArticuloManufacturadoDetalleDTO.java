@@ -19,6 +19,7 @@ public class ArticuloManufacturadoDetalleDTO {
     private String type;
     private Boolean descuento;
     private Double precioDescuento;
+    private Boolean deleted;
 
     @Data
     public static class CategoriaDTO {
